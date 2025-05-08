@@ -1,0 +1,6 @@
+{
+  "extends": "@printerp/tsconfig/library.json",
+  "include": [
+    "src/**/*",
+  ]
+}

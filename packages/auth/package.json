@@ -1,0 +1,22 @@
+{
+  "name": "@printerp/auth",
+  "verson": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "devDependencies": {
+    "@printerp/eslint-config": "workspace:*",
+    "@printerp/prettier": "workspace:*",
+    "@printerp/tsconfig": "workspace:*"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@printerp/eslint-config/library"
+    ]
+  },
+  "prettier": "@printerp/prettier",
+  "dependencies": {
+    "@casl/ability": "^6.7.3",
+    "zod": "^3.24.3"
+  }
+}
