@@ -15,7 +15,7 @@ export async function authWithPassword(app: FastifyInstance) {
         tags: ['Auth'],
         summary: 'Authenticate user with password',
         body: z.object({
-          email: z.string().email(),
+          email: z.string(),
           password: z.string().min(6),
         }),
         response: {

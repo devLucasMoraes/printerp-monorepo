@@ -12,7 +12,6 @@ import {
 } from 'fastify-type-provider-zod'
 
 import { errorHandler } from './error-handler'
-import { authWithGithub } from './routes/auth/auth-with-github'
 import { authWithPassword } from './routes/auth/auth-with-password'
 import { createAccount } from './routes/auth/create-account'
 import { getProfile } from './routes/auth/get-profile'
@@ -68,7 +67,6 @@ app.register(authWithPassword)
 app.register(getProfile)
 app.register(reqPasswordRecover)
 app.register(resetPassword)
-app.register(authWithGithub)
 
 app.register(createOrganization)
 app.register(getMembership)
