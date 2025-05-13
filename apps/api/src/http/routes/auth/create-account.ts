@@ -9,10 +9,10 @@ import { BadRequestError } from '../_errors/bad-request-error'
 
 export async function createAccount(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/users',
+    '/sign-up',
     {
       schema: {
-        tags: ['Auth'],
+        tags: ['auth'],
         summary: 'Create a new user',
         body: z.object({
           name: z.string(),
@@ -35,7 +35,7 @@ export async function createAccount(app: FastifyInstance) {
         )
       }
 
-      const [username, domain] = email.split('@')
+      const [, domain] = email.split('@')
 
       const autoJoinOrganization = await prisma.organization.findFirst({
         where: {
@@ -49,7 +49,7 @@ export async function createAccount(app: FastifyInstance) {
       await prisma.user.create({
         data: {
           name,
-          username,
+          username: email,
           email,
           passwordHash,
           member_on: autoJoinOrganization

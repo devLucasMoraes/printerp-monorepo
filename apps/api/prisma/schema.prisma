@@ -25,10 +25,12 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId String?
 
-  tokens     Token[]
-  accounts   Account[]
-  member_on  Member[]
-  categorias Categoria[]
+  tokens                Token[]
+  accounts              Account[]
+  member_on             Member[]
+  categoriasCriadas     Categoria[] @relation("CategoriaCreatedBy")
+  categoriasAtualizadas Categoria[] @relation("CategoriaUpdatedBy")
+  categoriasDeletadas   Categoria[] @relation("CategoriaDeletedBy")
 
   @@unique([organizationId, username])
   @@map("users")
@@ -112,18 +114,26 @@ model Organization {
 }
 
 model Categoria {
-  id        String   @id @default(uuid())
-  nome      String   @unique
-  slug      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id   String @id @default(uuid())
+  nome String
+  slug String
 
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String       @map("organization_id")
 
-  createdBy User   @relation(fields: [userId], references: [id])
-  userId    String @map("owner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdBy   User     @relation("CategoriaCreatedBy", fields: [createdById], references: [id])
+  createdById String   @map("created_by_id")
+
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  updatedBy   User?    @relation("CategoriaUpdatedBy", fields: [updatedById], references: [id])
+  updatedById String?  @map("updated_by_id")
+
+  deletedAt   DateTime? @map("deleted_at")
+  deletedBy   User?     @relation("CategoriaDeletedBy", fields: [deletedById], references: [id])
+  deletedById String?   @map("deleted_by_id")
 
   @@unique([slug, organizationId])
+  @@unique([nome, organizationId])
   @@map("categorias")
 }
