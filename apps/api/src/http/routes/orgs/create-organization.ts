@@ -56,7 +56,6 @@ export async function createOrganization(app: FastifyInstance) {
             domain,
             slug: createSlug(name),
             shouldAttachUsersByDomain,
-            ownerId: userId,
             members: {
               create: {
                 userId,

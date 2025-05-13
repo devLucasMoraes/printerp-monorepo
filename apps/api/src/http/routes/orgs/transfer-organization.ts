@@ -76,15 +76,6 @@ export async function transferOrganization(app: FastifyInstance) {
               role: 'ADMIN',
             },
           })
-
-          await tx.organization.update({
-            where: {
-              id: organization.id,
-            },
-            data: {
-              ownerId: transferToUserId,
-            },
-          })
         })
 
         return res.status(204).send()
