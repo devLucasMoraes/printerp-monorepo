@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { repository } from '@/domain/repositories'
 import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
@@ -23,7 +24,7 @@ export async function createAccount(app: FastifyInstance) {
     },
     async (req, res) => {
       const { name, email, password } = req.body
-      const userWithSameEmail = await prisma.user.findUnique({
+      const userWithSameEmail = await repository.user.findOne({
         where: {
           email,
         },
@@ -37,7 +38,7 @@ export async function createAccount(app: FastifyInstance) {
 
       const [, domain] = email.split('@')
 
-      const autoJoinOrganization = await prisma.organization.findFirst({
+      const autoJoinOrganization = await repository.organization.findOne({
         where: {
           domain,
           shouldAttachUsersByDomain: true,

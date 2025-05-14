@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { prisma } from '@/lib/prisma'
+import { repository } from '@/domain/repositories'
 
 import { BadRequestError } from '../_errors/bad-request-error'
 
@@ -28,7 +28,7 @@ export async function authWithPassword(app: FastifyInstance) {
     async (req, res) => {
       const { email, password } = req.body
 
-      const userFromEmail = await prisma.user.findUnique({
+      const userFromEmail = await repository.user.findOne({
         where: {
           email,
         },
@@ -38,16 +38,13 @@ export async function authWithPassword(app: FastifyInstance) {
         throw new BadRequestError('invalid credentials')
       }
 
-      if (userFromEmail.passwordHash === null) {
+      if (userFromEmail.password === null) {
         throw new BadRequestError(
           'User does not have a password, use social login',
         )
       }
 
-      const isPasswordValid = await compare(
-        password,
-        userFromEmail.passwordHash,
-      )
+      const isPasswordValid = await compare(password, userFromEmail.password)
 
       if (!isPasswordValid) {
         throw new BadRequestError('invalid credentials')

@@ -3,8 +3,8 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
-import { prisma } from '@/lib/prisma'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../_errors/unauthorized-error'
@@ -43,11 +43,7 @@ export async function shtutdownOrganization(app: FastifyInstance) {
           )
         }
 
-        await prisma.organization.delete({
-          where: {
-            id: organization.id,
-          },
-        })
+        await repository.organization.softDelete(authOrganization.id)
 
         return res.status(204).send()
       },

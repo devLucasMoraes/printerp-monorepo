@@ -2,8 +2,9 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { Role } from '@/domain/entities/Role'
+import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
-import { prisma } from '@/lib/prisma'
 import { createSlug } from '@/utils/create-slug'
 
 import { BadRequestError } from '../_errors/bad-request-error'
@@ -37,7 +38,7 @@ export async function createOrganization(app: FastifyInstance) {
         const { name, domain, shouldAttachUsersByDomain } = req.body
 
         if (domain) {
-          const organizationByDomain = await prisma.organization.findFirst({
+          const organizationByDomain = await repository.organization.findOne({
             where: {
               domain,
             },
@@ -50,20 +51,22 @@ export async function createOrganization(app: FastifyInstance) {
           }
         }
 
-        const organization = await prisma.organization.create({
-          data: {
-            name,
-            domain,
-            slug: createSlug(name),
-            shouldAttachUsersByDomain,
-            members: {
-              create: {
-                userId,
-                role: 'ADMIN',
-              },
-            },
-          },
+        const memberData = repository.member.create({
+          userId,
+          role: Role.ADMIN,
         })
+
+        const organizationData = repository.organization.create({
+          name,
+          slug: createSlug(name),
+          domain,
+          shouldAttachUsersByDomain: shouldAttachUsersByDomain ?? false,
+          active: true,
+          members: [memberData],
+        })
+
+        const organization =
+          await repository.organization.save(organizationData)
 
         return res.status(201).send({ organizationId: organization.id })
       },

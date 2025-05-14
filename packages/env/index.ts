@@ -6,6 +6,12 @@ export const env = createEnv({
     SERVER_PORT: z.coerce.number().default(3333),
     DATABASE_URL: z.string().url(),
 
+    DB_PORT: z.coerce.number().default(5432),
+    DB_HOST: z.string().default('localhost'),
+    DB_USERNAME: z.string().default('docker'),
+    DB_PASSWORD: z.string().default('docker'),
+    DB_DATABASE: z.string().default('printerp'),
+
     JWT_SECRET: z.string(),
 
     GITHUB_CLIENT_ID: z.string(),
@@ -21,6 +27,11 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
+    DB_PORT: process.env.DB_PORT,
+    DB_HOST: process.env.DB_HOST,
+    DB_USERNAME: process.env.DB_USERNAME,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_DATABASE: process.env.DB_DATABASE,
   },
   emptyStringAsUndefined: true,
 })

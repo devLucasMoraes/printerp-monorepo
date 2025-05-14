@@ -1,10 +1,11 @@
 import { organizationSchema } from '@printerp/auth'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
+import { Not } from 'typeorm'
 import { z } from 'zod'
 
+import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
-import { prisma } from '@/lib/prisma'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { BadRequestError } from '../_errors/bad-request-error'
@@ -52,12 +53,10 @@ export async function updateOrganization(app: FastifyInstance) {
         }
 
         if (domain) {
-          const organizationByDomain = await prisma.organization.findFirst({
+          const organizationByDomain = await repository.organization.findOne({
             where: {
               domain,
-              id: {
-                not: organization.id,
-              },
+              id: Not(organization.id),
             },
           })
 
@@ -68,16 +67,14 @@ export async function updateOrganization(app: FastifyInstance) {
           }
         }
 
-        await prisma.organization.update({
-          where: {
-            id: organization.id,
-          },
-          data: {
+        await repository.organization.update(
+          { id: organization.id },
+          {
             name,
             domain,
-            shouldAttachUsersByDomain,
+            shouldAttachUsersByDomain: shouldAttachUsersByDomain ?? false,
           },
-        })
+        )
 
         return res.status(204).send()
       },

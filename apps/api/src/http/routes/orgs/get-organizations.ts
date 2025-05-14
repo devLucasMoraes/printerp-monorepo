@@ -3,8 +3,8 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
-import { prisma } from '@/lib/prisma'
 
 export async function getOrganizations(app: FastifyInstance) {
   app
@@ -35,26 +35,21 @@ export async function getOrganizations(app: FastifyInstance) {
       async (req, res) => {
         const userId = await req.getCurrentUserId()
 
-        const organizations = await prisma.organization.findMany({
+        const organizations = await repository.organization.find({
+          where: {
+            members: {
+              userId, // Filtra organizações que tenham membros com o userId
+            },
+          },
+          relations: { members: true }, // Carrega a relação members
           select: {
             id: true,
             name: true,
             slug: true,
             avatarUrl: true,
             members: {
-              select: {
-                role: true,
-              },
-              where: {
-                userId,
-              },
-            },
-          },
-          where: {
-            members: {
-              some: {
-                userId,
-              },
+              // Seleciona apenas o campo "role" dos membros
+              role: true,
             },
           },
         })

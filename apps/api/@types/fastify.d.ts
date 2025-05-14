@@ -1,6 +1,7 @@
 import 'fastify'
 
-import { Member, Organization } from '../src/generated/prisma'
+import { Member } from '@/domain/entities/Member'
+import { Organization } from '@/domain/entities/Organization'
 
 declare module 'fastify' {
   export interface FastifyRequest {

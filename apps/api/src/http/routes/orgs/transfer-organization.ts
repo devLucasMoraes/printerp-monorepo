@@ -3,8 +3,10 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { Member } from '@/domain/entities/Member'
+import { Role } from '@/domain/entities/Role'
+import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
-import { prisma } from '@/lib/prisma'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { BadRequestError } from '../_errors/bad-request-error'
@@ -49,12 +51,10 @@ export async function transferOrganization(app: FastifyInstance) {
           )
         }
 
-        const transferToMember = await prisma.member.findUnique({
+        const transferToMember = await repository.member.findOne({
           where: {
-            organizationId_userId: {
-              organizationId: organization.id,
-              userId: transferToUserId,
-            },
+            organizationId: organization.id,
+            userId: transferToUserId,
           },
         })
 
@@ -64,18 +64,15 @@ export async function transferOrganization(app: FastifyInstance) {
           )
         }
 
-        await prisma.$transaction(async (tx) => {
-          await tx.member.update({
-            where: {
-              organizationId_userId: {
-                organizationId: organization.id,
-                userId: transferToUserId,
-              },
+        await repository.member.manager.transaction(async (manager) => {
+          await manager.update(
+            Member,
+            {
+              organizationId: organization.id,
+              userId: transferToUserId,
             },
-            data: {
-              role: 'ADMIN',
-            },
-          })
+            { role: Role.ADMIN },
+          )
         })
 
         return res.status(204).send()
