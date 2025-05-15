@@ -11,6 +11,8 @@ import {
   ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 
+import typeormPlugin from '@/lib/typeorm-plugin'
+
 import { errorHandler } from './error-handler'
 import { authWithPassword } from './routes/auth/auth-with-password'
 import { createAccount } from './routes/auth/create-account'
@@ -31,6 +33,8 @@ app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)
 
 app.setErrorHandler(errorHandler)
+
+app.register(typeormPlugin)
 
 app.register(fastifySwagger, {
   openapi: {
@@ -76,10 +80,19 @@ app.register(updateOrganization)
 app.register(shtutdownOrganization)
 app.register(transferOrganization)
 
-app
-  .listen({
-    port: env.SERVER_PORT,
-  })
-  .then(() => {
-    console.log('HTTP server running!')
-  })
+const start = async () => {
+  try {
+    await app.listen({
+      port: env.SERVER_PORT,
+    })
+    console.log(`Server running at http://localhost:${env.SERVER_PORT}`)
+    console.log(
+      `Documentation available at http://localhost:${env.SERVER_PORT}/docs`,
+    )
+  } catch (err) {
+    app.log.error(err)
+    process.exit(1)
+  }
+}
+
+start()

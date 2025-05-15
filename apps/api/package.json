@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "pnpm env:load tsx watch src/http/server.ts",
-    "db:migrate": "pnpm env:load prisma migrate dev",
-    "db:studio": "pnpm env:load prisma studio",
-    "db:generate": "pnpm env:load prisma generate",
-    "env:load": "dotenv -e ../../.env --"
+    "db:migrate": "pnpm env:load typeorm migration:run",
+    "db:generate": "pnpm env:load tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts migration:generate",
+    "env:load": "dotenv -e ../../.env --",
+    "typeorm": "tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",

@@ -1,3 +1,5 @@
+import 'reflect-metadata'
+
 import { env } from '@printerp/env'
 import { join } from 'path'
 import { DataSource } from 'typeorm'
