@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import fastifyPlugin from 'fastify-plugin'
 
-import { prisma } from '@/lib/prisma'
+import { repository } from '@/domain/repositories'
 
 import { UnauthorizedError } from '../routes/_errors/unauthorized-error'
 
@@ -19,14 +19,14 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
     req.getUserMembership = async (slug: string) => {
       const userId = await req.getCurrentUserId()
 
-      const member = await prisma.member.findFirst({
+      const member = await repository.member.findOne({
         where: {
           userId,
           organization: {
             slug,
           },
         },
-        include: {
+        relations: {
           organization: true,
         },
       })
@@ -35,10 +35,10 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
         throw new UnauthorizedError('You are not part of this organization')
       }
 
-      const { organization, ...membership } = member
+      const { organization } = member
 
       return {
-        membership,
+        membership: member,
         organization,
       }
     }

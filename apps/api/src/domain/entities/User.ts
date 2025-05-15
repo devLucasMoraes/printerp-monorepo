@@ -32,7 +32,7 @@ export class User {
   password: string
 
   @Column({ name: 'avatar_url', nullable: true })
-  avatarUrl?: string
+  avatarUrl: string | null
 
   @Column({ type: 'varchar', length: 255, default: 'user' })
   role: 'user' | 'admin'
@@ -50,10 +50,10 @@ export class User {
   deletedAt?: Date
 
   @ManyToOne(() => Organization, (org) => org.users, { nullable: true })
-  organization?: Organization
+  organization: Organization | null
 
   @Column({ name: 'organization_id', nullable: true })
-  organizationId?: string
+  organizationId: string | null
 
   @OneToMany(() => Token, (token) => token.user)
   tokens: Token[]

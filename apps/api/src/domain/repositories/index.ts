@@ -10,6 +10,7 @@ import { ParceiroRepository } from './ParceiroRepository'
 import { RequisicaoEstoqueRepository } from './RequisicaoEstoqueRepository'
 import { RequisitanteRepository } from './RequisitanteRepository'
 import { SetorRepository } from './SetorRepository'
+import { TokenRepository } from './TokenRepository'
 import { UserRepository } from './UserRepository'
 
 const user = new UserRepository()
@@ -25,6 +26,7 @@ const emprestimo = new EmprestimoRepository()
 const parceiro = new ParceiroRepository()
 const organization = new OrganizationRepository()
 const member = new MemberRepository()
+const token = new TokenRepository()
 
 export const repository = {
   user,
@@ -40,4 +42,5 @@ export const repository = {
   parceiro,
   organization,
   member,
+  token,
 }

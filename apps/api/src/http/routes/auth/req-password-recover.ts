@@ -2,7 +2,8 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { prisma } from '@/lib/prisma'
+import { TokenType } from '@/domain/entities/TokenType'
+import { repository } from '@/domain/repositories'
 
 export async function reqPasswordRecover(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -22,7 +23,7 @@ export async function reqPasswordRecover(app: FastifyInstance) {
     async (req, res) => {
       const { email } = req.body
 
-      const userFromEmail = await prisma.user.findUnique({
+      const userFromEmail = await repository.user.findOne({
         where: {
           email,
         },
@@ -33,14 +34,12 @@ export async function reqPasswordRecover(app: FastifyInstance) {
         return res.status(201).send()
       }
 
-      const { id: code } = await prisma.token.create({
-        data: {
-          type: 'PASSWORD_RECOVER',
-          userId: userFromEmail.id,
-        },
+      const tokenData = repository.token.create({
+        type: TokenType.PASSWORD_RECOVER,
+        userId: userFromEmail.id,
       })
 
-      console.log(code)
+      await repository.token.save(tokenData)
 
       return res.status(201).send()
     },

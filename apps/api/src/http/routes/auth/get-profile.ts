@@ -2,8 +2,8 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
-import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
 
@@ -33,7 +33,7 @@ export async function getProfile(app: FastifyInstance) {
       async (req, res) => {
         const userId = await req.getCurrentUserId()
 
-        const user = await prisma.user.findUnique({
+        const user = await repository.user.findOne({
           where: {
             id: userId,
           },

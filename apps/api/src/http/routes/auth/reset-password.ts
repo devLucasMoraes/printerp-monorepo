@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { prisma } from '@/lib/prisma'
+import { repository } from '@/domain/repositories'
 
 import { UnauthorizedError } from '../_errors/unauthorized-error'
 
@@ -26,7 +26,7 @@ export async function resetPassword(app: FastifyInstance) {
     async (req, res) => {
       const { code, password } = req.body
 
-      const tokenFromCode = await prisma.token.findUnique({
+      const tokenFromCode = await repository.token.findOne({
         where: { id: code },
       })
 
@@ -36,12 +36,12 @@ export async function resetPassword(app: FastifyInstance) {
 
       const passwordHash = await hash(password, 6)
 
-      await prisma.user.update({
-        where: { id: tokenFromCode.userId },
-        data: {
-          passwordHash,
+      await repository.user.update(
+        { id: tokenFromCode.userId },
+        {
+          password: passwordHash,
         },
-      })
+      )
 
       return res.status(204).send()
     },

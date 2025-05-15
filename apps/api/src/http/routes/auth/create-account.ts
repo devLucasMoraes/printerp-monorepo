@@ -4,7 +4,6 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { repository } from '@/domain/repositories'
-import { prisma } from '@/lib/prisma'
 
 import { BadRequestError } from '../_errors/bad-request-error'
 
@@ -47,22 +46,15 @@ export async function createAccount(app: FastifyInstance) {
 
       const passwordHash = await hash(password, 6)
 
-      await prisma.user.create({
-        data: {
-          name,
-          username: email,
-          email,
-          passwordHash,
-          member_on: autoJoinOrganization
-            ? {
-                create: {
-                  organizationId: autoJoinOrganization.id,
-                },
-              }
-            : undefined,
-          organizationId: autoJoinOrganization?.id,
-        },
+      const userData = repository.user.create({
+        name,
+        username: email,
+        email,
+        password: passwordHash,
+        organizationId: autoJoinOrganization?.id,
       })
+
+      await repository.user.save(userData)
 
       return res.status(201).send({
         message: 'User created successfully',
