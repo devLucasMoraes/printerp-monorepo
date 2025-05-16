@@ -28,12 +28,12 @@ export class Token {
   @ManyToOne(() => User, (user) => user.tokens)
   user: User
 
-  @Column({ name: 'user_id' })
+  @Column({ type: 'uuid', name: 'user_id' })
   userId: string
 
   @ManyToOne(() => Organization, (org) => org.tokens, { nullable: true })
   organization?: Organization
 
-  @Column({ name: 'organization_id', nullable: true })
+  @Column({ type: 'uuid', name: 'organization_id', nullable: true })
   organizationId?: string
 }

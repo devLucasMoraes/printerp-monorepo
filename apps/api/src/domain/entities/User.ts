@@ -31,7 +31,7 @@ export class User {
   @Column({ type: 'varchar', length: 255 })
   password: string
 
-  @Column({ name: 'avatar_url', nullable: true })
+  @Column({ type: 'varchar', length: 255, name: 'avatar_url', nullable: true })
   avatarUrl: string | null
 
   @Column({ type: 'varchar', length: 255, default: 'user' })
@@ -52,7 +52,7 @@ export class User {
   @ManyToOne(() => Organization, (org) => org.users, { nullable: true })
   organization: Organization | null
 
-  @Column({ name: 'organization_id', nullable: true })
+  @Column({ type: 'uuid', name: 'organization_id', nullable: true })
   organizationId: string | null
 
   @OneToMany(() => Token, (token) => token.user)

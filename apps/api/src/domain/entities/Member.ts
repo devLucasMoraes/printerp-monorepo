@@ -22,12 +22,12 @@ export class Member {
   @ManyToOne(() => Organization, (org) => org.members)
   organization: Organization
 
-  @Column({ name: 'organization_id' })
+  @Column({ type: 'uuid', name: 'organization_id' })
   organizationId: string
 
   @ManyToOne(() => User, (user) => user.memberOn)
   user: User
 
-  @Column({ name: 'user_id' })
+  @Column({ type: 'uuid', name: 'user_id' })
   userId: string
 }

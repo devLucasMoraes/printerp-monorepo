@@ -19,18 +19,23 @@ export class Account {
   @Column({ type: 'enum', enum: AccountProvider })
   provider: AccountProvider
 
-  @Column({ name: 'provider_account_id', unique: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    name: 'provider_account_id',
+    unique: true,
+  })
   providerAccountId: string
 
   @ManyToOne(() => User, (user) => user.accounts)
   user: User
 
-  @Column({ name: 'user_id' })
+  @Column({ type: 'uuid', name: 'user_id' })
   userId: string
 
   @ManyToOne(() => Organization, (org) => org.accounts, { nullable: true })
   organization?: Organization
 
-  @Column({ name: 'organization_id', nullable: true })
+  @Column({ type: 'uuid', name: 'organization_id', nullable: true })
   organizationId?: string
 }

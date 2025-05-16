@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm env:load tsx watch src/http/server.ts",
-    "db:migrate": "pnpm env:load typeorm migration:run",
+    "db:migrate": "pnpm env:load tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts migration:run",
     "db:generate": "pnpm env:load tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts migration:generate",
     "env:load": "dotenv -e ../../.env --",
     "typeorm": "tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts"
