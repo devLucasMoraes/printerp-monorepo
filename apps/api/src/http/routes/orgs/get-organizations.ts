@@ -38,7 +38,7 @@ export async function getOrganizations(app: FastifyInstance) {
         const organizations = await repository.organization.find({
           where: {
             members: {
-              userId, // Filtra organizações que tenham membros com o userId
+              user: { id: userId }, // Filtra organizações que tenham membros com o userId
             },
           },
           relations: { members: true }, // Carrega a relação members

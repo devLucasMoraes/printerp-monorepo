@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -26,14 +27,10 @@ export class Token {
   updatedAt: Date
 
   @ManyToOne(() => User, (user) => user.tokens)
+  @JoinColumn({ name: 'user_id' })
   user: User
 
-  @Column({ type: 'uuid', name: 'user_id' })
-  userId: string
-
   @ManyToOne(() => Organization, (org) => org.tokens, { nullable: true })
+  @JoinColumn({ name: 'organization_id' })
   organization?: Organization
-
-  @Column({ type: 'uuid', name: 'organization_id', nullable: true })
-  organizationId?: string
 }

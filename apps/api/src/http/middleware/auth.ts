@@ -21,7 +21,9 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
 
       const member = await repository.member.findOne({
         where: {
-          userId,
+          user: {
+            id: userId,
+          },
           organization: {
             slug,
           },

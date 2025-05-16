@@ -28,6 +28,9 @@ export async function resetPassword(app: FastifyInstance) {
 
       const tokenFromCode = await repository.token.findOne({
         where: { id: code },
+        relations: {
+          user: true,
+        },
       })
 
       if (!tokenFromCode) {
@@ -37,7 +40,7 @@ export async function resetPassword(app: FastifyInstance) {
       const passwordHash = await hash(password, 6)
 
       await repository.user.update(
-        { id: tokenFromCode.userId },
+        { id: tokenFromCode.user.id },
         {
           password: passwordHash,
         },

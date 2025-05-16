@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -34,9 +35,6 @@ export class User {
   @Column({ type: 'varchar', length: 255, name: 'avatar_url', nullable: true })
   avatarUrl: string | null
 
-  @Column({ type: 'varchar', length: 255, default: 'user' })
-  role: 'user' | 'admin'
-
   @Column({ type: 'boolean', default: true })
   active: boolean
 
@@ -50,10 +48,8 @@ export class User {
   deletedAt?: Date
 
   @ManyToOne(() => Organization, (org) => org.users, { nullable: true })
+  @JoinColumn({ name: 'organization_id' })
   organization: Organization | null
-
-  @Column({ type: 'uuid', name: 'organization_id', nullable: true })
-  organizationId: string | null
 
   @OneToMany(() => Token, (token) => token.user)
   tokens: Token[]

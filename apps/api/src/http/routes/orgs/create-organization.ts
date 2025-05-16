@@ -51,22 +51,24 @@ export async function createOrganization(app: FastifyInstance) {
           }
         }
 
-        const memberData = repository.member.create({
-          userId,
-          role: Role.ADMIN,
-        })
-
         const organizationData = repository.organization.create({
           name,
           slug: createSlug(name),
           domain,
           shouldAttachUsersByDomain: shouldAttachUsersByDomain ?? false,
           active: true,
-          members: [memberData],
         })
 
         const organization =
           await repository.organization.save(organizationData)
+
+        const memberData = repository.member.create({
+          user: { id: userId },
+          role: Role.ADMIN,
+          organization,
+        })
+
+        await repository.member.save(memberData)
 
         return res.status(201).send({ organizationId: organization.id })
       },

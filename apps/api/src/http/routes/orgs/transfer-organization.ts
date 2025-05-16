@@ -53,8 +53,8 @@ export async function transferOrganization(app: FastifyInstance) {
 
         const transferToMember = await repository.member.findOne({
           where: {
-            organizationId: organization.id,
-            userId: transferToUserId,
+            organization,
+            user: { id: transferToUserId },
           },
         })
 

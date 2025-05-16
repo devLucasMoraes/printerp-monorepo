@@ -36,7 +36,7 @@ export async function reqPasswordRecover(app: FastifyInstance) {
 
       const tokenData = repository.token.create({
         type: TokenType.PASSWORD_RECOVER,
-        userId: userFromEmail.id,
+        user: userFromEmail,
       })
 
       await repository.token.save(tokenData)

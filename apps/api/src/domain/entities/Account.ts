@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
@@ -11,7 +12,7 @@ import { Organization } from './Organization'
 import { User } from './User'
 
 @Entity({ name: 'accounts' })
-@Unique(['provider', 'userId'])
+@Unique(['provider', 'user'])
 export class Account {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -28,14 +29,10 @@ export class Account {
   providerAccountId: string
 
   @ManyToOne(() => User, (user) => user.accounts)
+  @JoinColumn({ name: 'user_id' })
   user: User
 
-  @Column({ type: 'uuid', name: 'user_id' })
-  userId: string
-
   @ManyToOne(() => Organization, (org) => org.accounts, { nullable: true })
+  @JoinColumn({ name: 'organization_id' })
   organization?: Organization
-
-  @Column({ type: 'uuid', name: 'organization_id', nullable: true })
-  organizationId?: string
 }
