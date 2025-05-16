@@ -81,6 +81,7 @@ app.register(shtutdownOrganization)
 app.register(transferOrganization)
 
 const start = async () => {
+  console.log('Starting server...')
   try {
     await app.listen({
       port: env.SERVER_PORT,
