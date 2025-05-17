@@ -19,10 +19,12 @@ export const permissions: Record<Role, PermissionsByRole> = {
     })
   },
   MEMBER: (_, { can }) => {
-    can('get', 'User')
-    can(['create', 'get'], 'Categoria')
+    can(['create', 'get', 'update', 'delete'], 'Categoria')
   },
   BILLING: (_, { can }) => {
     can('manage', 'Billing')
+  },
+  SUPER_ADMIN: (_, { can }) => {
+    can('manage', 'all')
   },
 }

@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { repository } from '@/domain/repositories'
 
-import { UnauthorizedError } from '../_errors/unauthorized-error'
+import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function resetPassword(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(

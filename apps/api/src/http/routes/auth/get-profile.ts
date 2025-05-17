@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
 
-import { BadRequestError } from '../_errors/bad-request-error'
+import { BadRequestError } from '../../_errors/bad-request-error'
 
 export async function getProfile(app: FastifyInstance) {
   app

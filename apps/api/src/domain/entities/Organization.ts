@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,6 +14,7 @@ import { Token } from './Token'
 import { User } from './User'
 
 @Entity({ name: 'organizations' })
+@Index('IDX_ORGANIZATION_SLUG', ['slug'])
 export class Organization {
   @PrimaryGeneratedColumn('uuid')
   id: string

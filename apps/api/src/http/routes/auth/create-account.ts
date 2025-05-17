@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { repository } from '@/domain/repositories'
 
-import { BadRequestError } from '../_errors/bad-request-error'
+import { BadRequestError } from '../../_errors/bad-request-error'
 
 export async function createAccount(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(

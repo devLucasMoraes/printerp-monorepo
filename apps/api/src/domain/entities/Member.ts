@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -13,6 +14,8 @@ import { User } from './User'
 
 @Entity({ name: 'members' })
 @Unique(['organization', 'user'])
+@Index('IDX_MEMBER_USER', ['user'])
+@Index('IDX_MEMBER_ORGANIZATION', ['organization'])
 export class Member {
   @PrimaryGeneratedColumn('uuid')
   id: string

@@ -7,7 +7,7 @@ import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
-import { UnauthorizedError } from '../_errors/unauthorized-error'
+import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function shtutdownOrganization(app: FastifyInstance) {
   app

@@ -1,39 +1,42 @@
-import { EntityManager } from "typeorm";
-import { NotFoundError } from "../../../shared/errors";
-import { Categoria } from "../../entities/Categoria";
-import { categoriaRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Categoria } from '../../entities/Categoria'
+import { repository } from '../../repositories'
 
 export const deleteCategoriaUseCase = {
-  async execute(id: number, userId: string): Promise<void> {
-    return await categoriaRepository.manager.transaction(async (manager) => {
-      const categoria = await findCategoria(id, manager);
-      await disable(categoria, manager, userId);
-    });
+  async execute(id: string, membership: Member): Promise<void> {
+    return await repository.categoria.manager.transaction(async (manager) => {
+      const categoria = await findCategoria(id, manager)
+      await disable(categoria, manager, membership)
+    })
   },
-};
+}
 
 async function findCategoria(
-  id: number,
-  manager: EntityManager
+  id: string,
+  manager: EntityManager,
 ): Promise<Categoria> {
-  const categoria = await manager.getRepository(Categoria).findOneBy({ id });
+  const categoria = await manager.getRepository(Categoria).findOneBy({ id })
 
   if (!categoria) {
-    throw new NotFoundError("Categoria não encontrada");
+    throw new BadRequestError('Categoria não encontrada')
   }
 
-  return categoria;
+  return categoria
 }
 
 async function disable(
   categoria: Categoria,
   manager: EntityManager,
-  userId: string
+  membership: Member,
 ): Promise<void> {
-  categoria.ativo = false;
-  categoria.userId = userId;
+  categoria.ativo = false
+  categoria.deletedBy = membership.user.id
 
-  await manager.save(Categoria, categoria);
+  await manager.save(Categoria, categoria)
 
-  await manager.softDelete(Categoria, categoria.id);
+  await manager.softDelete(Categoria, categoria.id)
 }

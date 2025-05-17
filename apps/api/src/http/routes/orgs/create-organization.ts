@@ -7,7 +7,7 @@ import { repository } from '@/domain/repositories'
 import { auth } from '@/http/middleware/auth'
 import { createSlug } from '@/utils/create-slug'
 
-import { BadRequestError } from '../_errors/bad-request-error'
+import { BadRequestError } from '../../_errors/bad-request-error'
 
 export async function createOrganization(app: FastifyInstance) {
   app

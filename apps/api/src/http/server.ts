@@ -19,6 +19,12 @@ import { createAccount } from './routes/auth/create-account'
 import { getProfile } from './routes/auth/get-profile'
 import { reqPasswordRecover } from './routes/auth/req-password-recover'
 import { resetPassword } from './routes/auth/reset-password'
+import { createCategoria } from './routes/categoria/create-categoria'
+import { deleteCategoria } from './routes/categoria/delete-categoria'
+import { getAllCategorias } from './routes/categoria/get-all-categorias'
+import { getCategoria } from './routes/categoria/get-categoria'
+import { listCategorias } from './routes/categoria/list-categorias'
+import { updateCategoria } from './routes/categoria/update-categoria'
 import { createOrganization } from './routes/orgs/create-organization'
 import { getMembership } from './routes/orgs/get-membership'
 import { getOrganization } from './routes/orgs/get-organization'
@@ -79,6 +85,13 @@ app.register(getOrganization)
 app.register(updateOrganization)
 app.register(shtutdownOrganization)
 app.register(transferOrganization)
+
+app.register(createCategoria)
+app.register(deleteCategoria)
+app.register(getCategoria)
+app.register(getAllCategorias)
+app.register(updateCategoria)
+app.register(listCategorias)
 
 const start = async () => {
   console.log('Starting server...')

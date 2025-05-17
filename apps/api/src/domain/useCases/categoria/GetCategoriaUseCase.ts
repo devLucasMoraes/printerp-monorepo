@@ -1,15 +1,16 @@
-import { NotFoundError } from "../../../shared/errors";
-import { Categoria } from "../../entities/Categoria";
-import { categoriaRepository } from "../../repositories";
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Categoria } from '../../entities/Categoria'
+import { repository } from '../../repositories'
 
 export const getCategoriaUseCase = {
-  async execute(id: number): Promise<Categoria> {
-    const categoria = await categoriaRepository.findOneBy({ id });
+  async execute(id: string): Promise<Categoria> {
+    const categoria = await repository.categoria.findOneBy({ id })
 
     if (!categoria) {
-      throw new NotFoundError("Categoria não encontrada");
+      throw new BadRequestError('Categoria não encontrada')
     }
 
-    return categoria;
+    return categoria
   },
-};
+}

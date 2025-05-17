@@ -12,4 +12,11 @@ export class CategoriaRepository extends BaseRepository<Categoria> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Categoria>> {
     return this.paginate(pageRequest)
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Categoria>> {
+    return this.paginate(pageRequest, { organizationId })
+  }
 }
