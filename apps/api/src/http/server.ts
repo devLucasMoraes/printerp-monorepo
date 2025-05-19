@@ -14,6 +14,11 @@ import {
 import typeormPlugin from '@/lib/typeorm-plugin'
 
 import { errorHandler } from './error-handler'
+import { createArmazem } from './routes/armazem/create-armazem'
+import { deleteArmazem } from './routes/armazem/delete-armazem'
+import { getAllArmazens } from './routes/armazem/get-all-armazens'
+import { listArmazens } from './routes/armazem/list-armazens'
+import { updateArmazem } from './routes/armazem/update-armazem'
 import { authWithPassword } from './routes/auth/auth-with-password'
 import { createAccount } from './routes/auth/create-account'
 import { getProfile } from './routes/auth/get-profile'
@@ -131,6 +136,13 @@ app.register(getAllRequisitantes)
 app.register(getRequisitante)
 app.register(listRequisitantes)
 app.register(updateRequisitante)
+
+app.register(createArmazem)
+app.register(deleteArmazem)
+app.register(getAllArmazens)
+app.register(listArmazens)
+app.register(listRequisitantes)
+app.register(updateArmazem)
 
 const start = async () => {
   console.log('Starting server...')

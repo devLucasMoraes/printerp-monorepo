@@ -1,15 +1,16 @@
-import { NotFoundError } from "../../../shared/errors";
-import { Armazem } from "../../entities/Armazem";
-import { armazemRepository } from "../../repositories";
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Armazem } from '../../entities/Armazem'
 
 export const getArmazemUseCase = {
-  async execute(id: number): Promise<Armazem> {
-    const armazem = await armazemRepository.findOneWithRelations(id);
+  async execute(id: string): Promise<Armazem> {
+    const armazem = await repository.armazem.findOneWithRelations(id)
 
     if (!armazem) {
-      throw new NotFoundError("Armazém não encontrado");
+      throw new BadRequestError('Armazém não encontrado')
     }
 
-    return armazem;
+    return armazem
   },
-};
+}

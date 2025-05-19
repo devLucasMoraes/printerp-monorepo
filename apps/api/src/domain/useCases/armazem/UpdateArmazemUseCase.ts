@@ -1,71 +1,85 @@
-import { EntityManager } from "typeorm";
-import { UpdateArmazemDTO } from "../../../http/validators/armazem.schema";
-import { BadRequestError, NotFoundError } from "../../../shared/errors";
-import { Armazem } from "../../entities/Armazem";
-import { armazemRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { UpdateArmazemDTO } from '@/http/routes/armazem/update-armazem'
+
+import { Armazem } from '../../entities/Armazem'
 
 export const updateArmazemUseCase = {
-  async execute(id: number, dto: UpdateArmazemDTO): Promise<Armazem> {
-    return await armazemRepository.manager.transaction(async (manager) => {
-      const armazemToUpdate = await findArmazemToUpdate(id, manager);
-      await validate(id, dto, manager);
-      const armazem = await update(armazemToUpdate, dto, manager);
-      return armazem;
-    });
+  async execute(
+    id: string,
+    dto: UpdateArmazemDTO,
+    membership: Member,
+  ): Promise<Armazem> {
+    return await repository.armazem.manager.transaction(async (manager) => {
+      const armazemToUpdate = await findArmazemToUpdate(id, manager)
+      await validate(id, dto, membership, manager)
+      const armazem = await update(armazemToUpdate, dto, membership, manager)
+      return armazem
+    })
   },
-};
+}
 async function findArmazemToUpdate(
-  id: number,
-  manager: EntityManager
+  id: string,
+  manager: EntityManager,
 ): Promise<Armazem> {
   const armazem = await manager.findOne(Armazem, {
     where: { id },
-  });
+  })
 
   if (!armazem) {
-    throw new NotFoundError("Armazém não encontrado");
+    throw new BadRequestError('Armazém não encontrado')
   }
 
-  return armazem;
+  return armazem
 }
 
 async function validate(
-  id: number,
+  id: string,
   dto: UpdateArmazemDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   const armazem = await manager.getRepository(Armazem).findOne({
     where: { nome: dto.nome },
     withDeleted: true,
-  });
+  })
 
-  if (id !== dto.id) {
-    throw new BadRequestError("Id do armazém não pode ser alterado");
+  if (
+    armazem &&
+    armazem.deletedAt === null &&
+    armazem.organizationId === membership.organization.id &&
+    armazem.id !== id
+  ) {
+    throw new BadRequestError(`Armazém "${armazem.nome}" já cadastrado`)
   }
 
-  if (armazem && armazem.ativo === true && armazem.id !== dto.id) {
-    throw new BadRequestError(`Armazém "${armazem.nome}" já cadastrado`);
-  }
-
-  if (armazem && armazem.ativo === false) {
+  if (
+    armazem &&
+    armazem.deletedAt == null &&
+    armazem.organizationId === membership.organization.id &&
+    armazem.id !== id
+  ) {
     throw new BadRequestError(
-      `Armazém "${armazem.nome}" já cadastrado e desativado`
-    );
+      `Armazém "${armazem.nome}" já cadastrado e desativado`,
+    )
   }
 }
 
 async function update(
   armazemToUpdate: Armazem,
   dto: UpdateArmazemDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<Armazem> {
-  const armazemDTO = armazemRepository.create({
-    id: dto.id,
+  const armazemDTO = repository.armazem.create({
     nome: dto.nome,
-    userId: dto.userId,
-  });
+    updatedBy: membership.user.id,
+  })
 
-  const armazem = armazemRepository.merge(armazemToUpdate, armazemDTO);
+  const armazem = repository.armazem.merge(armazemToUpdate, armazemDTO)
 
-  return await manager.save(Armazem, armazem);
+  return await manager.save(Armazem, armazem)
 }

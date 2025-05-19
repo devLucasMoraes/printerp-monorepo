@@ -1,41 +1,26 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Unique,
 } from 'typeorm'
 
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { Estoque } from './Estoque'
 import { MovimentoEstoque } from './MovimentoEstoque'
 
 @Entity('armazens')
-export class Armazem {
-  @PrimaryGeneratedColumn()
-  id: number
+@Unique(['nome', 'organizationId'])
+export class Armazem extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255 })
   nome: string
-
-  @Column({ type: 'boolean', default: true })
-  ativo: boolean
 
   @OneToMany(() => Estoque, (estoque) => estoque.armazem)
   estoques: Estoque[]
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
-
-  @Column({ name: 'user_id', type: 'varchar', length: 255 })
-  userId: string
 
   @OneToMany(() => MovimentoEstoque, (movimento) => movimento.armazemOrigem)
   movimentosSaida: MovimentoEstoque[]

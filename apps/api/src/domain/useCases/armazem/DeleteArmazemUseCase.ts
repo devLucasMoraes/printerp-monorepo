@@ -1,39 +1,41 @@
-import { EntityManager } from "typeorm";
-import { NotFoundError } from "../../../shared/errors";
-import { Armazem } from "../../entities/Armazem";
-import { armazemRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Armazem } from '../../entities/Armazem'
 
 export const deleteArmazemUseCase = {
-  async execute(id: number, userId: string): Promise<void> {
-    return await armazemRepository.manager.transaction(async (manager) => {
-      const armazem = await findArmazem(id, manager);
-      await disable(armazem, manager, userId);
-    });
+  async execute(id: string, membership: Member): Promise<void> {
+    return await repository.armazem.manager.transaction(async (manager) => {
+      const armazem = await findArmazem(id, manager)
+      await disable(armazem, manager, membership.user.id)
+    })
   },
-};
+}
 
 async function findArmazem(
-  id: number,
-  manager: EntityManager
+  id: string,
+  manager: EntityManager,
 ): Promise<Armazem> {
-  const armazem = await manager.getRepository(Armazem).findOneBy({ id });
+  const armazem = await manager.getRepository(Armazem).findOneBy({ id })
 
   if (!armazem) {
-    throw new NotFoundError("Armazém não encontrado");
+    throw new BadRequestError('Armazém não encontrado')
   }
 
-  return armazem;
+  return armazem
 }
 
 async function disable(
   armazem: Armazem,
   manager: EntityManager,
-  userId: string
+  userId: string,
 ): Promise<void> {
-  armazem.ativo = false;
-  armazem.userId = userId;
+  armazem.deletedBy = userId
 
-  await manager.save(Armazem, armazem);
+  await manager.save(Armazem, armazem)
 
-  await manager.softDelete(Armazem, armazem.id);
+  await manager.softDelete(Armazem, armazem.id)
 }

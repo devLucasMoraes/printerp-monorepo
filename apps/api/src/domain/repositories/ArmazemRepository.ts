@@ -13,7 +13,14 @@ export class ArmazemRepository extends BaseRepository<Armazem> {
     return this.paginate(pageRequest, {}, {})
   }
 
-  async findOneWithRelations(id: number): Promise<Armazem | null> {
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Armazem>> {
+    return this.paginate(pageRequest, { organizationId })
+  }
+
+  async findOneWithRelations(id: string): Promise<Armazem | null> {
     return await this.findOne({
       where: { id },
       relations: {

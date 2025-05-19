@@ -1,0 +1,62 @@
+import { FastifyInstance } from 'fastify'
+import { ZodTypeProvider } from 'fastify-type-provider-zod'
+import { z } from 'zod'
+
+import { createArmazemUseCase } from '@/domain/useCases/armazem/CreateArmazemUseCase'
+import { auth } from '@/http/middleware/auth'
+import { getUserPermissions } from '@/utils/get-user-permissions'
+
+import { UnauthorizedError } from '../../_errors/unauthorized-error'
+
+const bodySchema = z.object({
+  nome: z.string(),
+})
+
+export type CreateArmazemDTO = z.infer<typeof bodySchema>
+
+export async function createArmazem(app: FastifyInstance) {
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .post(
+      '/organizations/:slug/armazens',
+      {
+        schema: {
+          tags: ['armazens'],
+          summary: 'cria um novo armazem',
+          security: [{ bearerAuth: [] }],
+          body: bodySchema,
+          params: z.object({
+            slug: z.string(),
+          }),
+          response: {
+            201: z.object({
+              armazemId: z.string(),
+            }),
+          },
+        },
+      },
+      async (req, res) => {
+        const { slug } = req.params
+
+        const { membership } = await req.getUserMembership(slug)
+
+        const { cannot } = getUserPermissions(
+          membership.user.id,
+          membership.role,
+        )
+
+        if (cannot('create', 'Armazem')) {
+          throw new UnauthorizedError(
+            'Você não tem permissão para criar um armazem',
+          )
+        }
+
+        const { nome } = req.body
+
+        const armazem = await createArmazemUseCase.execute({ nome }, membership)
+
+        return res.status(201).send({ armazemId: armazem.id })
+      },
+    )
+}
