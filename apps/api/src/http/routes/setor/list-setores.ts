@@ -2,22 +2,22 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { listCategoriaUseCase } from '@/domain/useCases/categoria/ListCategoriaUseCase'
+import { listSetorUseCase } from '@/domain/useCases/setor/ListSetorUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
-export async function listCategorias(app: FastifyInstance) {
+export async function listSetores(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/categorias/list',
+      '/organizations/:orgSlug/setores/list',
       {
         schema: {
-          tags: ['categorias'],
-          summary: 'List categories',
+          tags: ['setores'],
+          summary: 'List setores',
           security: [{ bearerAuth: [] }],
           params: z.object({
             orgSlug: z.string(),
@@ -64,9 +64,9 @@ export async function listCategorias(app: FastifyInstance) {
           membership.role,
         )
 
-        if (cannot('get', 'Categoria')) {
+        if (cannot('get', 'Setor')) {
           throw new UnauthorizedError(
-            'You do not have permission to list categories',
+            'Você não tem permissão para acessar este recurso.',
           )
         }
 
@@ -76,10 +76,7 @@ export async function listCategorias(app: FastifyInstance) {
           sort: req.query?.sort,
         }
 
-        const result = await listCategoriaUseCase.execute(
-          membership,
-          pageRequest,
-        )
+        const result = await listSetorUseCase.execute(membership, pageRequest)
 
         return res.status(201).send(result)
       },

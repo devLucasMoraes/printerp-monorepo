@@ -33,7 +33,6 @@ async function disable(
   manager: EntityManager,
   membership: Member,
 ): Promise<void> {
-  categoria.ativo = false
   categoria.deletedBy = membership.user.id
 
   await manager.save(Categoria, categoria)

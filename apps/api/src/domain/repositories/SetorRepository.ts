@@ -12,4 +12,11 @@ export class SetorRepository extends BaseRepository<Setor> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Setor>> {
     return this.paginate(pageRequest)
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Setor>> {
+    return this.paginate(pageRequest, { organizationId })
+  }
 }

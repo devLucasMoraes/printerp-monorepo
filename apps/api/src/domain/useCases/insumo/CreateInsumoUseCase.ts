@@ -38,7 +38,7 @@ async function validate(
 
   if (
     insumo &&
-    insumo.deletedAt !== null &&
+    insumo.deletedAt === null &&
     insumo.organizationId === membership.organization.id
   ) {
     throw new BadRequestError(`Insumo "${insumo.descricao}" já cadastrado`)
@@ -46,7 +46,7 @@ async function validate(
 
   if (
     insumo &&
-    insumo.deletedAt === null &&
+    insumo.deletedAt !== null &&
     insumo.organizationId === membership.organization.id
   ) {
     throw new BadRequestError(

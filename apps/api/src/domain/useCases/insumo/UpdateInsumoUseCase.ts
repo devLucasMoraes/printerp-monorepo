@@ -59,7 +59,7 @@ async function validate(
 
   if (
     insumo &&
-    insumo.deletedAt !== null &&
+    insumo.deletedAt === null &&
     insumo.organizationId === membership.organization.id &&
     insumo.id !== id
   ) {
@@ -68,7 +68,7 @@ async function validate(
 
   if (
     insumo &&
-    insumo.deletedAt === null &&
+    insumo.deletedAt !== null &&
     insumo.organizationId === membership.organization.id &&
     insumo.id !== id
   ) {

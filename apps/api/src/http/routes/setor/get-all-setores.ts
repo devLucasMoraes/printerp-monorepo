@@ -2,22 +2,22 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { getAllCategoriaUseCase } from '@/domain/useCases/categoria/GetAllCategoriaUseCase'
+import { getAllSetorUseCase } from '@/domain/useCases/setor/GetAllSetorUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
-export async function getAllCategorias(app: FastifyInstance) {
+export async function getAllSetores(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/categorias',
+      '/organizations/:orgSlug/setores',
       {
         schema: {
-          tags: ['categorias'],
-          summary: 'Get all categories',
+          tags: ['setores'],
+          summary: 'Get all setores',
           security: [{ bearerAuth: [] }],
           params: z.object({
             orgSlug: z.string(),
@@ -49,15 +49,15 @@ export async function getAllCategorias(app: FastifyInstance) {
           membership.role,
         )
 
-        if (cannot('get', 'Categoria')) {
+        if (cannot('get', 'Setor')) {
           throw new UnauthorizedError(
-            'You do not have permission to create a category',
+            'Você não tem permissão para listar setores',
           )
         }
 
-        const categorias = await getAllCategoriaUseCase.execute(membership)
+        const setores = await getAllSetorUseCase.execute(membership)
 
-        return res.status(201).send(categorias)
+        return res.status(201).send(setores)
       },
     )
 }

@@ -1,36 +1,38 @@
-import { EntityManager } from "typeorm";
-import { NotFoundError } from "../../../shared/errors";
-import { Setor } from "../../entities/Setor";
-import { setorRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Setor } from '../../entities/Setor'
+import { repository } from '../../repositories'
 
 export const deleteSetorUseCase = {
-  async execute(id: number, userId: string): Promise<void> {
-    return await setorRepository.manager.transaction(async (manager) => {
-      const setor = await findSetor(id, manager);
-      await disable(setor, manager, userId);
-    });
+  async execute(id: string, membership: Member): Promise<void> {
+    return await repository.setor.manager.transaction(async (manager) => {
+      const setor = await findSetor(id, manager)
+      await disable(setor, manager, membership.user.id)
+    })
   },
-};
+}
 
-async function findSetor(id: number, manager: EntityManager): Promise<Setor> {
-  const setor = await manager.getRepository(Setor).findOneBy({ id });
+async function findSetor(id: string, manager: EntityManager): Promise<Setor> {
+  const setor = await manager.getRepository(Setor).findOneBy({ id })
 
   if (!setor) {
-    throw new NotFoundError("Setor não encontrado");
+    throw new BadRequestError('Setor não encontrado')
   }
 
-  return setor;
+  return setor
 }
 
 async function disable(
   setor: Setor,
   manager: EntityManager,
-  userId: string
+  userId: string,
 ): Promise<void> {
-  setor.ativo = false;
-  setor.userId = userId;
+  setor.deletedBy = userId
 
-  await manager.save(Setor, setor);
+  await manager.save(Setor, setor)
 
-  await manager.softDelete(Setor, setor.id);
+  await manager.softDelete(Setor, setor.id)
 }

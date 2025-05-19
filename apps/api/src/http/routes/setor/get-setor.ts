@@ -2,26 +2,26 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { getCategoriaUseCase } from '@/domain/useCases/categoria/GetCategoriaUseCase'
+import { getSetorUseCase } from '@/domain/useCases/setor/GetSetorUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
-export async function getCategoria(app: FastifyInstance) {
+export async function getSetor(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/categorias/:categoriaId',
+      '/organizations/:orgSlug/setores/:setorId',
       {
         schema: {
-          tags: ['categorias'],
-          summary: 'Get a category by ID',
+          tags: ['setores'],
+          summary: 'Get a setor by ID',
           security: [{ bearerAuth: [] }],
           params: z.object({
             orgSlug: z.string(),
-            categoriaId: z.string(),
+            setorId: z.string(),
           }),
           response: {
             201: z.object({
@@ -48,17 +48,17 @@ export async function getCategoria(app: FastifyInstance) {
           membership.role,
         )
 
-        if (cannot('get', 'Categoria')) {
+        if (cannot('get', 'Setor')) {
           throw new UnauthorizedError(
             'You do not have permission to create a category',
           )
         }
 
-        const { categoriaId } = req.params
+        const { setorId } = req.params
 
-        const categoria = await getCategoriaUseCase.execute(categoriaId)
+        const setor = await getSetorUseCase.execute(setorId)
 
-        return res.status(201).send(categoria)
+        return res.status(201).send(setor)
       },
     )
 }

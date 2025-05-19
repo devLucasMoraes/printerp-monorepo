@@ -1,15 +1,16 @@
-import { NotFoundError } from "../../../shared/errors";
-import { Setor } from "../../entities/Setor";
-import { setorRepository } from "../../repositories";
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Setor } from '../../entities/Setor'
+import { repository } from '../../repositories'
 
 export const getSetorUseCase = {
-  async execute(id: number): Promise<Setor> {
-    const setor = await setorRepository.findOneBy({ id });
+  async execute(id: string): Promise<Setor> {
+    const setor = await repository.setor.findOneBy({ id })
 
     if (!setor) {
-      throw new NotFoundError("Setor não encontrado");
+      throw new BadRequestError('Setor não encontrado')
     }
 
-    return setor;
+    return setor
   },
-};
+}

@@ -38,6 +38,12 @@ import { getOrganizations } from './routes/orgs/get-organizations'
 import { shtutdownOrganization } from './routes/orgs/shutdown-organization'
 import { transferOrganization } from './routes/orgs/transfer-organization'
 import { updateOrganization } from './routes/orgs/update-organization'
+import { createSetor } from './routes/setor/create-setor'
+import { deleteSetor } from './routes/setor/delete-setor'
+import { getAllSetores } from './routes/setor/get-all-setores'
+import { getSetor } from './routes/setor/get-setor'
+import { listSetores } from './routes/setor/list-setores'
+import { updateSetor } from './routes/setor/update-setor'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -105,6 +111,13 @@ app.register(getAllInsumos)
 app.register(listInsumos)
 app.register(updateInsumo)
 app.register(deleteInsumo)
+
+app.register(updateSetor)
+app.register(listSetores)
+app.register(getSetor)
+app.register(getAllSetores)
+app.register(deleteSetor)
+app.register(createSetor)
 
 const start = async () => {
   console.log('Starting server...')

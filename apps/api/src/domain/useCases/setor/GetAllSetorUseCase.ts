@@ -1,8 +1,12 @@
-import { Setor } from "../../entities/Setor";
-import { setorRepository } from "../../repositories";
+import { Member } from '@/domain/entities/Member'
+
+import { Setor } from '../../entities/Setor'
+import { repository } from '../../repositories'
 
 export const getAllSetorUseCase = {
-  async execute(): Promise<Setor[]> {
-    return await setorRepository.find();
+  async execute(membership: Member): Promise<Setor[]> {
+    return await repository.setor.find({
+      where: { organizationId: membership.organization.id },
+    })
   },
-};
+}

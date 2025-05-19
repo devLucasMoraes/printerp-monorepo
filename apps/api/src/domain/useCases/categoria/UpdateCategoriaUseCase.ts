@@ -55,7 +55,7 @@ async function validate(
 
   if (
     categoria &&
-    categoria.ativo === true &&
+    categoria.deletedAt === null &&
     categoria.organizationId === membership.organization.id &&
     categoria.id !== id
   ) {
@@ -64,7 +64,7 @@ async function validate(
 
   if (
     categoria &&
-    categoria.ativo === false &&
+    categoria.deletedAt !== null &&
     categoria.organizationId === membership.organization.id &&
     categoria.id !== id
   ) {

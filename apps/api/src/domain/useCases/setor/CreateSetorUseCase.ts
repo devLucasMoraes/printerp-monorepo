@@ -1,47 +1,61 @@
-import { EntityManager } from "typeorm";
-import { CreateSetorDTO } from "../../../http/validators/setor.schemas";
-import { BadRequestError } from "../../../shared/errors";
-import { Setor } from "../../entities/Setor";
-import { setorRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { Setor } from '@/domain/entities/Setor'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { CreateSetorDTO } from '@/http/routes/setor/create-setor'
 
 export const createSetorUseCase = {
-  async execute(dto: CreateSetorDTO): Promise<Setor> {
-    return await setorRepository.manager.transaction(async (manager) => {
-      await validate(dto, manager);
-      const setor = await createSetor(dto, manager);
-      return setor;
-    });
+  async execute(dto: CreateSetorDTO, membership: Member): Promise<Setor> {
+    return await repository.setor.manager.transaction(async (manager) => {
+      await validate(dto, membership, manager)
+      const setor = await createSetor(dto, membership, manager)
+      return setor
+    })
   },
-};
+}
 
 async function validate(
   dto: CreateSetorDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   const setor = await manager.getRepository(Setor).findOne({
     where: { nome: dto.nome },
     withDeleted: true,
-  });
+  })
 
-  if (setor && setor.ativo === true) {
-    throw new BadRequestError(`Setor "${setor.nome}" já cadastrado`);
+  if (
+    setor &&
+    setor.deletedAt === null &&
+    setor.organizationId === membership.organization.id
+  ) {
+    throw new BadRequestError(`Setor "${setor.nome}" já cadastrado`)
   }
 
-  if (setor && setor.ativo === false) {
+  if (
+    setor &&
+    setor.deletedAt !== null &&
+    setor.organizationId === membership.organization.id
+  ) {
     throw new BadRequestError(
-      `Setor "${setor.nome}" já cadastrado e desativado`
-    );
+      `Setor "${setor.nome}" já cadastrado e desativado`,
+    )
   }
 }
 
 async function createSetor(
   dto: CreateSetorDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<Setor> {
-  const setorToCreate = setorRepository.create({
+  const setorToCreate = repository.setor.create({
     nome: dto.nome,
-    userId: dto.userId,
-  });
+    createdBy: membership.user.id,
+    updatedBy: membership.user.id,
+    organizationId: membership.organization.id,
+  })
 
-  return await manager.save(Setor, setorToCreate);
+  return await manager.save(Setor, setorToCreate)
 }

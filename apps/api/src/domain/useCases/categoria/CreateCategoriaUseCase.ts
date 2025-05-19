@@ -32,7 +32,7 @@ async function validate(
 
   if (
     categoria &&
-    categoria.ativo === true &&
+    categoria.deletedAt === null &&
     categoria.organizationId === membership.organization.id
   ) {
     throw new BadRequestError(`Categoria "${categoria.nome}" já cadastrada`)
@@ -40,7 +40,7 @@ async function validate(
 
   if (
     categoria &&
-    categoria.ativo === false &&
+    categoria.deletedAt !== null &&
     categoria.organizationId === membership.organization.id
   ) {
     throw new BadRequestError(
