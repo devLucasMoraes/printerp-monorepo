@@ -1,15 +1,16 @@
-import { NotFoundError } from "../../../shared/errors";
-import { Requisitante } from "../../entities/Requisitante";
-import { requisitanteRepository } from "../../repositories";
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Requisitante } from '../../entities/Requisitante'
+import { repository } from '../../repositories'
 
 export const getRequisitanteUseCase = {
-  async execute(id: number): Promise<Requisitante> {
-    const requisitante = await requisitanteRepository.findOneBy({ id });
+  async execute(id: string): Promise<Requisitante> {
+    const requisitante = await repository.requisitante.findOneBy({ id })
 
     if (!requisitante) {
-      throw new NotFoundError("Requisitante não encontrado");
+      throw new BadRequestError('Requisitante não encontrado')
     }
 
-    return requisitante;
+    return requisitante
   },
-};
+}

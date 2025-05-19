@@ -38,6 +38,12 @@ import { getOrganizations } from './routes/orgs/get-organizations'
 import { shtutdownOrganization } from './routes/orgs/shutdown-organization'
 import { transferOrganization } from './routes/orgs/transfer-organization'
 import { updateOrganization } from './routes/orgs/update-organization'
+import { createRequisitante } from './routes/requisitante/create-requisitante'
+import { deleteRequisitante } from './routes/requisitante/delete-requisitante'
+import { getAllRequisitantes } from './routes/requisitante/get-all-requisitantes'
+import { getRequisitante } from './routes/requisitante/get-requisitante'
+import { listRequisitantes } from './routes/requisitante/list-requisitantes'
+import { updateRequisitante } from './routes/requisitante/update-requisitante'
 import { createSetor } from './routes/setor/create-setor'
 import { deleteSetor } from './routes/setor/delete-setor'
 import { getAllSetores } from './routes/setor/get-all-setores'
@@ -118,6 +124,13 @@ app.register(getSetor)
 app.register(getAllSetores)
 app.register(deleteSetor)
 app.register(createSetor)
+
+app.register(createRequisitante)
+app.register(deleteRequisitante)
+app.register(getAllRequisitantes)
+app.register(getRequisitante)
+app.register(listRequisitantes)
+app.register(updateRequisitante)
 
 const start = async () => {
   console.log('Starting server...')

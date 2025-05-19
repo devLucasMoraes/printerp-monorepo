@@ -14,4 +14,11 @@ export class RequisitanteRepository extends BaseRepository<Requisitante> {
   ): Promise<Page<Requisitante>> {
     return this.paginate(pageRequest)
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Requisitante>> {
+    return this.paginate(pageRequest, { organizationId })
+  }
 }
