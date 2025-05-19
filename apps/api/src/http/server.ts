@@ -17,6 +17,7 @@ import { errorHandler } from './error-handler'
 import { createArmazem } from './routes/armazem/create-armazem'
 import { deleteArmazem } from './routes/armazem/delete-armazem'
 import { getAllArmazens } from './routes/armazem/get-all-armazens'
+import { getArmazem } from './routes/armazem/get-armazem'
 import { listArmazens } from './routes/armazem/list-armazens'
 import { updateArmazem } from './routes/armazem/update-armazem'
 import { authWithPassword } from './routes/auth/auth-with-password'
@@ -140,8 +141,8 @@ app.register(updateRequisitante)
 app.register(createArmazem)
 app.register(deleteArmazem)
 app.register(getAllArmazens)
+app.register(getArmazem)
 app.register(listArmazens)
-app.register(listRequisitantes)
 app.register(updateArmazem)
 
 const start = async () => {
@@ -155,6 +156,7 @@ const start = async () => {
       `Documentation available at http://localhost:${env.SERVER_PORT}/docs`,
     )
   } catch (err) {
+    console.error(err)
     app.log.error(err)
     process.exit(1)
   }
