@@ -25,6 +25,12 @@ import { getAllCategorias } from './routes/categoria/get-all-categorias'
 import { getCategoria } from './routes/categoria/get-categoria'
 import { listCategorias } from './routes/categoria/list-categorias'
 import { updateCategoria } from './routes/categoria/update-categoria'
+import { createInsumo } from './routes/insumo/create-insumo'
+import { deleteInsumo } from './routes/insumo/delete-insumo'
+import { getAllInsumos } from './routes/insumo/get-all-insumos'
+import { getInsumo } from './routes/insumo/get-insumo'
+import { listInsumos } from './routes/insumo/list-insumos'
+import { updateInsumo } from './routes/insumo/update-insumo'
 import { createOrganization } from './routes/orgs/create-organization'
 import { getMembership } from './routes/orgs/get-membership'
 import { getOrganization } from './routes/orgs/get-organization'
@@ -92,6 +98,13 @@ app.register(getCategoria)
 app.register(getAllCategorias)
 app.register(updateCategoria)
 app.register(listCategorias)
+
+app.register(createInsumo)
+app.register(getInsumo)
+app.register(getAllInsumos)
+app.register(listInsumos)
+app.register(updateInsumo)
+app.register(deleteInsumo)
 
 const start = async () => {
   console.log('Starting server...')

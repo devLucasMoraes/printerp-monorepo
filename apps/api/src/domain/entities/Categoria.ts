@@ -1,19 +1,17 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn,
 } from 'typeorm'
 
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { Insumo } from './Insumo'
 
 @Entity('categorias')
 @Unique(['nome', 'organizationId'])
-export class Categoria {
+export class Categoria extends BaseAuditEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -22,27 +20,6 @@ export class Categoria {
 
   @Column({ type: 'boolean', default: true })
   ativo: boolean
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @Column({ type: 'uuid', name: 'created_by' })
-  createdBy: string
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @Column({ type: 'uuid', name: 'updated_by' })
-  updatedBy: string
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt: Date | null
-
-  @Column({ type: 'uuid', name: 'deleted_by', nullable: true })
-  deletedBy: string | null
-
-  @Column({ type: 'uuid', name: 'organization_id' })
-  organizationId: string
 
   @OneToMany(() => Insumo, (insumo) => insumo.categoria)
   insumos: Insumo[]

@@ -1,24 +1,24 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Unique,
 } from 'typeorm'
 
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { Categoria } from './Categoria'
 import { Estoque } from './Estoque'
 import { MovimentoEstoque } from './MovimentoEstoque'
 import { Unidade } from './Unidade'
 
 @Entity('insumos')
-export class Insumo {
-  @PrimaryGeneratedColumn()
-  id: number
+@Unique(['descricao', 'organizationId'])
+export class Insumo extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column({ type: 'varchar', length: 255 })
   descricao: string
@@ -30,7 +30,7 @@ export class Insumo {
     scale: 2,
     default: 0,
   })
-  valorUntMed: number = 0
+  valorUntMed: number
 
   @Column({ name: 'valor_unt_med_auto', type: 'boolean', default: false })
   valorUntMedAuto = false
@@ -57,21 +57,6 @@ export class Insumo {
   @ManyToOne(() => Categoria, (categoria) => categoria.insumos)
   @JoinColumn({ name: 'categoria_id' })
   categoria: Categoria
-
-  @Column({ type: 'boolean', default: true })
-  ativo: boolean
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
-
-  @Column({ name: 'user_id', type: 'varchar', length: 255 })
-  userId: string
 
   @OneToMany(() => Estoque, (estoque) => estoque.insumo)
   estoques: Estoque[]

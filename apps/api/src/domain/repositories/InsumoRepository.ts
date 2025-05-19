@@ -12,4 +12,11 @@ export class InsumoRepository extends BaseRepository<Insumo> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Insumo>> {
     return this.paginate(pageRequest, {}, { categoria: true })
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Insumo>> {
+    return this.paginate(pageRequest, { organizationId }, { categoria: true })
+  }
 }

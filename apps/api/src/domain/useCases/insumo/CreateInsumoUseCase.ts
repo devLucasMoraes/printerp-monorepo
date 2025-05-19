@@ -1,52 +1,77 @@
-import { EntityManager } from "typeorm";
-import { CreateInsumoDTO } from "../../../http/validators/insumo.schemas";
-import { BadRequestError } from "../../../shared/errors";
-import { Insumo } from "../../entities/Insumo";
-import { insumoRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Categoria } from '@/domain/entities/Categoria'
+import { Member } from '@/domain/entities/Member'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { CreateInsumoDTO } from '@/http/routes/insumo/create-insumo'
+
+import { Insumo } from '../../entities/Insumo'
+import { repository } from '../../repositories'
 
 export const createInsumoUseCase = {
-  async execute(dto: CreateInsumoDTO): Promise<Insumo> {
-    return await insumoRepository.manager.transaction(async (manager) => {
-      await validate(dto, manager);
-      const insumo = await createInsumo(dto, manager);
-      return insumo;
-    });
+  async execute(dto: CreateInsumoDTO, membership: Member): Promise<Insumo> {
+    return await repository.insumo.manager.transaction(async (manager) => {
+      await validate(dto, membership, manager)
+      const insumo = await createInsumo(dto, membership, manager)
+      return insumo
+    })
   },
-};
+}
 
 async function validate(
   dto: CreateInsumoDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
+  const categoria = await manager.getRepository(Categoria).findOne({
+    where: { id: dto.categoriaId },
+  })
+
+  if (!categoria) {
+    throw new BadRequestError(`Categoria "${dto.categoriaId}" não encontrada`)
+  }
+
   const insumo = await manager.getRepository(Insumo).findOne({
     where: { descricao: dto.descricao },
     withDeleted: true,
-  });
+  })
 
-  if (insumo && insumo.ativo === true) {
-    throw new BadRequestError(`Insumo "${insumo.descricao}" já cadastrado`);
+  if (
+    insumo &&
+    insumo.deletedAt !== null &&
+    insumo.organizationId === membership.organization.id
+  ) {
+    throw new BadRequestError(`Insumo "${insumo.descricao}" já cadastrado`)
   }
 
-  if (insumo && insumo.ativo === false) {
+  if (
+    insumo &&
+    insumo.deletedAt === null &&
+    insumo.organizationId === membership.organization.id
+  ) {
     throw new BadRequestError(
-      `Insumo "${insumo.descricao}" já cadastrado e desativado`
-    );
+      `Insumo "${insumo.descricao}" já cadastrado e desativado`,
+    )
   }
 }
 
 async function createInsumo(
   dto: CreateInsumoDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<Insumo> {
-  const insumoToCreate = insumoRepository.create({
+  const insumoToCreate = repository.insumo.create({
     descricao: dto.descricao,
+    undEstoque: dto.undEstoque,
     valorUntMed: dto.valorUntMed,
     valorUntMedAuto: dto.valorUntMedAuto,
-    undEstoque: dto.undEstoque,
     estoqueMinimo: dto.estoqueMinimo,
-    categoria: dto.categoria,
-    userId: dto.userId,
-  });
+    permiteEstoqueNegativo: dto.permiteEstoqueNegativo,
+    createdBy: membership.user.id,
+    updatedBy: membership.user.id,
+    organizationId: membership.organization.id,
+    categoria: { id: dto.categoriaId },
+  })
 
-  return await manager.save(Insumo, insumoToCreate);
+  return await manager.save(Insumo, insumoToCreate)
 }

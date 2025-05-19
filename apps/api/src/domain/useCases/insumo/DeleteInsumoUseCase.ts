@@ -1,36 +1,38 @@
-import { EntityManager } from "typeorm";
-import { NotFoundError } from "../../../shared/errors";
-import { Insumo } from "../../entities/Insumo";
-import { insumoRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Insumo } from '../../entities/Insumo'
 
 export const deleteInsumoUseCase = {
-  async execute(id: number, userId: string): Promise<void> {
-    return await insumoRepository.manager.transaction(async (manager) => {
-      const insumo = await findInsumo(id, manager);
-      await disable(insumo, manager, userId);
-    });
+  async execute(id: string, membership: Member): Promise<void> {
+    return await repository.insumo.manager.transaction(async (manager) => {
+      const insumo = await findInsumo(id, manager)
+      await disable(insumo, manager, membership.user.id)
+    })
   },
-};
+}
 
-async function findInsumo(id: number, manager: EntityManager): Promise<Insumo> {
-  const insumo = await manager.getRepository(Insumo).findOneBy({ id });
+async function findInsumo(id: string, manager: EntityManager): Promise<Insumo> {
+  const insumo = await manager.getRepository(Insumo).findOneBy({ id })
 
   if (!insumo) {
-    throw new NotFoundError("Insumo não encontrado");
+    throw new BadRequestError('Insumo não encontrado')
   }
 
-  return insumo;
+  return insumo
 }
 
 async function disable(
   insumo: Insumo,
   manager: EntityManager,
-  userId: string
+  userId: string,
 ): Promise<void> {
-  insumo.ativo = false;
-  insumo.userId = userId;
+  insumo.deletedBy = userId
 
-  await manager.save(Insumo, insumo);
+  await manager.save(Insumo, insumo)
 
-  await manager.softDelete(Insumo, insumo.id);
+  await manager.softDelete(Insumo, insumo.id)
 }
