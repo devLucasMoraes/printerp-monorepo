@@ -14,6 +14,7 @@ import { categoriaSubject } from './subjects/categoria'
 import { estoqueSubject } from './subjects/estoque'
 import { insumoSubject } from './subjects/insumo'
 import { organizationSubject } from './subjects/organization'
+import { parceiroSubject } from './subjects/parceiro'
 import { requisitanteSubject } from './subjects/requisitante'
 import { setorSubject } from './subjects/setor'
 import { userSubject } from './subjects/user'
@@ -33,6 +34,7 @@ const appAbility = z.union([
   requisitanteSubject,
   armazemSubject,
   estoqueSubject,
+  parceiroSubject,
   z.tuple([z.literal('manage'), z.literal('all')]),
 ])
 

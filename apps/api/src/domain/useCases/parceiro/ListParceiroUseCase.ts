@@ -1,9 +1,16 @@
-import { Parceiro } from "../../entities/Parceiro";
-import { parceiroRepository } from "../../repositories";
-import { Page, PageRequest } from "../../repositories/BaseRepository";
+import { Member } from '@/domain/entities/Member'
+import { Parceiro } from '@/domain/entities/Parceiro'
+import { repository } from '@/domain/repositories'
+import { Page, PageRequest } from '@/domain/repositories/BaseRepository'
 
 export const listParceiroUseCase = {
-  async execute(pageRequest?: PageRequest): Promise<Page<Parceiro>> {
-    return await parceiroRepository.findAllPaginated(pageRequest);
+  async execute(
+    membership: Member,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Parceiro>> {
+    return await repository.parceiro.findAllPaginatedByOrganizationId(
+      membership.organization.id,
+      pageRequest,
+    )
   },
-};
+}

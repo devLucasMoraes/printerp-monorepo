@@ -1,8 +1,12 @@
-import { Parceiro } from "../../entities/Parceiro";
-import { parceiroRepository } from "../../repositories";
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+
+import { Parceiro } from '../../entities/Parceiro'
 
 export const getAllParceiroUseCase = {
-  async execute(): Promise<Parceiro[]> {
-    return await parceiroRepository.find();
+  async execute(membership: Member): Promise<Parceiro[]> {
+    return await repository.parceiro.find({
+      where: { organizationId: membership.organization.id },
+    })
   },
-};
+}

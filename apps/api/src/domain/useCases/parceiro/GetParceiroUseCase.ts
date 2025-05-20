@@ -1,15 +1,15 @@
-import { NotFoundError } from "../../../shared/errors";
-import { Parceiro } from "../../entities/Parceiro";
-import { parceiroRepository } from "../../repositories";
+import { Parceiro } from '@/domain/entities/Parceiro'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
 
 export const getParceiroUseCase = {
-  async execute(id: number): Promise<Parceiro> {
-    const parceiro = await parceiroRepository.findOneBy({ id });
+  async execute(id: string): Promise<Parceiro> {
+    const parceiro = await repository.parceiro.findOneBy({ id })
 
     if (!parceiro) {
-      throw new NotFoundError("Parceiro não encontrado");
+      throw new BadRequestError('Parceiro não encontrado')
     }
 
-    return parceiro;
+    return parceiro
   },
-};
+}

@@ -46,6 +46,12 @@ import { getOrganizations } from './routes/orgs/get-organizations'
 import { shtutdownOrganization } from './routes/orgs/shutdown-organization'
 import { transferOrganization } from './routes/orgs/transfer-organization'
 import { updateOrganization } from './routes/orgs/update-organization'
+import { createParceiro } from './routes/parceiro/create-parceiro'
+import { deleteParceiro } from './routes/parceiro/delete-parceiro'
+import { getAllParceiros } from './routes/parceiro/get-all-parceiros'
+import { getParceiro } from './routes/parceiro/get-parceiro'
+import { listParceiros } from './routes/parceiro/list-parceiro'
+import { updateParceiro } from './routes/parceiro/update-parceiro'
 import { createRequisitante } from './routes/requisitante/create-requisitante'
 import { deleteRequisitante } from './routes/requisitante/delete-requisitante'
 import { getAllRequisitantes } from './routes/requisitante/get-all-requisitantes'
@@ -149,6 +155,13 @@ app.register(updateArmazem)
 
 app.register(adjustEstoque)
 app.register(listEstoques)
+
+app.register(createParceiro)
+app.register(deleteParceiro)
+app.register(getAllParceiros)
+app.register(getParceiro)
+app.register(listParceiros)
+app.register(updateParceiro)
 
 const start = async () => {
   console.log('Starting server...')

@@ -1,39 +1,41 @@
-import { EntityManager } from "typeorm";
-import { NotFoundError } from "../../../shared/errors";
-import { Parceiro } from "../../entities/Parceiro";
-import { parceiroRepository } from "../../repositories";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { Parceiro } from '../../entities/Parceiro'
+import { repository } from '../../repositories'
 
 export const deleteParceiroUseCase = {
-  async execute(id: number, userId: string): Promise<void> {
-    return await parceiroRepository.manager.transaction(async (manager) => {
-      const parceiro = await findParceiro(id, manager);
-      await disable(parceiro, manager, userId);
-    });
+  async execute(id: string, membership: Member): Promise<void> {
+    return await repository.parceiro.manager.transaction(async (manager) => {
+      const parceiro = await findParceiro(id, manager)
+      await disable(parceiro, manager, membership.user.id)
+    })
   },
-};
+}
 
 async function findParceiro(
-  id: number,
-  manager: EntityManager
+  id: string,
+  manager: EntityManager,
 ): Promise<Parceiro> {
-  const parceiro = await manager.getRepository(Parceiro).findOneBy({ id });
+  const parceiro = await manager.getRepository(Parceiro).findOneBy({ id })
 
   if (!parceiro) {
-    throw new NotFoundError("Parceiro não encontrado");
+    throw new BadRequestError('Parceiro não encontrado')
   }
 
-  return parceiro;
+  return parceiro
 }
 
 async function disable(
   parceiro: Parceiro,
   manager: EntityManager,
-  userId: string
+  userId: string,
 ): Promise<void> {
-  parceiro.ativo = false;
-  parceiro.userId = userId;
+  parceiro.deletedBy = userId
 
-  await manager.save(Parceiro, parceiro);
+  await manager.save(Parceiro, parceiro)
 
-  await manager.softDelete(Parceiro, parceiro.id);
+  await manager.softDelete(Parceiro, parceiro.id)
 }

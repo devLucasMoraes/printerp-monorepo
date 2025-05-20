@@ -12,4 +12,11 @@ export class ParceiroRepository extends BaseRepository<Parceiro> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<Parceiro>> {
     return this.paginate(pageRequest)
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Parceiro>> {
+    return this.paginate(pageRequest, { organizationId })
+  }
 }

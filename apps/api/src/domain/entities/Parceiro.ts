@@ -1,35 +1,26 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Unique,
 } from 'typeorm'
 
-@Entity('parceiros')
-export class Parceiro {
-  @PrimaryGeneratedColumn()
-  id: number
+import { BaseAuditEntity } from './BaseAuditEntity'
+import { Emprestimo } from './Emprestimo'
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+@Entity('parceiros')
+@Unique(['nome', 'organizationId'])
+export class Parceiro extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
+
+  @Column({ type: 'varchar', length: 255 })
   nome: string
 
   @Column({ type: 'varchar', length: 255 })
   fone: string
 
-  @Column({ type: 'boolean', default: true })
-  ativo: boolean
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
-
-  @Column({ name: 'user_id', type: 'varchar', length: 255 })
-  userId: string
+  @OneToMany(() => Emprestimo, (emprestimo) => emprestimo.parceiro)
+  emprestimos: Emprestimo[]
 }
