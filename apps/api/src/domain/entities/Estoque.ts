@@ -1,24 +1,22 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm'
 
 import { Armazem } from './Armazem'
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { Insumo } from './Insumo'
 
 @Entity('estoques')
-export class Estoque {
-  @PrimaryGeneratedColumn()
-  id: number
+export class Estoque extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
-  quantidade: number = 0
+  quantidade: number
 
   @Column({
     name: 'consumo_medio_diario',
@@ -36,15 +34,6 @@ export class Estoque {
   })
   ultimaAtualizacaoConsumo: Date | null
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
-
   @ManyToOne(() => Armazem, (armazem) => armazem.estoques)
   @JoinColumn({ name: 'armazem_id' })
   armazem: Armazem
@@ -58,13 +47,6 @@ export class Estoque {
   }
 
   estaAbaixoMinimo(): boolean {
-    console.log(
-      '\n estaAbaixoMinimo: ',
-      this.insumo.descricao,
-      this.quantidade,
-      this.insumo.estoqueMinimo,
-      Number(this.quantidade) < Number(this.insumo.estoqueMinimo),
-    )
     return Number(this.quantidade) < Number(this.insumo.estoqueMinimo)
   }
 

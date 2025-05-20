@@ -15,17 +15,40 @@ export class EstoqueRepository extends BaseRepository<Estoque> {
     const filters = pageRequest?.filters || {}
 
     const where: FindOptionsWhere<Estoque> = {}
+
     if (Object.keys(filters).length > 0) {
       where.insumo = {}
 
       if (filters.insumo) {
         where.insumo.descricao = ILike(`%${filters.insumo}%`)
       }
+    }
 
-      if (filters.estaAbaixoMinimo) {
-        where.estaAbaixoMinimo = filters.estaAbaixoMinimo
+    return this.paginate(pageRequest, where, {
+      armazem: true,
+      insumo: {
+        categoria: true,
+      },
+    })
+  }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Estoque>> {
+    const filters = pageRequest?.filters || {}
+
+    const where: FindOptionsWhere<Estoque> = {}
+    where.organizationId = organizationId
+
+    if (Object.keys(filters).length > 0) {
+      where.insumo = {}
+
+      if (filters.insumo) {
+        where.insumo.descricao = ILike(`%${filters.insumo}%`)
       }
     }
+
     return this.paginate(pageRequest, where, {
       armazem: true,
       insumo: {

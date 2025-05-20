@@ -1,29 +1,31 @@
-import { EntityManager } from "typeorm";
-import { Armazem } from "../../entities/Armazem";
-import { Estoque } from "../../entities/Estoque";
-import { Insumo } from "../../entities/Insumo";
-import { MovimentoEstoque } from "../../entities/MovimentoEstoque";
-import { Unidade } from "../../entities/Unidade";
-import { movimentoEstoqueRepository } from "../../repositories";
-import { atualizarConsumoMedioDiarioUseCase } from "./AtualizarConsumoMedioDiarioUseCase";
-import { inicializarEstoqueUseCase } from "./InicializarEstoqueUseCase";
+import { EntityManager } from 'typeorm'
+
+import { MovimentoEstoque } from '@/domain/entities/MovimentoEstoque'
+import { repository } from '@/domain/repositories'
+
+import { Armazem } from '../../entities/Armazem'
+import { Estoque } from '../../entities/Estoque'
+import { Insumo } from '../../entities/Insumo'
+import { Unidade } from '../../entities/Unidade'
+import { atualizarConsumoMedioDiarioUseCase } from './AtualizarConsumoMedioDiarioUseCase'
+import { inicializarEstoqueUseCase } from './InicializarEstoqueUseCase'
 
 export const registrarEntradaEstoqueUseCase = {
   async execute(
     params: {
-      insumo: Insumo;
-      armazem: Armazem;
-      quantidade: number;
-      valorUnitario: number;
-      undEstoque: Unidade;
-      tipoDocumento: string;
-      documentoOrigem: string;
-      userId: string;
-      observacao?: string;
-      data: Date;
-      estorno?: boolean;
+      insumo: Insumo
+      armazem: Armazem
+      quantidade: number
+      valorUnitario: number
+      undEstoque: Unidade
+      tipoDocumento: string
+      documentoOrigemId: string
+      userId: string
+      observacao?: string
+      data: Date
+      estorno?: boolean
     },
-    manager: EntityManager
+    manager: EntityManager,
   ): Promise<void> {
     const {
       insumo,
@@ -32,45 +34,46 @@ export const registrarEntradaEstoqueUseCase = {
       valorUnitario,
       undEstoque,
       tipoDocumento,
-      documentoOrigem,
+      documentoOrigemId,
       observacao,
       userId,
       data,
       estorno,
-    } = params;
+    } = params
 
     const estoque = await inicializarEstoqueUseCase.execute(
       insumo.id,
       armazem.id,
-      manager
-    );
+      manager,
+    )
 
-    const movimento = movimentoEstoqueRepository.create({
-      tipo: "ENTRADA",
+    const movimento = repository.movimentoEstoque.create({
+      tipo: 'ENTRADA',
       data,
-      insumo,
       quantidade,
       valorUnitario,
       undidade: undEstoque,
-      armazemDestino: armazem,
-      documentoOrigem,
+      documentoOrigemId,
       tipoDocumento,
-      regularizado: true,
-      observacao,
-      userId,
       estorno,
-    });
+      observacao,
+      armazemDestino: armazem,
+      insumo,
+      createdBy: userId,
+      updatedBy: userId,
+      organizationId: armazem.organizationId,
+    })
 
-    await manager.save(MovimentoEstoque, movimento);
+    await manager.save(MovimentoEstoque, movimento)
 
-    estoque.quantidade = Number(estoque.quantidade) + Number(quantidade);
-    await manager.save(Estoque, estoque);
+    estoque.quantidade = Number(estoque.quantidade) + Number(quantidade)
+    await manager.save(Estoque, estoque)
 
     await atualizarConsumoMedioDiarioUseCase.execute(
       insumo.id,
       armazem.id,
       manager,
-      true // Forçar atualização
-    );
+      true, // Forçar atualização
+    )
   },
-};
+}

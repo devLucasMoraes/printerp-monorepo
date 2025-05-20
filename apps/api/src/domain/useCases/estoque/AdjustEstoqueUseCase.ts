@@ -1,35 +1,40 @@
-import { EntityManager } from "typeorm";
-import { AdjustEstoqueDTO } from "../../../http/validators/estoque.schema";
-import { BadRequestError, NotFoundError } from "../../../shared/errors";
-import { Estoque } from "../../entities/Estoque";
-import { MovimentoEstoque } from "../../entities/MovimentoEstoque";
-import {
-  estoqueRepository,
-  movimentoEstoqueRepository,
-} from "../../repositories";
-import { atualizarConsumoMedioDiarioUseCase } from "./AtualizarConsumoMedioDiarioUseCase";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { AdjustEstoqueDTO } from '@/http/routes/estoque/adjust-estoque'
+
+import { Estoque } from '../../entities/Estoque'
+import { MovimentoEstoque } from '../../entities/MovimentoEstoque'
+import { atualizarConsumoMedioDiarioUseCase } from './AtualizarConsumoMedioDiarioUseCase'
 
 export const adjustEstoqueUseCase = {
-  async execute(id: number, dto: AdjustEstoqueDTO): Promise<Estoque> {
-    return await estoqueRepository.manager.transaction(async (manager) => {
-      const estoqueToAdjust = await findEstoque(id, manager);
-      await validate(estoqueToAdjust, dto, manager);
-      await processarMovimentacoes(estoqueToAdjust, dto, manager);
+  async execute(
+    id: string,
+    dto: AdjustEstoqueDTO,
+    membership: Member,
+  ): Promise<Estoque> {
+    return await repository.estoque.manager.transaction(async (manager) => {
+      const estoqueToAdjust = await findEstoque(id, manager)
+      await validate(estoqueToAdjust, dto)
+      await processarMovimentacoes(estoqueToAdjust, dto, membership, manager)
       const adjustedEstoque = await adjustEstoque(
         estoqueToAdjust,
         dto,
-        manager
-      );
-      await atualizarConsumoMedioDiario(adjustedEstoque, manager);
+        membership,
+        manager,
+      )
+      await atualizarConsumoMedioDiario(adjustedEstoque, manager)
 
-      return adjustedEstoque;
-    });
+      return adjustedEstoque
+    })
   },
-};
+}
 
 async function findEstoque(
-  id: number,
-  manager: EntityManager
+  id: string,
+  manager: EntityManager,
 ): Promise<Estoque> {
   const estoque = await manager.findOne(Estoque, {
     where: { id },
@@ -37,101 +42,102 @@ async function findEstoque(
       insumo: true,
       armazem: true,
     },
-  });
+  })
 
   if (!estoque) {
-    throw new NotFoundError("RequisicaoEstoque not found");
+    throw new BadRequestError('RequisicaoEstoque not found')
   }
 
-  return estoque;
+  return estoque
 }
 
 async function validate(
   estoqueToAdjust: Estoque,
   dto: AdjustEstoqueDTO,
-  manager: EntityManager
 ): Promise<void> {
-  if (estoqueToAdjust.id !== dto.id) {
-    throw new BadRequestError("Id do armazém não pode ser alterado");
-  }
-  const diferenca = Number(dto.quantidade) - Number(estoqueToAdjust.quantidade);
+  const diferenca = Number(dto.quantidade) - Number(estoqueToAdjust.quantidade)
 
   if (diferenca === 0) {
-    throw new BadRequestError("Quantidade a ser ajustada não pode ser a mesma");
+    throw new BadRequestError('Quantidade a ser ajustada não pode ser a mesma')
   }
 }
 
 async function adjustEstoque(
   estoqueToAdjust: Estoque,
   dto: AdjustEstoqueDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<Estoque> {
-  const ajustEstoqueDto = estoqueRepository.create({
+  const ajustEstoqueDto = repository.estoque.create({
     quantidade: dto.quantidade,
-  });
+    updatedBy: membership.user.id,
+  })
 
-  const ajustedEstoque = estoqueRepository.merge(
+  const ajustedEstoque = repository.estoque.merge(
     estoqueToAdjust,
-    ajustEstoqueDto
-  );
+    ajustEstoqueDto,
+  )
 
-  return await manager.save(Estoque, ajustedEstoque);
+  return await manager.save(Estoque, ajustedEstoque)
 }
 
 async function processarMovimentacoes(
   estoque: Estoque,
   dto: AdjustEstoqueDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
-  const diferenca = Number(dto.quantidade) - Number(estoque.quantidade);
+  const diferenca = Number(dto.quantidade) - Number(estoque.quantidade)
 
   if (diferenca > 0) {
-    const movimentacaoEntrada = movimentoEstoqueRepository.create({
-      tipo: "ENTRADA",
+    const movimentacaoEntrada = repository.movimentoEstoque.create({
+      tipo: 'ENTRADA',
       data: new Date(),
-      insumo: estoque.insumo,
       quantidade: Math.abs(diferenca),
       valorUnitario: estoque.insumo.valorUntMed,
       undidade: estoque.insumo.undEstoque,
+      documentoOrigemId: estoque.id.toString(),
+      tipoDocumento: 'ESTOQUE',
+      observacao: 'Ajuste de estoque',
       armazemDestino: estoque.armazem,
-      documentoOrigem: estoque.id.toString(),
-      tipoDocumento: "ESTOQUE",
-      regularizado: true,
-      observacao: "Ajuste de estoque",
-      userId: dto.userId,
-    });
+      insumo: estoque.insumo,
+      createdBy: membership.user.id,
+      updatedBy: membership.user.id,
+      organizationId: membership.organization.id,
+    })
 
-    await manager.save(MovimentoEstoque, movimentacaoEntrada);
+    await manager.save(MovimentoEstoque, movimentacaoEntrada)
   }
 
   if (diferenca < 0) {
-    const movimentacaoSaida = movimentoEstoqueRepository.create({
-      tipo: "SAIDA",
+    const movimentacaoSaida = repository.movimentoEstoque.create({
+      tipo: 'SAIDA',
       data: new Date(),
-      insumo: estoque.insumo,
       quantidade: Math.abs(diferenca),
       valorUnitario: estoque.insumo.valorUntMed,
       undidade: estoque.insumo.undEstoque,
+      documentoOrigemId: estoque.id.toString(),
+      tipoDocumento: 'ESTOQUE',
+      observacao: 'Ajuste de estoque',
       armazemOrigem: estoque.armazem,
-      documentoOrigem: estoque.id.toString(),
-      tipoDocumento: "ESTOQUE",
-      regularizado: true,
-      observacao: "Ajuste de estoque",
-      userId: dto.userId,
-    });
+      insumo: estoque.insumo,
+      createdBy: membership.user.id,
+      updatedBy: membership.user.id,
+      organizationId: membership.organization.id,
+    })
 
-    await manager.save(MovimentoEstoque, movimentacaoSaida);
+    await manager.save(MovimentoEstoque, movimentacaoSaida)
   }
 }
 
 async function atualizarConsumoMedioDiario(
   estoque: Estoque,
-  manager: EntityManager
+  manager: EntityManager,
 ): Promise<void> {
   await atualizarConsumoMedioDiarioUseCase.execute(
     estoque.insumo.id,
     estoque.armazem.id,
     manager,
-    true // Forçar atualização
-  );
+    true, // Forçar atualização
+  )
 }

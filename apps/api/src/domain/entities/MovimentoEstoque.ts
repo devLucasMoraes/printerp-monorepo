@@ -1,22 +1,20 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm'
 
 import { Armazem } from './Armazem'
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { Insumo } from './Insumo'
 import { Unidade } from './Unidade'
 
 @Entity('movimentos_estoque')
-export class MovimentoEstoque {
-  @PrimaryGeneratedColumn()
-  id: number
+export class MovimentoEstoque extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column({ type: 'varchar', length: 50 })
   tipo: 'ENTRADA' | 'SAIDA' | 'TRANSFERENCIA'
@@ -37,22 +35,11 @@ export class MovimentoEstoque {
   })
   undidade: Unidade
 
-  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida)
-  @JoinColumn({ name: 'armazem_origem_id' })
-  armazemOrigem: Armazem
-
-  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosEntrada)
-  @JoinColumn({ name: 'armazem_destino_id' })
-  armazemDestino: Armazem
-
-  @Column({ name: 'documento_origem', type: 'varchar', length: 255 })
-  documentoOrigem: string
+  @Column({ name: 'documento_origem_id', type: 'uuid' })
+  documentoOrigemId: string
 
   @Column({ name: 'tipo_documento', type: 'varchar', length: 50 })
   tipoDocumento: string
-
-  @Column({ type: 'boolean', default: false })
-  regularizado: boolean
 
   @Column({ type: 'boolean', default: false })
   estorno: boolean
@@ -60,17 +47,13 @@ export class MovimentoEstoque {
   @Column({ type: 'text', nullable: true })
   observacao?: string
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
+  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida)
+  @JoinColumn({ name: 'armazem_origem_id' })
+  armazemOrigem: Armazem
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
-
-  @Column({ name: 'user_id', type: 'varchar', length: 255 })
-  userId: string
+  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosEntrada)
+  @JoinColumn({ name: 'armazem_destino_id' })
+  armazemDestino: Armazem
 
   @ManyToOne(() => Insumo, (insumo) => insumo.movimentos)
   @JoinColumn({ name: 'insumo_id' })

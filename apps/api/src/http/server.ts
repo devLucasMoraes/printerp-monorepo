@@ -31,6 +31,8 @@ import { getAllCategorias } from './routes/categoria/get-all-categorias'
 import { getCategoria } from './routes/categoria/get-categoria'
 import { listCategorias } from './routes/categoria/list-categorias'
 import { updateCategoria } from './routes/categoria/update-categoria'
+import { adjustEstoque } from './routes/estoque/adjust-estoque'
+import { listEstoques } from './routes/estoque/list-estoques'
 import { createInsumo } from './routes/insumo/create-insumo'
 import { deleteInsumo } from './routes/insumo/delete-insumo'
 import { getAllInsumos } from './routes/insumo/get-all-insumos'
@@ -144,6 +146,9 @@ app.register(getAllArmazens)
 app.register(getArmazem)
 app.register(listArmazens)
 app.register(updateArmazem)
+
+app.register(adjustEstoque)
+app.register(listEstoques)
 
 const start = async () => {
   console.log('Starting server...')

@@ -1,22 +1,23 @@
-import { EntityManager } from "typeorm";
-import { Estoque } from "../../entities/Estoque";
+import { EntityManager } from 'typeorm'
 
-const MAX_DATAS_RECENTES = 10;
+import { Estoque } from '../../entities/Estoque'
+
+const MAX_DATAS_RECENTES = 10
 
 interface QueryResult {
-  documento_origem: string;
-  data: Date;
-  total_saidas: number;
-  total_estornos: number;
-  saida_liquida: number;
+  documento_origem: string
+  data: Date
+  total_saidas: number
+  total_estornos: number
+  saida_liquida: number
 }
 
 export const atualizarConsumoMedioDiarioUseCase = {
   async execute(
-    insumoId: number,
-    armazemId: number,
+    insumoId: string,
+    armazemId: string,
     manager: EntityManager,
-    forcarAtualizacao: boolean = true
+    forcarAtualizacao: boolean = true,
   ): Promise<void> {
     // Buscar o estoque e verificar se precisa atualizar
     const estoque = await manager.findOne(Estoque, {
@@ -24,21 +25,21 @@ export const atualizarConsumoMedioDiarioUseCase = {
         insumo: { id: insumoId },
         armazem: { id: armazemId },
       },
-    });
+    })
 
-    if (!estoque) return;
+    if (!estoque) return
 
     // Verificar se já foi atualizado hoje
     if (!forcarAtualizacao && estoque.ultimaAtualizacaoConsumo) {
-      const hoje = new Date();
-      const ultimaAtualizacao = new Date(estoque.ultimaAtualizacaoConsumo);
+      const hoje = new Date()
+      const ultimaAtualizacao = new Date(estoque.ultimaAtualizacaoConsumo)
 
       if (
         hoje.getDate() === ultimaAtualizacao.getDate() &&
         hoje.getMonth() === ultimaAtualizacao.getMonth() &&
         hoje.getFullYear() === ultimaAtualizacao.getFullYear()
       ) {
-        return;
+        return
       }
     }
 
@@ -109,64 +110,64 @@ export const atualizarConsumoMedioDiarioUseCase = {
         FROM estatisticas_por_documento
         ORDER BY data DESC, documento_origem;
     `,
-      [insumoId]
-    );
+      [insumoId],
+    )
 
     if (!resultado || resultado.length === 0) {
-      await this.atualizarEstoqueComConsumoZero(manager, estoque);
-      return;
+      await this.atualizarEstoqueComConsumoZero(manager, estoque)
+      return
     }
 
     // Calcular o período em dias
-    const datasDocumentos = resultado.map((doc) => new Date(doc.data));
+    const datasDocumentos = resultado.map((doc) => new Date(doc.data))
     const dataInicial = new Date(
-      Math.min(...datasDocumentos.map((d) => d.getTime()))
-    );
-    const dataFinal = new Date();
+      Math.min(...datasDocumentos.map((d) => d.getTime())),
+    )
+    const dataFinal = new Date()
 
     // Truncar as horas para calcular dias completos
     const dataInicialSemHora = new Date(
       dataInicial.getFullYear(),
       dataInicial.getMonth(),
-      dataInicial.getDate()
-    );
+      dataInicial.getDate(),
+    )
     const dataFinalSemHora = new Date(
       dataFinal.getFullYear(),
       dataFinal.getMonth(),
-      dataFinal.getDate()
-    );
+      dataFinal.getDate(),
+    )
 
     // Adicionar 1 para incluir ambos os dias (inicial e final) na contagem
     const periodoDias =
       Math.ceil(
         (dataFinalSemHora.getTime() - dataInicialSemHora.getTime()) /
-          (1000 * 60 * 60 * 24)
-      ) + 1;
+          (1000 * 60 * 60 * 24),
+      ) + 1
 
     // Calcular o total de saídas líquidas
     const totalSaidas = resultado.reduce(
       (soma, doc) => soma + Number(doc.saida_liquida),
-      0
-    );
+      0,
+    )
 
-    const consumoMedioDiario = totalSaidas / periodoDias;
+    const consumoMedioDiario = totalSaidas / periodoDias
 
     console.log(
-      `\nConsumo médio diário do insumo ${insumoId} ${consumoMedioDiario} \n total saídas ${totalSaidas} \n período ${periodoDias} dias`
-    );
+      `\nConsumo médio diário do insumo ${insumoId} ${consumoMedioDiario} \n total saídas ${totalSaidas} \n período ${periodoDias} dias`,
+    )
 
     // Atualizar o estoque
-    estoque.consumoMedioDiario = consumoMedioDiario;
-    estoque.ultimaAtualizacaoConsumo = new Date();
-    await manager.save(Estoque, estoque);
+    estoque.consumoMedioDiario = consumoMedioDiario
+    estoque.ultimaAtualizacaoConsumo = new Date()
+    await manager.save(Estoque, estoque)
   },
 
   async atualizarEstoqueComConsumoZero(
     manager: EntityManager,
-    estoque: Estoque
+    estoque: Estoque,
   ): Promise<void> {
-    estoque.consumoMedioDiario = 0;
-    estoque.ultimaAtualizacaoConsumo = new Date();
-    await manager.save(Estoque, estoque);
+    estoque.consumoMedioDiario = 0
+    estoque.ultimaAtualizacaoConsumo = new Date()
+    await manager.save(Estoque, estoque)
   },
-};
+}

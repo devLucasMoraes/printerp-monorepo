@@ -11,6 +11,7 @@ import { permissions } from './permissions'
 import { armazemSubject } from './subjects/armazem'
 import { billingSubject } from './subjects/billing'
 import { categoriaSubject } from './subjects/categoria'
+import { estoqueSubject } from './subjects/estoque'
 import { insumoSubject } from './subjects/insumo'
 import { organizationSubject } from './subjects/organization'
 import { requisitanteSubject } from './subjects/requisitante'
@@ -31,6 +32,7 @@ const appAbility = z.union([
   setorSubject,
   requisitanteSubject,
   armazemSubject,
+  estoqueSubject,
   z.tuple([z.literal('manage'), z.literal('all')]),
 ])
 
