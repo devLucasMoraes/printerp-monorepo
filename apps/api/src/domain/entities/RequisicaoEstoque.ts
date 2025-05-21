@@ -1,24 +1,22 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm'
 
 import { Armazem } from './Armazem'
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { RequisicaoEstoqueItem } from './RequisicaoEstoqueItem'
 import { Requisitante } from './Requisitante'
 import { Setor } from './Setor'
 
 @Entity('requisicoes_estoque')
-export class RequisicaoEstoque {
-  @PrimaryGeneratedColumn()
-  id: number
+export class RequisicaoEstoque extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column({ name: 'data_requisicao', type: 'timestamp' })
   dataRequisicao: Date
@@ -36,18 +34,6 @@ export class RequisicaoEstoque {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   obs: string | null
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
-
-  @Column({ name: 'user_id', type: 'varchar', length: 255 })
-  userId: string
 
   @ManyToOne(() => Requisitante, (requisitante) => requisitante.requisicoes)
   @JoinColumn({ name: 'requisitante_id' })

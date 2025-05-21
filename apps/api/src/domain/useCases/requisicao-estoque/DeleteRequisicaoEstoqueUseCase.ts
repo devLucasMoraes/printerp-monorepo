@@ -1,28 +1,36 @@
-import { EntityManager } from "typeorm";
-import { NotFoundError } from "../../../shared/errors";
-import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { requisicaoEstoqueRepository } from "../../repositories";
-import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { RequisicaoEstoque } from '../../entities/RequisicaoEstoque'
+import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
 
 export const deleteRequisicaoEstoqueUseCase = {
-  async execute(id: number): Promise<void> {
-    return await requisicaoEstoqueRepository.manager.transaction(
+  async execute(id: string, membership: Member): Promise<void> {
+    return await repository.requisicaoEstoque.manager.transaction(
       async (manager) => {
-        const requisicaoToDelete = await findRequisicaoToDelete(id, manager);
+        const requisicaoToDelete = await findRequisicaoToDelete(
+          id,
+          membership,
+          manager,
+        )
 
-        await reverterMovimentacoes(requisicaoToDelete, manager);
-        await manager.softRemove(RequisicaoEstoque, requisicaoToDelete);
-      }
-    );
+        await reverterMovimentacoes(requisicaoToDelete, membership, manager)
+        await manager.softRemove(RequisicaoEstoque, requisicaoToDelete)
+      },
+    )
   },
-};
+}
 
 async function findRequisicaoToDelete(
-  id: number,
-  manager: EntityManager
+  id: string,
+  membership: Member,
+  manager: EntityManager,
 ): Promise<RequisicaoEstoque> {
   const requisicao = await manager.findOne(RequisicaoEstoque, {
-    where: { id },
+    where: { id, organizationId: membership.organization.id },
     relations: {
       requisitante: true,
       setor: true,
@@ -31,18 +39,19 @@ async function findRequisicaoToDelete(
         insumo: true,
       },
     },
-  });
+  })
 
   if (!requisicao) {
-    throw new NotFoundError("RequisicaoEstoque not found");
+    throw new BadRequestError('RequisicaoEstoque not found')
   }
 
-  return requisicao;
+  return requisicao
 }
 
 async function reverterMovimentacoes(
   requisicaoToDelete: RequisicaoEstoque,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   for (const item of requisicaoToDelete.itens) {
     await registrarEntradaEstoqueUseCase.execute(
@@ -52,14 +61,15 @@ async function reverterMovimentacoes(
         quantidade: item.quantidade,
         valorUnitario: item.valorUnitario,
         undEstoque: item.unidade,
-        documentoOrigem: requisicaoToDelete.id.toString(),
-        tipoDocumento: "REQUISICAO",
+        documentoOrigemId: requisicaoToDelete.id,
+        tipoDocumento: 'REQUISICAO-ESTOQUE',
         observacao: `Estorno da movimentação ${requisicaoToDelete.id} - requisição deletada`,
-        userId: requisicaoToDelete.userId,
+        userId: membership.user.id,
         data: requisicaoToDelete.dataRequisicao,
         estorno: true,
       },
-      manager
-    );
+      membership,
+      manager,
+    )
   }
 }

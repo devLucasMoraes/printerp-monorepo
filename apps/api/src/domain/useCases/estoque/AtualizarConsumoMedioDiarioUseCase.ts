@@ -5,7 +5,7 @@ import { Estoque } from '../../entities/Estoque'
 const MAX_DATAS_RECENTES = 10
 
 interface QueryResult {
-  documento_origem: string
+  documento_origem_id: string
   data: Date
   total_saidas: number
   total_estornos: number
@@ -47,16 +47,16 @@ export const atualizarConsumoMedioDiarioUseCase = {
     const resultado: QueryResult[] = await manager.query(
       `
         WITH latest_por_documento AS (
-        -- 1) Para cada documento_origem, escolhe o movimento SAÍDA com o updated_at mais recente
-        SELECT DISTINCT ON (me.documento_origem)
-          me.documento_origem,
+        -- 1) Para cada documento_origem_id, escolhe o movimento SAÍDA com o updated_at mais recente
+        SELECT DISTINCT ON (me.documento_origem_id)
+          me.documento_origem_id,
           me.data           AS ultima_data,
           me.updated_at
         FROM movimentos_estoque me
         WHERE me.insumo_id = $1
           AND me.tipo = 'SAIDA'
-          AND me.tipo_documento = 'REQUISICAO'  -- Adicionado filtro para tipo_documento
-        ORDER BY me.documento_origem,
+          AND me.tipo_documento = 'REQUISICAO-ESTOQUE'  -- Adicionado filtro para tipo_documento
+        ORDER BY me.documento_origem_id,
                   me.updated_at DESC
         ),
         datas_recentes AS (
@@ -70,7 +70,7 @@ export const atualizarConsumoMedioDiarioUseCase = {
         docs_filtrados AS (
         -- 3) Filtra somente os documentos cujas ultimas datas estão nessas 10 datas
         SELECT
-          lpd.documento_origem,
+          lpd.documento_origem_id,
           lpd.ultima_data
         FROM latest_por_documento lpd
         WHERE DATE(lpd.ultima_data) IN (
@@ -80,7 +80,7 @@ export const atualizarConsumoMedioDiarioUseCase = {
         estatisticas_por_documento AS (
         -- 4) Agora calcula as estatísticas para todos os movimentos desses documentos
         SELECT
-          d.documento_origem,
+          d.documento_origem_id,
           d.ultima_data     AS data,
           SUM(CASE WHEN me.tipo = 'SAIDA'   THEN me.quantidade ELSE 0 END) AS total_saidas,
           SUM(CASE WHEN me.estorno = 'true' THEN me.quantidade ELSE 0 END) AS total_estornos,
@@ -90,11 +90,11 @@ export const atualizarConsumoMedioDiarioUseCase = {
           ) AS saida_liquida
         FROM movimentos_estoque me
           JOIN docs_filtrados d
-            ON me.documento_origem = d.documento_origem
+            ON me.documento_origem_id = d.documento_origem_id
         WHERE me.insumo_id = $1
           AND (me.tipo = 'SAIDA' OR me.estorno = 'true')
           AND me.tipo_documento = 'REQUISICAO'  -- Adicionado filtro aqui também
-        GROUP BY d.documento_origem, d.ultima_data
+        GROUP BY d.documento_origem_id, d.ultima_data
         HAVING
           -- somente documentos com saída líquida positiva
           (SUM(CASE WHEN me.tipo = 'SAIDA'   THEN me.quantidade ELSE 0 END)
@@ -102,13 +102,13 @@ export const atualizarConsumoMedioDiarioUseCase = {
           ) > 0
         )
         SELECT
-        documento_origem,
+        documento_origem_id,
         data,
         total_saidas,
         total_estornos,
         saida_liquida
         FROM estatisticas_por_documento
-        ORDER BY data DESC, documento_origem;
+        ORDER BY data DESC, documento_origem_id;
     `,
       [insumoId],
     )

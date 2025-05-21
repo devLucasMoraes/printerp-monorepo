@@ -26,7 +26,25 @@ export class RequisicaoEstoqueRepository extends BaseRepository<RequisicaoEstoqu
     )
   }
 
-  async findOneWithRelations(id: number): Promise<RequisicaoEstoque | null> {
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<RequisicaoEstoque>> {
+    return this.paginate(
+      pageRequest,
+      { organizationId },
+      {
+        armazem: true,
+        requisitante: true,
+        setor: true,
+        itens: {
+          insumo: true,
+        },
+      },
+    )
+  }
+
+  async findOneWithRelations(id: string): Promise<RequisicaoEstoque | null> {
     return await this.findOne({
       where: { id },
       relations: {

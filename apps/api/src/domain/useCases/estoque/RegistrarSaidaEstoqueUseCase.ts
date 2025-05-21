@@ -1,5 +1,6 @@
 import { EntityManager } from 'typeorm'
 
+import { Member } from '@/domain/entities/Member'
 import { repository } from '@/domain/repositories'
 
 import { Armazem } from '../../entities/Armazem'
@@ -25,6 +26,7 @@ export const registrarSaidaEstoqueUseCase = {
       data: Date
       estorno?: boolean
     },
+    membership: Member,
     manager: EntityManager,
   ): Promise<void> {
     const {
@@ -44,6 +46,7 @@ export const registrarSaidaEstoqueUseCase = {
     const estoque = await inicializarEstoqueUseCase.execute(
       insumo.id,
       armazem.id,
+      membership,
       manager,
     )
 
@@ -69,7 +72,7 @@ export const registrarSaidaEstoqueUseCase = {
       insumo,
       createdBy: userId,
       updatedBy: userId,
-      organizationId: armazem.organizationId,
+      organizationId: membership.organization.id,
     })
 
     await manager.save(MovimentoEstoque, movimento)

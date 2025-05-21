@@ -52,6 +52,12 @@ import { getAllParceiros } from './routes/parceiro/get-all-parceiros'
 import { getParceiro } from './routes/parceiro/get-parceiro'
 import { listParceiros } from './routes/parceiro/list-parceiro'
 import { updateParceiro } from './routes/parceiro/update-parceiro'
+import { createRequisicaoEstoque } from './routes/requisicao-estoque/create-requisicao-estoque'
+import { deleteRequisicaoEstoque } from './routes/requisicao-estoque/delete-requisicao-estoque'
+import { getAllRequisicoesEstoque } from './routes/requisicao-estoque/get-all-requisicoes-estoque'
+import { getRequisicaoEstoque } from './routes/requisicao-estoque/get-requisicao-estoque'
+import { listRequisicaoEstoques } from './routes/requisicao-estoque/list-requisicoes-estoque'
+import { updateRequisicaoEstoque } from './routes/requisicao-estoque/update-requisicao-estoque'
 import { createRequisitante } from './routes/requisitante/create-requisitante'
 import { deleteRequisitante } from './routes/requisitante/delete-requisitante'
 import { getAllRequisitantes } from './routes/requisitante/get-all-requisitantes'
@@ -162,6 +168,13 @@ app.register(getAllParceiros)
 app.register(getParceiro)
 app.register(listParceiros)
 app.register(updateParceiro)
+
+app.register(createRequisicaoEstoque)
+app.register(deleteRequisicaoEstoque)
+app.register(getAllRequisicoesEstoque)
+app.register(getRequisicaoEstoque)
+app.register(listRequisicaoEstoques)
+app.register(updateRequisicaoEstoque)
 
 const start = async () => {
   console.log('Starting server...')

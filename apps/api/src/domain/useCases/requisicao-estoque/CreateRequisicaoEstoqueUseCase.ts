@@ -1,97 +1,122 @@
-import { EntityManager } from "typeorm";
-import { CreateRequisicaoEstoqueDTO } from "../../../http/validators/requisicaoEstoque.schemas";
-import { BadRequestError } from "../../../shared/errors";
-import { Insumo } from "../../entities/Insumo";
-import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { Requisitante } from "../../entities/Requisitante";
-import { Setor } from "../../entities/Setor";
-import { requisicaoEstoqueRepository } from "../../repositories";
-import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { CreateRequisicaoEstoqueDTO } from '@/http/routes/requisicao-estoque/create-requisicao-estoque'
+
+import { Insumo } from '../../entities/Insumo'
+import { RequisicaoEstoque } from '../../entities/RequisicaoEstoque'
+import { Requisitante } from '../../entities/Requisitante'
+import { Setor } from '../../entities/Setor'
+import { registrarSaidaEstoqueUseCase } from '../estoque/RegistrarSaidaEstoqueUseCase'
 
 export const createRequisicaoEstoqueUseCase = {
-  async execute(dto: CreateRequisicaoEstoqueDTO): Promise<RequisicaoEstoque> {
-    return await requisicaoEstoqueRepository.manager.transaction(
+  async execute(
+    dto: CreateRequisicaoEstoqueDTO,
+    membership: Member,
+  ): Promise<RequisicaoEstoque> {
+    return await repository.requisicaoEstoque.manager.transaction(
       async (manager) => {
-        await validate(dto, manager);
-        const requisicao = await createRequisicao(dto, manager);
-        await processarMovimentacoes(requisicao, manager);
-        return requisicao;
-      }
-    );
+        await validate(dto, membership, manager)
+        const requisicao = await createRequisicao(dto, membership, manager)
+        await processarMovimentacoes(requisicao, membership, manager)
+        return requisicao
+      },
+    )
   },
-};
+}
 
 async function validate(
   dto: CreateRequisicaoEstoqueDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   const requisitante = await manager.findOne(Requisitante, {
-    where: { id: dto.requisitante.id },
-  });
+    where: {
+      id: dto.requisitanteId,
+      organizationId: membership.organization.id,
+    },
+  })
 
   if (!requisitante) {
-    throw new BadRequestError("Requisitante nao encontrado");
+    throw new BadRequestError('Requisitante nao encontrado')
   }
 
   const setor = await manager.findOne(Setor, {
-    where: { id: dto.setor.id },
-  });
+    where: { id: dto.setorId, organizationId: membership.organization.id },
+  })
 
   if (!setor) {
-    throw new BadRequestError("Setor não encontrado");
+    throw new BadRequestError('Setor não encontrado')
   }
 
   if (dto.itens.length === 0) {
-    throw new BadRequestError("Requisição Estoque deve ter pelo menos um item");
+    throw new BadRequestError('Requisição Estoque deve ter pelo menos um item')
   }
 
   for (const item of dto.itens) {
     const insumo = await manager.findOne(Insumo, {
-      where: { id: item.insumo.id },
-    });
+      where: { id: item.insumoId, organizationId: membership.organization.id },
+    })
     if (!insumo) {
-      throw new BadRequestError("Insumo nao encontrado");
+      throw new BadRequestError('Insumo nao encontrado')
     }
 
     if (item.quantidade <= 0) {
-      throw new BadRequestError("Quantidade deve ser maior que zero");
+      throw new BadRequestError('Quantidade deve ser maior que zero')
     }
 
     if (item.unidade !== insumo.undEstoque) {
-      throw new BadRequestError("Unidade deve ser igual a unidade do estoque");
+      throw new BadRequestError('Unidade deve ser igual a unidade do estoque')
     }
   }
 }
 
 async function createRequisicao(
   dto: CreateRequisicaoEstoqueDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<RequisicaoEstoque> {
-  const requisicaoToCreate = requisicaoEstoqueRepository.create({
+  const requisicaoToCreate = repository.requisicaoEstoque.create({
     dataRequisicao: dto.dataRequisicao,
     ordemProducao: dto.ordemProducao,
     valorTotal: dto.valorTotal,
     obs: dto.obs,
-    requisitante: dto.requisitante,
-    setor: dto.setor,
-    armazem: dto.armazem,
-    userId: dto.userId,
+    requisitante: {
+      id: dto.requisitanteId,
+    },
+    setor: {
+      id: dto.setorId,
+    },
+    armazem: {
+      id: dto.armazemId,
+    },
     itens: dto.itens.map((itemDTO) => {
       return {
-        insumo: itemDTO.insumo,
+        insumo: {
+          id: itemDTO.insumoId,
+        },
         quantidade: itemDTO.quantidade,
         unidade: itemDTO.unidade,
         valorUnitario: itemDTO.valorUnitario,
-      };
+        createdBy: membership.user.id,
+        updatedBy: membership.user.id,
+        organizationId: membership.organization.id,
+      }
     }),
-  });
+    createdBy: membership.user.id,
+    updatedBy: membership.user.id,
+    organizationId: membership.organization.id,
+  })
 
-  return await manager.save(RequisicaoEstoque, requisicaoToCreate);
+  return await manager.save(RequisicaoEstoque, requisicaoToCreate)
 }
 
 async function processarMovimentacoes(
   requisicao: RequisicaoEstoque,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   for (const item of requisicao.itens) {
     await registrarSaidaEstoqueUseCase.execute(
@@ -101,12 +126,13 @@ async function processarMovimentacoes(
         quantidade: item.quantidade,
         valorUnitario: item.valorUnitario,
         undEstoque: item.unidade,
-        documentoOrigem: requisicao.id.toString(),
-        tipoDocumento: "REQUISICAO",
-        userId: requisicao.userId,
+        documentoOrigemId: requisicao.id,
+        tipoDocumento: 'REQUISICAO-ESTOQUE',
         data: requisicao.dataRequisicao,
+        userId: membership.user.id,
       },
-      manager
-    );
+      membership,
+      manager,
+    )
   }
 }

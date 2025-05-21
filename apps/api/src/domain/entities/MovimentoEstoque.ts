@@ -44,8 +44,8 @@ export class MovimentoEstoque extends BaseAuditEntity {
   @Column({ type: 'boolean', default: false })
   estorno: boolean
 
-  @Column({ type: 'text', nullable: true })
-  observacao?: string
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  observacao?: string | null
 
   @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida)
   @JoinColumn({ name: 'armazem_origem_id' })

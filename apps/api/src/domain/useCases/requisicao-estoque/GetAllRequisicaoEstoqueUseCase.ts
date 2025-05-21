@@ -1,9 +1,12 @@
-import { RequisicaoEstoque } from "../../entities/RequisicaoEstoque";
-import { requisicaoEstoqueRepository } from "../../repositories";
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+
+import { RequisicaoEstoque } from '../../entities/RequisicaoEstoque'
 
 export const getAllRequisicaoEstoqueUseCase = {
-  async execute(): Promise<RequisicaoEstoque[]> {
-    return await requisicaoEstoqueRepository.find({
+  async execute(membership: Member): Promise<RequisicaoEstoque[]> {
+    return await repository.requisicaoEstoque.find({
+      where: { organizationId: membership.organization.id },
       relations: {
         itens: {
           insumo: true,
@@ -12,6 +15,6 @@ export const getAllRequisicaoEstoqueUseCase = {
         setor: true,
         armazem: true,
       },
-    });
+    })
   },
-};
+}

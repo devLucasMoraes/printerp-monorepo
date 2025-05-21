@@ -1,22 +1,20 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm'
 
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { Insumo } from './Insumo'
 import { RequisicaoEstoque } from './RequisicaoEstoque'
 import { Unidade } from './Unidade'
 
 @Entity('requisicoes_estoque_itens')
-export class RequisicaoEstoqueItem {
-  @PrimaryGeneratedColumn()
-  id: number
+export class RequisicaoEstoqueItem extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   quantidade: number
@@ -30,15 +28,6 @@ export class RequisicaoEstoqueItem {
 
   @Column({ name: 'valor_unitario', type: 'numeric', precision: 10, scale: 2 })
   valorUnitario: number
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
 
   @ManyToOne(() => Insumo, (insumo) => insumo.id)
   @JoinColumn({ name: 'insumos_id' })
