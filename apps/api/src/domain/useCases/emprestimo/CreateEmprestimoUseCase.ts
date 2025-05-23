@@ -1,100 +1,114 @@
-import { EntityManager } from "typeorm";
-import { CreateEmprestimoDTO } from "../../../http/validators/emprestimo.schema";
-import { BadRequestError } from "../../../shared/errors";
-import { Armazem } from "../../entities/Armazem";
-import { Emprestimo } from "../../entities/Emprestimo";
-import { Insumo } from "../../entities/Insumo";
-import { Parceiro } from "../../entities/Parceiro";
-import { emprestimoRepository } from "../../repositories";
-import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
-import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { CreateEmprestimoDTO } from '@/http/routes/emprestimo/create-emprestimo'
+
+import { Armazem } from '../../entities/Armazem'
+import { Emprestimo } from '../../entities/Emprestimo'
+import { Insumo } from '../../entities/Insumo'
+import { Parceiro } from '../../entities/Parceiro'
+import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
+import { registrarSaidaEstoqueUseCase } from '../estoque/RegistrarSaidaEstoqueUseCase'
 
 export const createEmprestimoUseCase = {
-  async execute(dto: CreateEmprestimoDTO): Promise<Emprestimo> {
-    return await emprestimoRepository.manager.transaction(async (manager) => {
-      await validate(dto, manager);
-      const emprestimo = await createEmprestimo(dto, manager);
-      await processarMovimentacoes(emprestimo, manager);
-      return emprestimo;
-    });
+  async execute(
+    dto: CreateEmprestimoDTO,
+    membership: Member,
+  ): Promise<Emprestimo> {
+    return await repository.emprestimo.manager.transaction(async (manager) => {
+      await validate(dto, membership, manager)
+      const emprestimo = await createEmprestimo(dto, membership, manager)
+      await processarMovimentacoes(emprestimo, membership, manager)
+      return emprestimo
+    })
   },
-};
+}
 
 async function validate(
   dto: CreateEmprestimoDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   const parceiro = await manager.findOne(Parceiro, {
-    where: { id: dto.parceiro.id },
-  });
+    where: { id: dto.parceiroId, organizationId: membership.organization.id },
+  })
 
   if (!parceiro) {
-    throw new BadRequestError("Parceiro não encontrado");
+    throw new BadRequestError('Parceiro não encontrado')
   }
 
   const armazem = await manager.findOne(Armazem, {
-    where: { id: dto.armazem.id },
-  });
+    where: { id: dto.armazemId, organizationId: membership.organization.id },
+  })
 
   if (!armazem) {
-    throw new BadRequestError("Armazém não encontrado");
+    throw new BadRequestError('Armazém não encontrado')
   }
 
   if (dto.itens.length === 0) {
-    throw new BadRequestError("Emprestimo deve ter pelo menos um item");
+    throw new BadRequestError('Empréstimo deve ter pelo menos um item')
   }
 
   for (const item of dto.itens) {
     const insumo = await manager.findOne(Insumo, {
-      where: { id: item.insumo.id },
-    });
+      where: { id: item.insumoId, organizationId: membership.organization.id },
+    })
     if (!insumo) {
-      throw new BadRequestError("Insumo não encontrado");
+      throw new BadRequestError('Insumo não encontrado')
     }
 
     if (item.quantidade <= 0) {
-      throw new BadRequestError("Quantidade deve ser maior que zero");
+      throw new BadRequestError('Quantidade deve ser maior que zero')
     }
 
     if (item.unidade !== insumo.undEstoque) {
-      throw new BadRequestError("Unidade deve ser igual a unidade do estoque");
+      throw new BadRequestError('Unidade deve ser igual a unidade do estoque')
     }
   }
 }
 
 async function createEmprestimo(
   dto: CreateEmprestimoDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<Emprestimo> {
-  const emprestimoToCreate = emprestimoRepository.create({
+  const emprestimoToCreate = repository.emprestimo.create({
     tipo: dto.tipo,
     status: dto.status,
     dataEmprestimo: dto.dataEmprestimo,
     previsaoDevolucao: dto.previsaoDevolucao,
     custoEstimado: dto.custoEstimado,
-    parceiro: dto.parceiro,
-    armazem: dto.armazem,
-    userId: dto.userId,
+    parceiro: { id: dto.parceiroId },
+    armazem: { id: dto.armazemId },
     obs: dto.obs,
+    createdBy: membership.user.id,
+    updatedBy: membership.user.id,
+    organizationId: membership.organization.id,
     itens: dto.itens.map((itemDTO) => {
       return {
-        insumo: itemDTO.insumo,
+        insumo: { id: itemDTO.insumoId },
         quantidade: itemDTO.quantidade,
         unidade: itemDTO.unidade,
         valorUnitario: itemDTO.valorUnitario,
-      };
+        createdBy: membership.user.id,
+        updatedBy: membership.user.id,
+        organizationId: membership.organization.id,
+      }
     }),
-  });
+  })
 
-  return await manager.save(Emprestimo, emprestimoToCreate);
+  return await manager.save(Emprestimo, emprestimoToCreate)
 }
 
 async function processarMovimentacoes(
   emprestimo: Emprestimo,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   for (const item of emprestimo.itens) {
-    if (emprestimo.tipo === "ENTRADA") {
+    if (emprestimo.tipo === 'ENTRADA') {
       await registrarEntradaEstoqueUseCase.execute(
         {
           insumo: item.insumo,
@@ -102,15 +116,15 @@ async function processarMovimentacoes(
           quantidade: item.quantidade,
           valorUnitario: item.valorUnitario,
           undEstoque: item.unidade,
-          documentoOrigem: emprestimo.id.toString(),
-          tipoDocumento: "EMPRESTIMO",
-          userId: emprestimo.userId,
+          documentoOrigemId: emprestimo.id,
+          tipoDocumento: 'EMPRESTIMO',
           data: emprestimo.dataEmprestimo,
         },
-        manager
-      );
+        membership,
+        manager,
+      )
     }
-    if (emprestimo.tipo === "SAIDA") {
+    if (emprestimo.tipo === 'SAIDA') {
       await registrarSaidaEstoqueUseCase.execute(
         {
           insumo: item.insumo,
@@ -118,13 +132,13 @@ async function processarMovimentacoes(
           quantidade: item.quantidade,
           valorUnitario: item.valorUnitario,
           undEstoque: item.unidade,
-          documentoOrigem: emprestimo.id.toString(),
-          tipoDocumento: "EMPRESTIMO",
-          userId: emprestimo.userId,
+          documentoOrigemId: emprestimo.id,
+          tipoDocumento: 'EMPRESTIMO',
           data: emprestimo.dataEmprestimo,
         },
-        manager
-      );
+        membership,
+        manager,
+      )
     }
   }
 }

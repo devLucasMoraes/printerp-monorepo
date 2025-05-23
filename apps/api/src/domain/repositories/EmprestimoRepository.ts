@@ -26,7 +26,27 @@ export class EmprestimoRepository extends BaseRepository<Emprestimo> {
     )
   }
 
-  async findOneWithRelations(id: number): Promise<Emprestimo | null> {
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<Emprestimo>> {
+    return this.paginate(
+      pageRequest,
+      { organizationId },
+      {
+        armazem: true,
+        parceiro: true,
+        itens: {
+          insumo: true,
+          devolucaoItens: {
+            insumo: true,
+          },
+        },
+      },
+    )
+  }
+
+  async findOneWithRelations(id: string): Promise<Emprestimo | null> {
     return await this.findOne({
       where: { id },
       relations: {

@@ -1,43 +1,54 @@
-import { EntityManager } from "typeorm";
-import { UpdateEmprestimoDTO } from "../../../http/validators/emprestimo.schema";
-import { BadRequestError, NotFoundError } from "../../../shared/errors";
-import { Armazem } from "../../entities/Armazem";
-import { Emprestimo } from "../../entities/Emprestimo";
-import { Insumo } from "../../entities/Insumo";
-import { Parceiro } from "../../entities/Parceiro";
-import { emprestimoRepository } from "../../repositories";
-import { registrarEntradaEstoqueUseCase } from "../estoque/RegistrarEntradaEstoqueUseCase";
-import { registrarSaidaEstoqueUseCase } from "../estoque/RegistrarSaidaEstoqueUseCase";
+import { EntityManager } from 'typeorm'
+
+import { Member } from '@/domain/entities/Member'
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+import { UpdateEmprestimoDTO } from '@/http/routes/emprestimo/update-requisicao-estoque'
+
+import { Armazem } from '../../entities/Armazem'
+import { Emprestimo } from '../../entities/Emprestimo'
+import { Insumo } from '../../entities/Insumo'
+import { Parceiro } from '../../entities/Parceiro'
+import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
+import { registrarSaidaEstoqueUseCase } from '../estoque/RegistrarSaidaEstoqueUseCase'
 
 export const updateEmprestimoUseCase = {
-  async execute(id: number, dto: UpdateEmprestimoDTO): Promise<Emprestimo> {
-    return await emprestimoRepository.manager.transaction(async (manager) => {
-      const emprestimoToUpdate = await findEmprestimoToUpdate(id, manager);
-      const oldEmprestimo = { ...emprestimoToUpdate };
-      await validate(emprestimoToUpdate, dto, manager);
-      await reverterMovimentacoes(emprestimoToUpdate, manager);
+  async execute(
+    id: string,
+    dto: UpdateEmprestimoDTO,
+    membership: Member,
+  ): Promise<Emprestimo> {
+    return await repository.emprestimo.manager.transaction(async (manager) => {
+      const emprestimoToUpdate = await findEmprestimoToUpdate(
+        id,
+        membership,
+        manager,
+      )
+      await validate(emprestimoToUpdate, dto, membership, manager)
+      await reverterMovimentacoes(emprestimoToUpdate, membership, manager)
       const emprestimoAtualizada = await updateEmprestimo(
         emprestimoToUpdate,
         dto,
-        manager
-      );
+        manager,
+      )
       await processarNovasMovimentacoes(
-        oldEmprestimo,
         emprestimoAtualizada,
-        manager
-      );
+        membership,
+        manager,
+      )
 
-      return emprestimoAtualizada;
-    });
+      return emprestimoAtualizada
+    })
   },
-};
+}
 
 async function findEmprestimoToUpdate(
-  id: number,
-  manager: EntityManager
+  id: string,
+  membership: Member,
+  manager: EntityManager,
 ): Promise<Emprestimo> {
   const emprestimo = await manager.findOne(Emprestimo, {
-    where: { id },
+    where: { id, organizationId: membership.organization.id },
     relations: {
       parceiro: true,
       armazem: true,
@@ -48,80 +59,90 @@ async function findEmprestimoToUpdate(
         },
       },
     },
-  });
+  })
 
   if (!emprestimo) {
-    throw new NotFoundError("Empréstimo not found");
+    throw new BadRequestError('Empréstimo not found')
   }
 
-  return emprestimo;
+  return emprestimo
 }
 
 async function validate(
   emprestimoToUpdate: Emprestimo,
   emprestimoDTO: UpdateEmprestimoDTO,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   const parceiro = await manager.findOne(Parceiro, {
-    where: { id: emprestimoDTO.parceiro.id },
-  });
+    where: {
+      id: emprestimoDTO.parceiroId,
+      organizationId: membership.organization.id,
+    },
+  })
 
   if (!parceiro) {
-    throw new BadRequestError("Parceiro não encontrado");
+    throw new BadRequestError('Parceiro não encontrado')
   }
 
   const armazem = await manager.findOne(Armazem, {
-    where: { id: emprestimoDTO.armazem.id },
-  });
+    where: {
+      id: emprestimoDTO.armazemId,
+      organizationId: membership.organization.id,
+    },
+  })
 
   if (!armazem) {
-    throw new BadRequestError("Armazém não encontrado");
+    throw new BadRequestError('Armazém não encontrado')
   }
 
   if (emprestimoDTO.itens.length === 0) {
-    throw new BadRequestError("Empréstimo deve ter pelo menos um item");
+    throw new BadRequestError('Empréstimo deve ter pelo menos um item')
   }
 
   for (const itemDTO of emprestimoDTO.itens) {
     if (itemDTO.id !== null) {
       const itemPertence = emprestimoToUpdate.itens.some(
-        (itemExistente) => itemExistente.id === itemDTO.id
-      );
+        (itemExistente) => itemExistente.id === itemDTO.id,
+      )
 
       if (!itemPertence) {
         throw new BadRequestError(
-          `Não é possível atualizar o item de outro empréstimo`
-        );
+          `Não é possível atualizar o item de outro empréstimo`,
+        )
       }
     }
     const insumo = await manager.findOne(Insumo, {
-      where: { id: itemDTO.insumo.id },
-    });
+      where: {
+        id: itemDTO.insumoId,
+        organizationId: membership.organization.id,
+      },
+    })
     if (!insumo) {
-      throw new BadRequestError("Insumo não encontrado");
+      throw new BadRequestError('Insumo não encontrado')
     }
     if (itemDTO.quantidade <= 0) {
-      throw new BadRequestError("Quantidade deve ser maior que zero");
+      throw new BadRequestError('Quantidade deve ser maior que zero')
     }
     if (itemDTO.unidade !== insumo.undEstoque) {
-      throw new BadRequestError("Unidade deve ser igual a unidade do estoque");
+      throw new BadRequestError('Unidade deve ser igual a unidade do estoque')
     }
 
     if (itemDTO.devolucaoItens.length) {
       for (const devolucaoItem of itemDTO.devolucaoItens) {
         const insumo = await manager.findOne(Insumo, {
-          where: { id: devolucaoItem.insumo.id },
-        });
+          where: { id: devolucaoItem.insumoId },
+        })
         if (!insumo) {
-          throw new BadRequestError("Insumo não encontrado");
+          throw new BadRequestError('Insumo não encontrado')
         }
         if (itemDTO.quantidade <= 0) {
-          throw new BadRequestError("Quantidade deve ser maior que zero");
+          throw new BadRequestError('Quantidade deve ser maior que zero')
         }
         if (itemDTO.unidade !== insumo.undEstoque) {
           throw new BadRequestError(
-            "Unidade deve ser igual a unidade do estoque"
-          );
+            'Unidade deve ser igual a unidade do estoque',
+          )
         }
       }
     }
@@ -130,7 +151,8 @@ async function validate(
 
 async function reverterMovimentacoes(
   emprestimoToUpdate: Emprestimo,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   for (const item of emprestimoToUpdate.itens) {
     for (const devolucaoItem of item.devolucaoItens) {
@@ -140,25 +162,26 @@ async function reverterMovimentacoes(
         quantidade: devolucaoItem.quantidade,
         valorUnitario: devolucaoItem.valorUnitario,
         undEstoque: devolucaoItem.unidade,
-        documentoOrigem: emprestimoToUpdate.id.toString(),
-        observacao: "Movimentação gerada por atualização de emprestimo",
-        userId: emprestimoToUpdate.userId,
+        documentoOrigemId: emprestimoToUpdate.id,
+        observacao: 'Movimentação gerada por atualização de emprestimo',
         data: emprestimoToUpdate.dataEmprestimo,
         estorno: true,
-      };
-
-      if (emprestimoToUpdate.tipo === "SAIDA") {
-        await registrarSaidaEstoqueUseCase.execute(
-          { ...params, tipoDocumento: "EMPRESTIMO" },
-          manager
-        );
       }
 
-      if (emprestimoToUpdate.tipo === "ENTRADA") {
+      if (emprestimoToUpdate.tipo === 'SAIDA') {
+        await registrarSaidaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: 'EMPRESTIMO' },
+          membership,
+          manager,
+        )
+      }
+
+      if (emprestimoToUpdate.tipo === 'ENTRADA') {
         await registrarEntradaEstoqueUseCase.execute(
-          { ...params, tipoDocumento: "EMPRESTIMO" },
-          manager
-        );
+          { ...params, tipoDocumento: 'EMPRESTIMO' },
+          membership,
+          manager,
+        )
       }
     }
 
@@ -168,25 +191,26 @@ async function reverterMovimentacoes(
       quantidade: item.quantidade,
       valorUnitario: item.valorUnitario,
       undEstoque: item.unidade,
-      documentoOrigem: emprestimoToUpdate.id.toString(),
-      observacao: "Movimentação gerada por atualização de emprestimo",
-      userId: emprestimoToUpdate.userId,
+      documentoOrigemId: emprestimoToUpdate.id,
+      observacao: 'Movimentação gerada por atualização de emprestimo',
       data: emprestimoToUpdate.dataEmprestimo,
       estorno: true,
-    };
-
-    if (emprestimoToUpdate.tipo === "SAIDA") {
-      await registrarEntradaEstoqueUseCase.execute(
-        { ...params, tipoDocumento: "EMPRESTIMO" },
-        manager
-      );
     }
 
-    if (emprestimoToUpdate.tipo === "ENTRADA") {
+    if (emprestimoToUpdate.tipo === 'SAIDA') {
+      await registrarEntradaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: 'EMPRESTIMO' },
+        membership,
+        manager,
+      )
+    }
+
+    if (emprestimoToUpdate.tipo === 'ENTRADA') {
       await registrarSaidaEstoqueUseCase.execute(
-        { ...params, tipoDocumento: "EMPRESTIMO" },
-        manager
-      );
+        { ...params, tipoDocumento: 'EMPRESTIMO' },
+        membership,
+        manager,
+      )
     }
   }
 }
@@ -194,58 +218,52 @@ async function reverterMovimentacoes(
 async function updateEmprestimo(
   emprestimoToUpdate: Emprestimo,
   dto: UpdateEmprestimoDTO,
-  manager: EntityManager
+  manager: EntityManager,
 ): Promise<Emprestimo> {
-  const emprestimoDto = emprestimoRepository.create({
+  const emprestimoDto = repository.emprestimo.create({
     tipo: dto.tipo,
     status: dto.status,
     dataEmprestimo: dto.dataEmprestimo,
     previsaoDevolucao: dto.previsaoDevolucao,
     custoEstimado: dto.custoEstimado,
-    parceiro: dto.parceiro,
-    armazem: dto.armazem,
-    userId: dto.userId,
+    parceiro: { id: dto.parceiroId },
+    armazem: { id: dto.armazemId },
     obs: dto.obs,
     itens: dto.itens.map((itemDTO) => {
       return {
         id: itemDTO.id || undefined,
-        insumo: itemDTO.insumo,
+        insumo: { id: itemDTO.insumoId },
         quantidade: itemDTO.quantidade,
         unidade: itemDTO.unidade,
         valorUnitario: itemDTO.valorUnitario,
         devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
           return {
             id: devolucaoItem.id || undefined,
-            insumo: devolucaoItem.insumo,
+            insumo: { id: devolucaoItem.insumoId },
             quantidade: devolucaoItem.quantidade,
             unidade: devolucaoItem.unidade,
             valorUnitario: devolucaoItem.valorUnitario,
             dataDevolucao: devolucaoItem.dataDevolucao,
-          };
+          }
         }),
-      };
+      }
     }),
-  });
+  })
 
-  const {
-    parceiro: _p,
-    armazem: _a,
-    itens: _i,
-    ...emprestimoWithoutRelations
-  } = emprestimoToUpdate;
+  const { ...emprestimoWithoutRelations } = emprestimoToUpdate
 
-  const updatedEmprestimo = emprestimoRepository.merge(
+  const updatedEmprestimo = repository.emprestimo.merge(
     emprestimoWithoutRelations as Emprestimo,
-    emprestimoDto
-  );
+    emprestimoDto,
+  )
 
-  return await manager.save(Emprestimo, updatedEmprestimo);
+  return await manager.save(Emprestimo, updatedEmprestimo)
 }
 
 async function processarNovasMovimentacoes(
-  oldEmprestimo: Emprestimo,
   emprestimo: Emprestimo,
-  manager: EntityManager
+  membership: Member,
+  manager: EntityManager,
 ): Promise<void> {
   for (const item of emprestimo.itens) {
     for (const devolucaoItem of item.devolucaoItens) {
@@ -255,24 +273,25 @@ async function processarNovasMovimentacoes(
         quantidade: devolucaoItem.quantidade,
         valorUnitario: devolucaoItem.valorUnitario,
         undEstoque: devolucaoItem.unidade,
-        documentoOrigem: emprestimo.id.toString(),
-        observacao: "",
-        userId: emprestimo.userId,
+        documentoOrigemId: emprestimo.id,
+        observacao: '',
         data: emprestimo.dataEmprestimo,
-      };
-
-      if (emprestimo.tipo === "SAIDA") {
-        await registrarEntradaEstoqueUseCase.execute(
-          { ...params, tipoDocumento: "EMPRESTIMO" },
-          manager
-        );
       }
 
-      if (emprestimo.tipo === "ENTRADA") {
+      if (emprestimo.tipo === 'SAIDA') {
+        await registrarEntradaEstoqueUseCase.execute(
+          { ...params, tipoDocumento: 'EMPRESTIMO' },
+          membership,
+          manager,
+        )
+      }
+
+      if (emprestimo.tipo === 'ENTRADA') {
         await registrarSaidaEstoqueUseCase.execute(
-          { ...params, tipoDocumento: "EMPRESTIMO" },
-          manager
-        );
+          { ...params, tipoDocumento: 'EMPRESTIMO' },
+          membership,
+          manager,
+        )
       }
     }
 
@@ -282,24 +301,25 @@ async function processarNovasMovimentacoes(
       quantidade: item.quantidade,
       valorUnitario: item.valorUnitario,
       undEstoque: item.unidade,
-      documentoOrigem: emprestimo.id.toString(),
-      observacao: "",
-      userId: emprestimo.userId,
+      documentoOrigemId: emprestimo.id,
+      observacao: '',
       data: emprestimo.dataEmprestimo,
-    };
-
-    if (emprestimo.tipo === "SAIDA") {
-      await registrarSaidaEstoqueUseCase.execute(
-        { ...params, tipoDocumento: "EMPRESTIMO" },
-        manager
-      );
     }
 
-    if (emprestimo.tipo === "ENTRADA") {
+    if (emprestimo.tipo === 'SAIDA') {
+      await registrarSaidaEstoqueUseCase.execute(
+        { ...params, tipoDocumento: 'EMPRESTIMO' },
+        membership,
+        manager,
+      )
+    }
+
+    if (emprestimo.tipo === 'ENTRADA') {
       await registrarEntradaEstoqueUseCase.execute(
-        { ...params, tipoDocumento: "EMPRESTIMO" },
-        manager
-      );
+        { ...params, tipoDocumento: 'EMPRESTIMO' },
+        membership,
+        manager,
+      )
     }
   }
 }

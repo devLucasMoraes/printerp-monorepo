@@ -1,23 +1,21 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm'
 
 import { Armazem } from './Armazem'
+import { BaseAuditEntity } from './BaseAuditEntity'
 import { EmprestimoItem } from './EmprestimoItem'
 import { Parceiro } from './Parceiro'
 
 @Entity('emprestimos')
-export class Emprestimo {
-  @PrimaryGeneratedColumn()
-  id: number
+export class Emprestimo extends BaseAuditEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
   @Column({ name: 'data_emprestimo', type: 'timestamp' })
   dataEmprestimo: Date
@@ -42,18 +40,6 @@ export class Emprestimo {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   obs: string | null
-
-  @Column({ name: 'user_id', type: 'varchar', length: 255 })
-  userId: string
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
 
   @ManyToOne(() => Armazem)
   @JoinColumn({ name: 'armazem_id' })
