@@ -64,7 +64,6 @@ async function reverterMovimentacoes(
         documentoOrigemId: requisicaoToDelete.id,
         tipoDocumento: 'REQUISICAO-ESTOQUE',
         observacao: `Estorno da movimentação ${requisicaoToDelete.id} - requisição deletada`,
-        userId: membership.user.id,
         data: requisicaoToDelete.dataRequisicao,
         estorno: true,
       },

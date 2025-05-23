@@ -22,7 +22,6 @@ export const registrarSaidaEstoqueUseCase = {
       tipoDocumento: string
       documentoOrigemId: string
       observacao?: string
-      userId: string
       data: Date
       estorno?: boolean
     },
@@ -38,7 +37,6 @@ export const registrarSaidaEstoqueUseCase = {
       tipoDocumento,
       documentoOrigemId,
       observacao,
-      userId,
       data,
       estorno,
     } = params
@@ -70,8 +68,8 @@ export const registrarSaidaEstoqueUseCase = {
       observacao,
       armazemOrigem: armazem,
       insumo,
-      createdBy: userId,
-      updatedBy: userId,
+      createdBy: membership.user.id,
+      updatedBy: membership.user.id,
       organizationId: membership.organization.id,
     })
 

@@ -129,7 +129,6 @@ async function processarMovimentacoes(
         documentoOrigemId: requisicao.id,
         tipoDocumento: 'REQUISICAO-ESTOQUE',
         data: requisicao.dataRequisicao,
-        userId: membership.user.id,
       },
       membership,
       manager,
