@@ -1,7 +1,13 @@
-import { createEnv } from '@t3-oss/env-nextjs'
+import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+const _runtimeEnv =
+  typeof process !== 'undefined' && typeof process.env === 'object'
+    ? process.env
+    : import.meta.env
+
 export const env = createEnv({
+  clientPrefix: 'VITE_',
   server: {
     SERVER_PORT: z.coerce.number().default(3333),
     DATABASE_URL: z.string().url(),
@@ -19,21 +25,11 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string(),
     GITHUB_REDIRECT_URI: z.string().url(),
   },
-  client: {},
-  shared: {},
-  runtimeEnv: {
-    SERVER_PORT: process.env.SERVER_PORT,
-    DATABASE_URL: process.env.DATABASE_URL,
-    JWT_SECRET: process.env.JWT_SECRET,
-    COOKIE_SECRET: process.env.JWT_SECRET,
-    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
-    DB_PORT: process.env.DB_PORT,
-    DB_HOST: process.env.DB_HOST,
-    DB_USERNAME: process.env.DB_USERNAME,
-    DB_PASSWORD: process.env.DB_PASSWORD,
-    DB_DATABASE: process.env.DB_DATABASE,
+  client: {
+    VITE_URL_BASE_API: z.string().url(),
+    VITE_SOCKET_URL: z.string().url(),
   },
+  shared: {},
+  runtimeEnv: _runtimeEnv,
   emptyStringAsUndefined: true,
 })
