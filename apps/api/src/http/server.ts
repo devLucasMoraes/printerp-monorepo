@@ -1,3 +1,4 @@
+import fastifyCookie from '@fastify/cookie'
 import fastifyCors from '@fastify/cors'
 import fastifyJwt from '@fastify/jwt'
 import fastifySwagger from '@fastify/swagger'
@@ -23,6 +24,8 @@ import { updateArmazem } from './routes/armazem/update-armazem'
 import { authWithPassword } from './routes/auth/auth-with-password'
 import { createAccount } from './routes/auth/create-account'
 import { getProfile } from './routes/auth/get-profile'
+import { logout } from './routes/auth/logout'
+import { refreshToken } from './routes/auth/refresh-token'
 import { reqPasswordRecover } from './routes/auth/req-password-recover'
 import { resetPassword } from './routes/auth/reset-password'
 import { createCategoria } from './routes/categoria/create-categoria'
@@ -112,6 +115,18 @@ app.register(fastifySwaggerUi, {
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
+  cookie: {
+    cookieName: 'refreshToken',
+    signed: false,
+  },
+})
+
+app.register(fastifyCookie, {
+  secret: env.COOKIE_SECRET,
+  parseOptions: {
+    httpOnly: true,
+    sameSite: 'strict',
+  },
 })
 
 app.register(fastifyCors)
@@ -121,6 +136,8 @@ app.register(authWithPassword)
 app.register(getProfile)
 app.register(reqPasswordRecover)
 app.register(resetPassword)
+app.register(refreshToken)
+app.register(logout)
 
 app.register(createOrganization)
 app.register(getMembership)
