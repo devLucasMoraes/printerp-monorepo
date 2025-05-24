@@ -5,7 +5,8 @@
     }
   ],
   "conventionalCommits.scopes": [
-    "rota"
+    "rota",
+    "front-end"
   ],
   "workbench.colorCustomizations": {
     "activityBar.background": "#2A3101",
