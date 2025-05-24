@@ -20,7 +20,7 @@ export async function authWithPassword(app: FastifyInstance) {
         }),
         response: {
           201: z.object({
-            accessToken: z.string(),
+            token: z.string(),
           }),
         },
       },
@@ -50,22 +50,9 @@ export async function authWithPassword(app: FastifyInstance) {
         throw new BadRequestError('invalid credentials')
       }
 
-      const accessToken = await res.jwtSign(
+      const token = await res.jwtSign(
         {
           sub: userFromEmail.id,
-          type: 'access',
-        },
-        {
-          sign: {
-            expiresIn: '15m',
-          },
-        },
-      )
-
-      const refreshToken = await res.jwtSign(
-        {
-          sub: userFromEmail.id,
-          type: 'refresh',
         },
         {
           sign: {
@@ -74,14 +61,7 @@ export async function authWithPassword(app: FastifyInstance) {
         },
       )
 
-      res.setCookie('refreshToken', refreshToken, {
-        path: '/',
-        httpOnly: true,
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60, // 7 dias em segundos
-      })
-
-      return res.status(201).send({ accessToken })
+      return res.status(201).send({ token })
     },
   )
 }

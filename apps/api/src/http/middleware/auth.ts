@@ -9,13 +9,7 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
   app.addHook('preHandler', async (req) => {
     req.getCurrentUserId = async () => {
       try {
-        const { sub, type } = await req.jwtVerify<{
-          sub: string
-          type: string
-        }>()
-        if (type !== 'access') {
-          throw new UnauthorizedError('Invalid token type')
-        }
+        const { sub } = await req.jwtVerify<{ sub: string }>()
         return sub
       } catch {
         throw new UnauthorizedError('Invalid auth token')
