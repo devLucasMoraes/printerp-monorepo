@@ -1,7 +1,8 @@
 import { Box, Button, Container, Typography } from '@mui/material'
 import { Link } from 'react-router'
 
-import ErrorImg from '../../../../../../../../../../assets/images/backgrounds/404-error-idea.gif'
+// eslint-disable-next-line import/no-absolute-path
+import ErrorImg from '/assets/images/backgrounds/404-error-idea.gif'
 
 const Error = () => (
   <Box

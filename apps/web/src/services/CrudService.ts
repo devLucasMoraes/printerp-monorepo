@@ -1,7 +1,7 @@
 import { Page, PageParams } from '../types'
 import { api } from './api/axios'
 
-export interface CrudService<ID, T> {
+export interface ICrudService<ID, T> {
   getAllPaginated(params?: PageParams): Promise<Page<T>>
   getAll(): Promise<T[]>
   getById(id: ID): Promise<T>
@@ -10,7 +10,8 @@ export interface CrudService<ID, T> {
   delete(id: ID): Promise<void>
 }
 
-export abstract class CrudService<ID, T> implements CrudService<ID, T> {
+export abstract class CrudService<ID, T> implements ICrudService<ID, T> {
+  // eslint-disable-next-line no-useless-constructor
   constructor(protected endpoint: string) {}
 
   async getAllPaginated({ page = 0, size = 20, sort }: PageParams = {}) {

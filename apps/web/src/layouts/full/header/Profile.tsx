@@ -15,8 +15,9 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 
-import { useAuth } from '../../../hooks/useAuth'
+import { useAuthStore } from '../../../stores/auth-store'
 
 interface ProfileOption {
   icon: typeof IconUser
@@ -29,7 +30,8 @@ const Profile = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const theme = useTheme()
-  const { user, signOut } = useAuth()
+  const { user, logout } = useAuthStore()
+  const navigate = useNavigate()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -40,8 +42,9 @@ const Profile = () => {
   }
 
   const handleLogout = () => {
-    signOut()
+    logout()
     handleClose()
+    navigate('/auth/login')
   }
 
   const profileOptions: ProfileOption[] = [

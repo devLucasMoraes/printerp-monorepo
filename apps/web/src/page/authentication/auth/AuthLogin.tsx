@@ -8,13 +8,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField'
-import { AuthContext } from '../../../contexts/AuthContext'
 import { LoginFormData, loginSchema } from '../../../schemas/auth'
+import { useAuthStore } from '../../../stores/auth-store'
+import { useAlertStore } from '../../../stores/useAlertStore'
 
 interface loginType {
   title?: string
@@ -23,7 +23,8 @@ interface loginType {
 }
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
-  const { signIn } = useContext(AuthContext)
+  const { login } = useAuthStore()
+  const { showAlert } = useAlertStore()
 
   const {
     register,
@@ -33,9 +34,10 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async ({ email, password }: LoginFormData) => {
     try {
-      await signIn(data)
+      await login(email, password)
+      showAlert.success('Login realizado com sucesso!')
     } catch (error) {
       console.error('Error signing in:', error)
     }

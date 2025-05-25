@@ -129,7 +129,10 @@ app.register(fastifyCookie, {
   },
 })
 
-app.register(fastifyCors)
+app.register(fastifyCors, {
+  origin: 'http://localhost:5173',
+  credentials: true,
+})
 
 app.register(createAccount)
 app.register(authWithPassword)

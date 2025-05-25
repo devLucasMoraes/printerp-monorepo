@@ -1,10 +1,9 @@
-import { useContext } from 'react'
 import { Navigate, Outlet } from 'react-router'
 
-import { AuthContext } from '../contexts/AuthContext'
+import { useAuthStore } from '../stores/auth-store'
 
 const PrivateRoute = () => {
-  const { isAuthenticated } = useContext(AuthContext)
+  const { isAuthenticated } = useAuthStore()
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/auth/login" />
 }

@@ -7,12 +7,12 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
-import { CrudService } from '../../services/CrudService'
+import { ICrudService } from '../../services/CrudService'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
 export interface QueryHookOptions<ID, T> {
   resourceKey: string
-  service: CrudService<ID, T>
+  service: ICrudService<ID, T>
 }
 
 export function useResourceQuery<ID, T>(options: QueryHookOptions<ID, T>) {
