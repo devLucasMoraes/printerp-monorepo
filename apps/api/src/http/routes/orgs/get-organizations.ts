@@ -11,24 +11,22 @@ export async function getOrganizations(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations',
+      '/api/v1/organizations',
       {
         schema: {
           tags: ['organizations'],
           summary: 'get organizations where user is member',
           security: [{ bearerAuth: [] }],
           response: {
-            200: z.object({
-              organizations: z.array(
-                z.object({
-                  id: z.string().uuid(),
-                  name: z.string(),
-                  slug: z.string(),
-                  avatarUrl: z.string().url().nullable(),
-                  role: roleSchema,
-                }),
-              ),
-            }),
+            200: z.array(
+              z.object({
+                id: z.string().uuid(),
+                name: z.string(),
+                slug: z.string(),
+                avatarUrl: z.string().url().nullable(),
+                role: roleSchema,
+              }),
+            ),
           },
         },
       },
@@ -63,7 +61,7 @@ export async function getOrganizations(app: FastifyInstance) {
           },
         )
 
-        return res.status(200).send({ organizations: organizationsWithRole })
+        return res.status(200).send(organizationsWithRole)
       },
     )
 }

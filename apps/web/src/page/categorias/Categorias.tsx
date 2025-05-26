@@ -8,17 +8,19 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useCategoriaQueries } from '../../hooks/queries/useCategoriaQueries'
+import { useCurrentOrg } from '../../hooks/useCurrentOrg'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { ListCatgoriasResponse } from '../../http/categoria/list-categorias'
 import { useAlertStore } from '../../stores/useAlertStore'
-import { CategoriaDto } from '../../types'
 import { CategoriaModal } from './components/CategoriaModal'
 
 const Categorias = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { currentOrg } = useCurrentOrg()
 
   const [selectedCategoria, setSelectedCategoria] = useState<{
-    data: CategoriaDto
+    data: ListCatgoriasResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -42,11 +44,12 @@ const Categorias = () => {
   const { showAlert } = useAlertStore((state) => state)
 
   const {
-    useGetAllPaginated: useGetCategoriasPaginated,
+    useListPaginated: useGetCategoriasPaginated,
     useDelete: useDeleteCategoria,
   } = useCategoriaQueries()
 
   const { data, isLoading } = useGetCategoriasPaginated(
+    currentOrg?.slug,
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -57,36 +60,39 @@ const Categorias = () => {
   )
   const { mutate: deleteById } = useDeleteCategoria()
 
-  const handleConfirmDelete = (categoria: CategoriaDto) => {
+  const handleConfirmDelete = (categoria: ListCatgoriasResponse) => {
     setSelectedCategoria({ data: categoria, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    deleteById(id, {
-      onSuccess: () => {
-        setSelectedCategoria(undefined)
-        setConfirmModalOpen(false)
-        showAlert('Categoria deletado com sucesso', 'success')
+  const handleDelete = (id: string) => {
+    deleteById(
+      { id, orgSlug: currentOrg?.slug },
+      {
+        onSuccess: () => {
+          setSelectedCategoria(undefined)
+          setConfirmModalOpen(false)
+          showAlert('Categoria deletado com sucesso', 'success')
+        },
+        onError: (error) => {
+          console.error(error)
+          showAlert(error.message, 'error')
+        },
       },
-      onError: (error) => {
-        console.error(error)
-        showAlert(error.message, 'error')
-      },
-    })
+    )
   }
 
-  const handleEdit = (categoria: CategoriaDto) => {
+  const handleEdit = (categoria: ListCatgoriasResponse) => {
     setSelectedCategoria({ data: categoria, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const handleCopy = (categoria: CategoriaDto): void => {
+  const handleCopy = (categoria: ListCatgoriasResponse): void => {
     setSelectedCategoria({ data: categoria, type: 'COPY' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<CategoriaDto>[] = [
+  const columns: GridColDef<ListCatgoriasResponse>[] = [
     { field: 'nome', headerName: 'Nome', minWidth: 120, flex: 1 },
     {
       field: 'actions',

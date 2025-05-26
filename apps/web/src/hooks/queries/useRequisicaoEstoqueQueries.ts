@@ -1,4 +1,4 @@
-import { requisicaoEstoqueService } from '../../services/RequisicaoEstoqueService'
+import { requisicaoEstoqueService } from '../../http/RequisicaoEstoqueService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useRequisicaoEstoqueQueries() {

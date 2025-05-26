@@ -66,6 +66,34 @@ const Router = [
     ],
   },
   {
+    path: '/organizations/:orgSlug',
+    element: <PrivateRoute />,
+    children: [
+      {
+        path: '/organizations/:orgSlug',
+        element: <FullLayout />,
+        children: [
+          // Redirecionar para dashboard da organização
+          { path: '', element: <Navigate to="dashboard" replace /> },
+
+          // Páginas da organização
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'settings', element: <Settings /> },
+          { path: 'users', element: <Users /> },
+          { path: 'categorias', element: <Categorias /> },
+          { path: 'requisitantes', element: <Requisitantes /> },
+          { path: 'setores', element: <Setores /> },
+          { path: 'insumos', element: <Insumos /> },
+          { path: 'requisicoes-estoque', element: <RequisicoesEstoque /> },
+          { path: 'armazens', element: <Armazens /> },
+          { path: 'estoques', element: <Estoques /> },
+          { path: 'emprestimos', element: <Emprestimos /> },
+          { path: 'parceiros', element: <Parceiros /> },
+        ],
+      },
+    ],
+  },
+  {
     path: '/auth',
     element: <PublicRoute />,
     children: [

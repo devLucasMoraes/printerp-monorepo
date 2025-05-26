@@ -1,4 +1,4 @@
-import { insumoService } from '../../services/InsumoService'
+import { insumoService } from '../../http/InsumoService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useInsumoQueries() {

@@ -9,7 +9,7 @@ import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function refreshToken(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/sessions/refresh',
+    '/api/v1/sessions/refresh',
     {
       schema: {
         tags: ['auth'],

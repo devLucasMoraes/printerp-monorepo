@@ -1,4 +1,4 @@
-import { requisitanteService } from '../../services/RequisitanteService'
+import { requisitanteService } from '../../http/RequisitanteService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useRequisitanteQueries() {

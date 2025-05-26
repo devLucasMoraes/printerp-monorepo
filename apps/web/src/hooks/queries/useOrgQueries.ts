@@ -7,72 +7,69 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
-import { ICrudService } from '../../http/CrudService'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import {
+  createOrganization,
+  CreateOrganizationDto,
+  CreateOrganizationResponse,
+} from '../../http/orgs/create-organization'
+import {
+  getOrganization,
+  GetOrganizationResponse,
+} from '../../http/orgs/get-organization'
+import {
+  getOrganizations,
+  GetOrganizationsResponse,
+} from '../../http/orgs/get-organizations'
+import { shtutdownOrganization } from '../../http/orgs/shutdown-organization'
+import {
+  updateOrganization,
+  UpdateOrganizationDto,
+} from '../../http/orgs/update-organization'
+import { ErrorResponse } from '../../types'
 
-export interface QueryHookOptions<ID, REQ, RES> {
-  resourceKey: string
-  service: ICrudService<ID, REQ, RES>
-}
-
-export function useResourceQuery<ID, REQ, RES>(
-  options: QueryHookOptions<ID, REQ, RES>,
-) {
-  const { resourceKey, service } = options
+export function useOrgQueries() {
+  const resourceKey = 'organizations'
   const queryClient = useQueryClient()
-
-  const useGetById = (
-    id: ID,
+  const useGetBySlug = (
+    orgSlug: string,
     queryOptions?: Omit<
-      UseQueryOptions<RES, AxiosError<ErrorResponse>>,
+      UseQueryOptions<GetOrganizationResponse, AxiosError<ErrorResponse>>,
       'queryKey' | 'queryFn'
     >,
   ) => {
     return useQuery({
       ...queryOptions,
-      queryKey: [resourceKey, id],
-      queryFn: () => service.getById(id),
+      queryKey: [resourceKey, orgSlug],
+      queryFn: () => getOrganization(orgSlug),
     })
   }
 
   const useGetAll = (
     queryOptions?: Omit<
-      UseQueryOptions<RES[], AxiosError<ErrorResponse>>,
+      UseQueryOptions<GetOrganizationsResponse[], AxiosError<ErrorResponse>>,
       'queryKey' | 'queryFn'
     >,
   ) => {
     return useQuery({
       ...queryOptions,
       queryKey: [resourceKey],
-      queryFn: () => service.getAll(),
-    })
-  }
-
-  const useGetAllPaginated = (
-    params: PageParams = {},
-    queryOptions?: Omit<
-      UseQueryOptions<Page<RES>, AxiosError<ErrorResponse>>,
-      'queryKey' | 'queryFn'
-    >,
-  ) => {
-    const { page = 0, size = 20, sort } = params
-
-    return useQuery({
-      ...queryOptions,
-      queryKey: [resourceKey, 'paginated', page, size, sort],
-      queryFn: () => service.getAllPaginated({ page, size, sort }),
+      queryFn: () => getOrganizations(),
     })
   }
 
   const useCreate = (
     mutationOptions?: Omit<
-      UseMutationOptions<RES, AxiosError<ErrorResponse>, REQ>,
+      UseMutationOptions<
+        CreateOrganizationResponse,
+        AxiosError<ErrorResponse>,
+        CreateOrganizationDto
+      >,
       'mutationFn'
     >,
   ) => {
     return useMutation({
       ...mutationOptions,
-      mutationFn: (data: REQ) => service.create(data),
+      mutationFn: (data) => createOrganization(data),
       onSuccess: (data, variables, context) => {
         queryClient.invalidateQueries({ queryKey: [resourceKey] })
         mutationOptions?.onSuccess?.(data, variables, context)
@@ -85,13 +82,17 @@ export function useResourceQuery<ID, REQ, RES>(
 
   const useUpdate = (
     mutationOptions?: Omit<
-      UseMutationOptions<RES, AxiosError<ErrorResponse>, { id: ID; data: REQ }>,
+      UseMutationOptions<
+        void,
+        AxiosError<ErrorResponse>,
+        { orgSlug: string; data: UpdateOrganizationDto }
+      >,
       'mutationFn'
     >,
   ) => {
     return useMutation({
       ...mutationOptions,
-      mutationFn: ({ id, data }) => service.update(id, data),
+      mutationFn: ({ orgSlug, data }) => updateOrganization(orgSlug, data),
       onSuccess: (data, variables, context) => {
         queryClient.invalidateQueries({ queryKey: [resourceKey] })
         mutationOptions?.onSuccess?.(data, variables, context)
@@ -102,15 +103,15 @@ export function useResourceQuery<ID, REQ, RES>(
     })
   }
 
-  const useDelete = (
+  const useShtutdown = (
     mutationOptions?: Omit<
-      UseMutationOptions<void, AxiosError<ErrorResponse>, ID>,
+      UseMutationOptions<void, AxiosError<ErrorResponse>, string>,
       'mutationFn'
     >,
   ) => {
     return useMutation({
       ...mutationOptions,
-      mutationFn: (id: ID) => service.delete(id),
+      mutationFn: (orgSlug) => shtutdownOrganization(orgSlug),
       onSuccess: (data, variables, context) => {
         queryClient.invalidateQueries({ queryKey: [resourceKey] })
         mutationOptions?.onSuccess?.(data, variables, context)
@@ -122,11 +123,10 @@ export function useResourceQuery<ID, REQ, RES>(
   }
 
   return {
-    useGetById,
-    useGetAllPaginated,
+    useGetBySlug,
     useGetAll,
     useCreate,
     useUpdate,
-    useDelete,
+    useShtutdown,
   }
 }

@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
-import { chartsService } from '../../services/ChartsService'
+import { chartsService } from '../../http/ChartsService'
 import {
   ErrorResponse,
   InsumosPorSetorResponse,

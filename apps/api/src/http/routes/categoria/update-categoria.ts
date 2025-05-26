@@ -19,7 +19,7 @@ export async function updateCategoria(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/organizations/:orgSlug/categorias/:categoriaId',
+      '/api/v1/organizations/:orgSlug/categorias/:categoriaId',
       {
         schema: {
           tags: ['categorias'],

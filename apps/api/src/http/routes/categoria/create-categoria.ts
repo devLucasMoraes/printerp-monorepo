@@ -19,7 +19,7 @@ export async function createCategoria(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/organizations/:slug/categorias',
+      '/api/v1/organizations/:slug/categorias',
       {
         schema: {
           tags: ['categorias'],

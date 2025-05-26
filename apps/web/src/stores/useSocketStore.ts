@@ -1,3 +1,4 @@
+import { env } from '@printerp/env'
 import { io, Socket } from 'socket.io-client'
 import { create } from 'zustand'
 
@@ -12,7 +13,7 @@ interface SocketState {
   setError: (error: string | null) => void
 }
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
+const SOCKET_URL = env.VITE_SOCKET_URL
 
 export const useSocketStore = create<SocketState>((set, get) => ({
   socket: null,

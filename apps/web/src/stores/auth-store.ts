@@ -1,17 +1,18 @@
-// src/stores/auth.store.ts
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { api } from '../http/api/axios'
 import { SignUpFormData } from '../schemas/auth'
-import { api } from '../services/api/axios'
+
+type User = {
+  id: number
+  name: string
+  email: string
+  avatar_url: string
+}
 
 type AuthState = {
-  user: {
-    id: number
-    name: string
-    email: string
-    avatar_url: string
-  } | null
+  user: User | null
   accessToken: string | null
   isAuthenticated: boolean
   isLoading: boolean

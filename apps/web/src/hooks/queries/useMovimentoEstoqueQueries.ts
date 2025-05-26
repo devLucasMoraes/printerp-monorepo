@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
-import { movimentoEstoqueService } from '../../services/MovimentoEstoqueService'
+import { movimentoEstoqueService } from '../../http/MovimentoEstoqueService'
 import {
   ErrorResponse,
   MovimentoEstoqueDto,

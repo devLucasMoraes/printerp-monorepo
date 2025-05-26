@@ -1,4 +1,4 @@
-import { userService } from '../../services/UserService'
+import { userService } from '../../http/UserService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useUserQueries() {

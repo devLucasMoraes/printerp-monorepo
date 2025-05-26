@@ -1,4 +1,4 @@
-import { setorService } from '../../services/SetorService'
+import { setorService } from '../../http/SetorService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useSetorQueries() {

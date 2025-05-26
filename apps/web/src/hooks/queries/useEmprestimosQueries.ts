@@ -1,4 +1,4 @@
-import { emprestimoService } from '../../services/EmprestimoService'
+import { emprestimoService } from '../../http/EmprestimoService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useEmprestimoQueries() {

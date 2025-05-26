@@ -14,7 +14,7 @@ export async function shtutdownOrganization(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/organizations/:slug',
+      '/api/v1/organizations/:slug',
       {
         schema: {
           tags: ['organizations'],

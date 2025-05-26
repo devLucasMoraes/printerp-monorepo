@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Outlet } from 'react-router'
 
 import Header from './header/Header'
+import OrganizationBreadcrumbs from './shared/OrganizationBreadcrumbs'
 import Sidebar from './sidebar/Sidebar'
 
 const MainWrapper = styled('div')(() => ({
@@ -55,6 +56,7 @@ const FullLayout = () => {
             maxWidth: '1200px',
           }}
         >
+          <OrganizationBreadcrumbs />
           {/* ------------------------------------------- */}
           {/* Page Route */}
           {/* ------------------------------------------- */}

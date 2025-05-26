@@ -1,4 +1,4 @@
-import { armazemService } from '../../services/ArmazemService'
+import { armazemService } from '../../http/ArmazemService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useArmazemQueries() {

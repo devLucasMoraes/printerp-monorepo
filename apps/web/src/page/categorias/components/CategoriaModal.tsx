@@ -14,18 +14,23 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { useCategoriaQueries } from '../../../hooks/queries/useCategoriaQueries'
+import { useCurrentOrg } from '../../../hooks/useCurrentOrg'
 import {
-  categoriaCreateSchema,
-  categoriaUpdateSchema,
-} from '../../../schemas/categoria.schemas'
+  CreateCategoriaDTO,
+  createCategoriaSchema,
+} from '../../../http/categoria/create-categoria'
+import { ListCatgoriasResponse } from '../../../http/categoria/list-categorias'
+import {
+  UpdateCategoriaDTO,
+  updateCategoriaSchema,
+} from '../../../http/categoria/update-categoria'
 import { useAlertStore } from '../../../stores/useAlertStore'
-import { CategoriaDto } from '../../../types'
 
 interface CategoriaModalProps {
   open: boolean
   onClose: () => void
   categoria?: {
-    data: CategoriaDto
+    data: ListCatgoriasResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }
@@ -35,12 +40,13 @@ export const CategoriaModal = ({
   onClose,
   categoria,
 }: CategoriaModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { showAlert } = useAlertStore()
+  const { currentOrg } = useCurrentOrg()
 
   const schema =
     categoria?.data && categoria.type === 'UPDATE'
-      ? categoriaUpdateSchema
-      : categoriaCreateSchema
+      ? updateCategoriaSchema
+      : createCategoriaSchema
 
   const { useCreate: useCreateCategoria, useUpdate: useUpdateCategoria } =
     useCategoriaQueries()
@@ -50,7 +56,7 @@ export const CategoriaModal = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<CategoriaDto>({
+  } = useForm<CreateCategoriaDTO | UpdateCategoriaDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: '',
@@ -61,17 +67,14 @@ export const CategoriaModal = ({
     console.log(categoria)
     if (categoria?.data && categoria.type === 'UPDATE') {
       reset({
-        id: categoria.data.id,
         nome: categoria.data.nome,
       })
     } else if (categoria?.data && categoria.type === 'COPY') {
       reset({
-        id: null as any,
         nome: categoria.data.nome,
       })
     } else {
       reset({
-        id: null as any,
         nome: '',
       })
     }
@@ -81,10 +84,10 @@ export const CategoriaModal = ({
 
   const { mutate: updateCategoria } = useUpdateCategoria()
 
-  const onSubmit = (data: CategoriaDto) => {
+  const onSubmit = (data: CreateCategoriaDTO | UpdateCategoriaDTO) => {
     if (categoria?.data && categoria.type === 'UPDATE') {
       updateCategoria(
-        { id: categoria.data.id, data },
+        { id: categoria.data.id, orgSlug: currentOrg.slug, data },
         {
           onSuccess: () => {
             onClose()
@@ -98,17 +101,20 @@ export const CategoriaModal = ({
         },
       )
     } else {
-      createCategoria(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          showAlert('Categoria criada com sucesso', 'success')
+      createCategoria(
+        { orgSlug: currentOrg.slug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            showAlert('Categoria criada com sucesso', 'success')
+          },
+          onError: (error) => {
+            console.error(error)
+            showAlert(error.response?.data.message || error.message, 'error')
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
-        },
-      })
+      )
     }
   }
   const handleClose = () => {

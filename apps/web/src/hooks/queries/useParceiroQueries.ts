@@ -1,4 +1,4 @@
-import { parceiroService } from '../../services/ParceiroService'
+import { parceiroService } from '../../http/ParceiroService'
 import { useResourceQuery } from './useResourceQuery'
 
 export function useParceiroQueries() {

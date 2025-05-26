@@ -7,8 +7,8 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { estoqueService } from '../../http/EstoqueService'
 import { AdjustEstoqueDTO } from '../../schemas/estoque.schema'
-import { estoqueService } from '../../services/EstoqueService'
 import { ErrorResponse, EstoqueDto, Page, PageParams } from '../../types'
 
 const resourceKey = 'estoque'

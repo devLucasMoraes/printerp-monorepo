@@ -14,7 +14,7 @@ export async function createOrganization(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/organizations',
+      '/api/v1/organizations',
       {
         schema: {
           tags: ['organizations'],
@@ -28,6 +28,7 @@ export async function createOrganization(app: FastifyInstance) {
           response: {
             201: z.object({
               organizationId: z.string(),
+              slug: z.string(),
             }),
           },
         },
@@ -70,7 +71,9 @@ export async function createOrganization(app: FastifyInstance) {
 
         await repository.member.save(memberData)
 
-        return res.status(201).send({ organizationId: organization.id })
+        return res
+          .status(201)
+          .send({ organizationId: organization.id, slug: organization.slug })
       },
     )
 }
