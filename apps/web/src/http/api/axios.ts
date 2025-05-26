@@ -8,7 +8,6 @@ export const api = axios.create({
   withCredentials: true,
 })
 
-// Configuração global do Axios para interceptar requisições
 api.interceptors.request.use((config) => {
   const { accessToken } = useAuthStore.getState()
 
