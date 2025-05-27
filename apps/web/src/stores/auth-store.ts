@@ -79,20 +79,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             password,
           })
 
-          set({
-            accessToken: null,
-            isAuthenticated: false,
-            isLoading: false,
-          })
+          set({ isLoading: false })
         } catch (error: any) {
           const errorMessage =
             error.response?.data?.message || 'Erro ao criar usuário'
           set({
             error: errorMessage,
             isLoading: false,
-            isAuthenticated: false,
-            accessToken: null,
-            user: null,
           })
           throw error
         }
@@ -144,16 +137,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       },
 
       refreshToken: async () => {
-        const { accessToken } = get()
-        if (!accessToken) return
-
         try {
-          const { data } = await api.post<{ token: string }>(
+          const { data } = await api.post<{ accessToken: string }>(
             '/sessions/refresh',
           )
 
           set({
-            accessToken: data.token,
+            accessToken: data.accessToken,
             isAuthenticated: true,
           })
         } catch (error) {
@@ -167,7 +157,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
     {
       name: 'auth-storage',
       partialize: (state) => ({
-        accessToken: state.accessToken,
+        // ✅ CORREÇÃO: accessToken removido do localStorage
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),

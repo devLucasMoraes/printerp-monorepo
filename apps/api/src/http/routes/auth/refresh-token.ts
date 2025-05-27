@@ -24,8 +24,6 @@ export async function refreshToken(app: FastifyInstance) {
     async (req, res) => {
       const refreshToken = req.cookies.refreshToken
 
-      console.log({ refreshToken })
-
       if (!refreshToken) {
         throw new UnauthorizedError('Refresh token not found')
       }
@@ -60,7 +58,7 @@ export async function refreshToken(app: FastifyInstance) {
           },
           {
             sign: {
-              expiresIn: '15m',
+              expiresIn: '1m',
             },
           },
         )

@@ -57,7 +57,7 @@ export async function authWithPassword(app: FastifyInstance) {
         },
         {
           sign: {
-            expiresIn: '15m',
+            expiresIn: '1m',
           },
         },
       )
