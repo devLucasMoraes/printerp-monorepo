@@ -1,4 +1,5 @@
 import { AlertColor } from '@mui/material'
+import { v4 as uuidv4 } from 'uuid'
 import { create } from 'zustand'
 
 interface AlertOptions {
@@ -24,7 +25,7 @@ export const useAlertStore = create<AlertState>((set, get) => ({
   alerts: [],
 
   enqueueSnackbar: (message: string, options: AlertOptions = {}) => {
-    const id = Math.random().toString(36).substr(2, 9)
+    const id = uuidv4()
     const { variant = 'info', autoHideDuration = 6000 } = options
 
     const newAlert: AlertItem = {

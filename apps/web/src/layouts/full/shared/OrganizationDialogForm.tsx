@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { LoadingButton } from '@mui/lab'
 import {
   Button,
   Dialog,
@@ -10,6 +9,7 @@ import {
   Stack,
   Switch,
   TextField,
+  Typography,
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -67,71 +67,78 @@ const CreateOrganizationDialog = ({ open, onClose, onSuccess }: Props) => {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Criar nova organização</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <DialogTitle>
+        <Typography>Criar nova organização</Typography>
+      </DialogTitle>
 
-        <DialogContent>
-          <Stack spacing={3} sx={{ mt: 1 }}>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Nome da organização"
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                  fullWidth
-                  autoFocus
-                />
-              )}
-            />
+      <DialogContent>
+        <Stack spacing={3} sx={{ mt: 1 }}>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Nome da organização"
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                fullWidth
+                autoFocus
+              />
+            )}
+          />
 
-            <Controller
-              name="domain"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Domínio (opcional)"
-                  placeholder="ex: minhaempresa.com"
-                  error={!!errors.domain}
-                  helperText={errors.domain?.message}
-                  fullWidth
-                />
-              )}
-            />
+          <Controller
+            name="domain"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Domínio (opcional)"
+                placeholder="ex: minhaempresa.com"
+                error={!!errors.domain}
+                helperText={errors.domain?.message}
+                fullWidth
+              />
+            )}
+          />
 
-            <Controller
-              name="shouldAttachUsersByDomain"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={field.value}
-                      onChange={field.onChange}
-                      color="primary"
-                    />
-                  }
-                  label="Vincular usuários automaticamente por domínio"
-                />
-              )}
-            />
-          </Stack>
-        </DialogContent>
+          <Controller
+            name="shouldAttachUsersByDomain"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={field.value}
+                    onChange={field.onChange}
+                    color="primary"
+                  />
+                }
+                label="Vincular usuários automaticamente por domínio"
+              />
+            )}
+          />
+        </Stack>
+      </DialogContent>
 
-        <DialogActions>
-          <Button onClick={handleClose} disabled={isPending}>
-            Cancelar
-          </Button>
+      <DialogActions>
+        <Button onClick={handleClose} disabled={isPending}>
+          Cancelar
+        </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={isPending}>
-            Criar organização
-          </LoadingButton>
-        </DialogActions>
-      </form>
+        <Button type="submit" variant="contained" loading={isPending}>
+          Criar organização
+        </Button>
+      </DialogActions>
     </Dialog>
   )
 }

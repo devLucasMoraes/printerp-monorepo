@@ -1,7 +1,7 @@
 import { useMediaQuery } from '@mui/material'
 import { useEffect } from 'react'
 
-import { useThemeStore } from '../stores/useThemeStore'
+import { useThemeStore } from '../stores/theme-store'
 
 export function useThemeMode() {
   const { mode, effectiveMode, setMode, setEffectiveMode } = useThemeStore()
