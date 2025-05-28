@@ -13,8 +13,8 @@ import { Link } from 'react-router'
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField'
 import { LoginFormData, loginSchema } from '../../../schemas/auth'
+import { useAlertStore } from '../../../stores/alert-store'
 import { useAuthStore } from '../../../stores/auth-store'
-import { useAlertStore } from '../../../stores/useAlertStore'
 
 interface loginType {
   title?: string
@@ -24,7 +24,7 @@ interface loginType {
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const { login } = useAuthStore()
-  const { showAlert } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore()
 
   const {
     register,
@@ -37,9 +37,10 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const onSubmit = async ({ email, password }: LoginFormData) => {
     try {
       await login(email, password)
-      showAlert.success('Login realizado com sucesso!')
+      enqueueSnackbar('Login realizado com sucesso!', { variant: 'success' })
     } catch (error) {
       console.error('Error signing in:', error)
+      enqueueSnackbar('Falha ao realizar o login', { variant: 'error' })
     }
   }
 

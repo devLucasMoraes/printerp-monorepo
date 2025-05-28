@@ -15,7 +15,7 @@ import { Controller, useForm } from 'react-hook-form'
 
 import { useEstoqueQueries } from '../../../hooks/queries/useEstoqueQueries'
 import { adjustEstoqueSchema } from '../../../schemas/estoque.schema'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { EstoqueDto } from '../../../types'
 
 interface EstoqueModalProps {
@@ -28,7 +28,7 @@ interface EstoqueModalProps {
 }
 
 export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { useAdjustEstoque } = useEstoqueQueries()
 
@@ -69,11 +69,15 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Ajuste de estoque realizado com sucesso', 'success')
+            enqueueSnackbar('Ajuste de estoque realizado com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )

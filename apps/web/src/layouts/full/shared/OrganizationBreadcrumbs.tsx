@@ -18,7 +18,7 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 import { useOrgQueries } from '../../../hooks/queries/useOrgQueries'
 import { useCurrentOrg } from '../../../hooks/useCurrentOrg'
 import { GetOrganizationsResponse } from '../../../http/orgs/get-organizations'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import CreateOrganizationDialog from './OrganizationDialogForm'
 
 const OrganizationBreadcrumbs = () => {
@@ -27,7 +27,7 @@ const OrganizationBreadcrumbs = () => {
 
   const { orgSlug } = useParams()
 
-  const { showAlert } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -108,7 +108,7 @@ const OrganizationBreadcrumbs = () => {
 
   const handleCreateSuccess = (orgSlug: string) => {
     navigate(`/organizations/${orgSlug}/dashboard`, { replace: true })
-    showAlert('Organização criada com sucesso!', 'success')
+    enqueueSnackbar('Organização criada com sucesso!', { variant: 'success' })
   }
 
   return (

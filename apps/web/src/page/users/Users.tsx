@@ -9,7 +9,7 @@ import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { profiles } from '../../constants'
 import { useUserQueries } from '../../hooks/queries/useUserQueries'
 import { UserDto } from '../../schemas/user.schemas'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { UserModal } from './components/UserModal'
 
 const Users = () => {
@@ -20,7 +20,7 @@ const Users = () => {
     pageSize: 10,
   })
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { useGetAllPaginated: useGetUsersPaginated, useDelete: useDeleteUser } =
     useUserQueries()
@@ -34,11 +34,11 @@ const Users = () => {
   const handleDelete = (id: string) => {
     deleteById(id, {
       onSuccess: () => {
-        showAlert('Usuário deletado com sucesso', 'success')
+        enqueueSnackbar('Usuário deletado com sucesso', { variant: 'success' })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }

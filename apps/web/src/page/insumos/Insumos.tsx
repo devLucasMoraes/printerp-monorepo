@@ -9,7 +9,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useInsumoQueries } from '../../hooks/queries/useInsumoQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { InsumoDto } from '../../types'
 import { InsumoModal } from './components/InsumoModal'
 
@@ -39,7 +39,7 @@ const Insumos = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useGetAllPaginated: useGetInsumosPaginated,
@@ -67,11 +67,11 @@ const Insumos = () => {
       onSuccess: () => {
         setSelectedInsumo(undefined)
         setConfirmModalOpen(false)
-        showAlert('Insumo deletado com sucesso', 'success')
+        enqueueSnackbar('Insumo deletado com sucesso', { variant: 'success' })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }

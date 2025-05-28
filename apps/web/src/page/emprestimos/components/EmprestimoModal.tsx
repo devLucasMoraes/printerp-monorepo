@@ -43,7 +43,7 @@ import {
   emprestimoCreateSchema,
   emprestimoUpdateSchema,
 } from '../../../schemas/emprestimo.schema'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { EmprestimoDto, InsumoDto } from '../../../types'
 import { DevolucaoModal } from './DevolucaoModal'
 
@@ -62,7 +62,7 @@ export const EmprestimoModal = ({
   const [devolucaoModalOpen, setDevolucaoModalOpen] = useState(false)
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1)
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const queryClient = useQueryClient()
 
@@ -211,11 +211,15 @@ export const EmprestimoModal = ({
             onClose()
             reset()
             queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
-            showAlert('Emprestimo atualizado com sucesso', 'success')
+            enqueueSnackbar('Emprestimo atualizado com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -227,11 +231,15 @@ export const EmprestimoModal = ({
           onClose()
           reset()
           queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
-          showAlert('Emprestimo criado com sucesso', 'success')
+          enqueueSnackbar('Emprestimo criado com sucesso', {
+            variant: 'success',
+          })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       })
     }

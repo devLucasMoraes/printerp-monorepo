@@ -17,7 +17,7 @@ import {
   requisitanteCreateSchema,
   requisitanteUpdateSchema,
 } from '../../../schemas/requisitante.schemas'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { RequisitanteDto } from '../../../types'
 
 interface RequisitanteModalProps {
@@ -34,7 +34,7 @@ export const RequisitanteModal = ({
   onClose,
   requisitante,
 }: RequisitanteModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const schema =
     requisitante?.data && requisitante.type === 'UPDATE'
@@ -92,11 +92,15 @@ export const RequisitanteModal = ({
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Requisitante atualizado com sucesso', 'success')
+            enqueueSnackbar('Requisitante atualizado com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -105,11 +109,15 @@ export const RequisitanteModal = ({
         onSuccess: () => {
           onClose()
           reset()
-          showAlert('Requisitante criado com sucesso', 'success')
+          enqueueSnackbar('Requisitante criado com sucesso', {
+            variant: 'success',
+          })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       })
     }

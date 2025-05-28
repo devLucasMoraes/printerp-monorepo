@@ -9,7 +9,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useSetorQueries } from '../../hooks/queries/useSetorQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { SetorDto } from '../../types'
 import { SetorModal } from './components/SetorModal'
 
@@ -38,7 +38,7 @@ const Setores = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useGetAllPaginated: useGetSetoresPaginated,
@@ -66,11 +66,11 @@ const Setores = () => {
       onSuccess: () => {
         setSelectedSetor(undefined)
         setConfirmModalOpen(false)
-        showAlert('Setor deletado com sucesso', 'success')
+        enqueueSnackbar('Setor deletado com sucesso', { variant: 'success' })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }

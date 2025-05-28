@@ -10,7 +10,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useRequisicaoEstoqueQueries } from '../../hooks/queries/useRequisicaoEstoqueQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { RequisicaoEstoqueDto } from '../../types'
 import { RequisicaoEstoqueModal } from './components/RequisicaoEstoqueModal'
 
@@ -42,7 +42,7 @@ const RequisicoesEstoque = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useGetAllPaginated: useGetRequisicoesEstoquePaginated,
@@ -71,11 +71,13 @@ const RequisicoesEstoque = () => {
         queryClient.invalidateQueries({ queryKey: ['estoque'] })
         setSelectedRequisicaoEstoque(undefined)
         setConfirmModalOpen(false)
-        showAlert('Requisição deletada com sucesso', 'success')
+        enqueueSnackbar('Requisição deletada com sucesso', {
+          variant: 'success',
+        })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }

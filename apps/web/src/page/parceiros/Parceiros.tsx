@@ -9,7 +9,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useParceiroQueries } from '../../hooks/queries/useParceiroQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { ParceiroDto } from '../../types'
 import { ParceiroModal } from './components/ParceiroModal'
 
@@ -38,7 +38,7 @@ const Parceiros = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useGetAllPaginated: useGetParceirosPaginated,
@@ -66,11 +66,11 @@ const Parceiros = () => {
       onSuccess: () => {
         setSelectedParceiro(undefined)
         setConfirmModalOpen(false)
-        showAlert('Parceiro deletado com sucesso', 'success')
+        enqueueSnackbar('Parceiro deletado com sucesso', { variant: 'success' })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }

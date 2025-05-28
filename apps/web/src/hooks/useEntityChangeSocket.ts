@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 
-import { useAlertStore } from '../stores/useAlertStore'
+import { useAlertStore } from '../stores/alert-store'
 import { useSocket } from './useSocket'
 
 interface EntityChangeConfig {
@@ -26,7 +26,7 @@ export function useEntityChangeSocket(
 ) {
   const socket = useSocket()
   const queryClient = useQueryClient()
-  const { showAlert } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore()
 
   // Memoize configuration to prevent unnecessary re-renders
   const memoizedConfig = useMemo(
@@ -70,13 +70,13 @@ export function useEntityChangeSocket(
         memoizedOptions.showNotifications &&
         !memoizedOptions.suppressSocketAlert
       ) {
-        showAlert(message, 'info')
+        enqueueSnackbar(message, { variant: 'info' })
       }
     },
     [
       memoizedOptions.showNotifications,
       memoizedOptions.suppressSocketAlert,
-      showAlert,
+      enqueueSnackbar,
     ],
   )
 

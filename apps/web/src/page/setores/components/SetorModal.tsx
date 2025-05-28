@@ -17,7 +17,7 @@ import {
   setorCreateSchema,
   setorUpdateSchema,
 } from '../../../schemas/setor.schemas'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { SetorDto } from '../../../types'
 
 interface SetorModalProps {
@@ -30,7 +30,7 @@ interface SetorModalProps {
 }
 
 export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const schema =
     setor?.data && setor.type === 'UPDATE'
@@ -83,11 +83,15 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Setor atualizado com sucesso', 'success')
+            enqueueSnackbar('Setor atualizado com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -96,11 +100,13 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
         onSuccess: () => {
           onClose()
           reset()
-          showAlert('Setor criado com sucesso', 'success')
+          enqueueSnackbar('Setor criado com sucesso', { variant: 'success' })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       })
     }

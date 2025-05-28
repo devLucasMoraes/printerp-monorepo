@@ -24,7 +24,7 @@ import {
   insumoCreateSchema,
   insumoUpdateSchema,
 } from '../../../schemas/insumo.schemas'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { InsumoDto } from '../../../types'
 
 interface InsumoModalProps {
@@ -37,7 +37,7 @@ interface InsumoModalProps {
 }
 
 export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const schema =
     insumo?.data && insumo.type === 'UPDATE'
@@ -110,11 +110,15 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Insumo atualizada com sucesso', 'success')
+            enqueueSnackbar('Insumo atualizada com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -123,11 +127,13 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
         onSuccess: () => {
           onClose()
           reset()
-          showAlert('Insumo criada com sucesso', 'success')
+          enqueueSnackbar('Insumo criada com sucesso', { variant: 'success' })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       })
     }

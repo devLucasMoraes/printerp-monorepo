@@ -11,7 +11,7 @@ import { useCategoriaQueries } from '../../hooks/queries/useCategoriaQueries'
 import { useCurrentOrg } from '../../hooks/useCurrentOrg'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
 import { ListCatgoriasResponse } from '../../http/categoria/list-categorias'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { CategoriaModal } from './components/CategoriaModal'
 
 const Categorias = () => {
@@ -41,7 +41,7 @@ const Categorias = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useListPaginated: useGetCategoriasPaginated,
@@ -72,11 +72,13 @@ const Categorias = () => {
         onSuccess: () => {
           setSelectedCategoria(undefined)
           setConfirmModalOpen(false)
-          showAlert('Categoria deletado com sucesso', 'success')
+          enqueueSnackbar('Categoria deletado com sucesso', {
+            variant: 'success',
+          })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.message, 'error')
+          enqueueSnackbar(error.message, { variant: 'error' })
         },
       },
     )

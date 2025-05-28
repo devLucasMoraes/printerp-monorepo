@@ -33,7 +33,7 @@ import {
   requisicaoEstoqueCreateSchema,
   requisicaoEstoqueUpdateSchema,
 } from '../../../schemas/requisicaoEstoque.schemas'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { InsumoDto, RequisicaoEstoqueDto } from '../../../types'
 
 const defaultValues = {
@@ -60,7 +60,7 @@ export const RequisicaoEstoqueModal = ({
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const queryClient = useQueryClient()
 
@@ -137,15 +137,17 @@ export const RequisicaoEstoqueModal = ({
     onClose()
     reset(defaultValues)
     queryClient.invalidateQueries({ queryKey: ['estoque'] })
-    showAlert(
+    enqueueSnackbar(
       `Requisição ${isUpdate ? 'atualizada' : 'criada'} com sucesso`,
-      'success',
+      { variant: 'success' },
     )
   }
 
   const handleError = (error: any) => {
     console.error(error)
-    showAlert(error.response?.data.message || error.message, 'error')
+    enqueueSnackbar(error.response?.data.message || error.message, {
+      variant: 'error',
+    })
   }
 
   const onSubmit = (data: RequisicaoEstoqueDto) => {

@@ -54,7 +54,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   signUp: async (payload: SignUpFormData) => {
     try {
       set({ isLoading: true })
-      await api.post('/users', payload)
+      await api.post('/sign-up', payload)
       await get().login(payload.email, payload.password)
     } catch (error) {
       set({ error: error.response?.data?.message || 'Falha no cadastro' })

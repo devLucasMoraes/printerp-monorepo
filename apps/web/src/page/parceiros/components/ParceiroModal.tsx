@@ -17,7 +17,7 @@ import {
   parceiroCreateSchema,
   parceiroUpdateSchema,
 } from '../../../schemas/parceiro.schemas'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 import { ParceiroDto } from '../../../types'
 
 interface ParceiroModalProps {
@@ -34,7 +34,7 @@ export const ParceiroModal = ({
   onClose,
   parceiro,
 }: ParceiroModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const schema =
     parceiro?.data && parceiro.type === 'UPDATE'
@@ -90,11 +90,15 @@ export const ParceiroModal = ({
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Parceiro atualizado com sucesso', 'success')
+            enqueueSnackbar('Parceiro atualizado com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -103,11 +107,13 @@ export const ParceiroModal = ({
         onSuccess: () => {
           onClose()
           reset()
-          showAlert('Parceiro criado com sucesso', 'success')
+          enqueueSnackbar('Parceiro criado com sucesso', { variant: 'success' })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       })
     }

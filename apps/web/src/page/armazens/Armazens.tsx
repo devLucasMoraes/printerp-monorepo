@@ -9,7 +9,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useArmazemQueries } from '../../hooks/queries/useArmazemQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { ArmazemDto } from '../../types'
 import { ArmazemModal } from './components/ArmazemModal'
 
@@ -38,7 +38,7 @@ const Armazens = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useGetAllPaginated: useGetArmazensPaginated,
@@ -66,11 +66,11 @@ const Armazens = () => {
       onSuccess: () => {
         setSelectedArmazem(undefined)
         setConfirmModalOpen(false)
-        showAlert('Armazém deletado com sucesso', 'success')
+        enqueueSnackbar('Armazém deletado com sucesso', { variant: 'success' })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }

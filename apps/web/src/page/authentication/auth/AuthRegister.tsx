@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router'
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField'
 import { SignUpFormData, signUpSchema } from '../../../schemas/auth'
+import { useAlertStore } from '../../../stores/alert-store'
 import { useAuthStore } from '../../../stores/auth-store'
-import { useAlertStore } from '../../../stores/useAlertStore'
 
 interface registerType {
   title?: string
@@ -16,7 +16,7 @@ interface registerType {
 
 const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const { signUp } = useAuthStore()
-  const { showAlert } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore()
   const navigate = useNavigate()
 
   const {
@@ -30,11 +30,11 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       await signUp(data)
-      showAlert.success('Usuário criado com sucesso')
+      enqueueSnackbar('Usuário criado com sucesso', { variant: 'success' })
       navigate('/auth/login')
     } catch (error) {
-      showAlert.error('Erro ao criar usuário')
       console.error('Error signing up:', error)
+      enqueueSnackbar('Erro ao criar usuário', { variant: 'error' })
     }
   }
 

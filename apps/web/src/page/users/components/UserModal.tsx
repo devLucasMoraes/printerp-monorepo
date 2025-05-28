@@ -20,7 +20,7 @@ import {
   UserDto,
   userUpdateSchema,
 } from '../../../schemas/user.schemas'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 
 interface UserModalProps {
   open: boolean
@@ -29,7 +29,7 @@ interface UserModalProps {
 }
 
 export const UserModal = ({ open, onClose, user }: UserModalProps) => {
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const schema = user ? userUpdateSchema : userCreateSchema
 
@@ -82,11 +82,15 @@ export const UserModal = ({ open, onClose, user }: UserModalProps) => {
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Usuário atualizado com sucesso', 'success')
+            enqueueSnackbar('Usuário atualizado com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -95,11 +99,13 @@ export const UserModal = ({ open, onClose, user }: UserModalProps) => {
         onSuccess: () => {
           onClose()
           reset()
-          showAlert('Usuário criado com sucesso', 'success')
+          enqueueSnackbar('Usuário criado com sucesso', { variant: 'success' })
         },
         onError: (error) => {
           console.error(error)
-          showAlert(error.response?.data.message || error.message, 'error')
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       })
     }

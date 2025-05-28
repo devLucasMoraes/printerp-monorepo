@@ -1,26 +1,35 @@
 import { Alert, Snackbar } from '@mui/material'
 
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 
 export const AlertManager = () => {
-  const { open, message, severity } = useAlertStore()
-  const { closeAlert } = useAlertStore()
+  const { alerts, closeSnackbar } = useAlertStore()
 
   return (
-    <Snackbar
-      open={open}
-      autoHideDuration={6000}
-      onClose={closeAlert}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-    >
-      <Alert
-        onClose={closeAlert}
-        severity={severity}
-        variant="standard"
-        sx={{ width: '100%' }}
-      >
-        {message}
-      </Alert>
-    </Snackbar>
+    <>
+      {alerts.map((alert, index) => (
+        <Snackbar
+          key={alert.id}
+          open={true}
+          onClose={() => closeSnackbar(alert.id)}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          style={{
+            top: `${80 + index * 70}px`, // Stack alerts vertically
+          }}
+        >
+          <Alert
+            onClose={() => closeSnackbar(alert.id)}
+            severity={alert.variant}
+            variant="standard"
+            sx={{ width: '100%' }}
+          >
+            {alert.message}
+          </Alert>
+        </Snackbar>
+      ))}
+    </>
   )
 }

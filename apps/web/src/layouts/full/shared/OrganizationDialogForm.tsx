@@ -18,7 +18,7 @@ import {
   CreateOrganizationDto,
   createOrganizationSchema,
 } from '../../../http/orgs/create-organization'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 
 interface Props {
   open: boolean
@@ -41,7 +41,7 @@ const CreateOrganizationDialog = ({ open, onClose, onSuccess }: Props) => {
     },
   })
 
-  const { showAlert } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore()
 
   const { useCreate } = useOrgQueries()
   const { mutate: createOrg, isPending } = useCreate()
@@ -59,7 +59,9 @@ const CreateOrganizationDialog = ({ open, onClose, onSuccess }: Props) => {
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.response?.data.message || error.message, 'error')
+        enqueueSnackbar(error.response?.data.message || error.message, {
+          variant: 'error',
+        })
       },
     })
   }

@@ -24,7 +24,7 @@ import {
   UpdateCategoriaDTO,
   updateCategoriaSchema,
 } from '../../../http/categoria/update-categoria'
-import { useAlertStore } from '../../../stores/useAlertStore'
+import { useAlertStore } from '../../../stores/alert-store'
 
 interface CategoriaModalProps {
   open: boolean
@@ -40,7 +40,7 @@ export const CategoriaModal = ({
   onClose,
   categoria,
 }: CategoriaModalProps) => {
-  const { showAlert } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore()
   const { currentOrg } = useCurrentOrg()
 
   const schema =
@@ -92,11 +92,15 @@ export const CategoriaModal = ({
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Categoria atualizada com sucesso', 'success')
+            enqueueSnackbar('Categoria atualizada com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )
@@ -107,11 +111,15 @@ export const CategoriaModal = ({
           onSuccess: () => {
             onClose()
             reset()
-            showAlert('Categoria criada com sucesso', 'success')
+            enqueueSnackbar('Categoria criada com sucesso', {
+              variant: 'success',
+            })
           },
           onError: (error) => {
             console.error(error)
-            showAlert(error.response?.data.message || error.message, 'error')
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
           },
         },
       )

@@ -30,7 +30,6 @@ const processQueue = (error: unknown, data: unknown = null) => {
   failedQueue = []
 }
 
-// Interceptor para adicionar o token de acesso no header
 api.interceptors.request.use((config) => {
   const { accessToken } = useAuthStore.getState()
   if (accessToken) {
@@ -39,7 +38,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Interceptor de resposta original com integração ao Zustand
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

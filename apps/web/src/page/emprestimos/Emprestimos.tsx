@@ -10,7 +10,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useEmprestimoQueries } from '../../hooks/queries/useEmprestimosQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { useAlertStore } from '../../stores/useAlertStore'
+import { useAlertStore } from '../../stores/alert-store'
 import { EmprestimoDto } from '../../types'
 import { EmprestimoModal } from './components/EmprestimoModal'
 
@@ -42,7 +42,7 @@ const Emprestimos = () => {
     },
   )
 
-  const { showAlert } = useAlertStore((state) => state)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const {
     useGetAllPaginated: useGetEmprestimos,
@@ -72,11 +72,13 @@ const Emprestimos = () => {
         queryClient.invalidateQueries({ queryKey: ['emprestimo'] })
         setSelectedEmprestimo(undefined)
         setConfirmModalOpen(false)
-        showAlert('Empréstimo excluído com sucesso!', 'success')
+        enqueueSnackbar('Empréstimo excluído com sucesso!', {
+          variant: 'success',
+        })
       },
       onError: (error) => {
         console.error(error)
-        showAlert(error.message, 'error')
+        enqueueSnackbar(error.message, { variant: 'error' })
       },
     })
   }
