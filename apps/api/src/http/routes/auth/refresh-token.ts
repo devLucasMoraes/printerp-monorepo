@@ -58,7 +58,7 @@ export async function refreshToken(app: FastifyInstance) {
           },
           {
             sign: {
-              expiresIn: '1m',
+              expiresIn: '15m',
             },
           },
         )

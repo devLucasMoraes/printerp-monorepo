@@ -1,166 +1,95 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 import { api } from '../http/api/axios'
 import { SignUpFormData } from '../schemas/auth'
 
 type User = {
-  id: number
+  id: string
   name: string
-  email: string
-  avatar_url: string
+  email: string | null
+  avatarUrl: string | null
 }
 
-type AuthState = {
-  user: User | null
+type AuthStore = {
   accessToken: string | null
+  user: User | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
-}
 
-type AuthActions = {
+  // Actions
   login: (email: string, password: string) => Promise<void>
-  signUp: (data: SignUpFormData) => Promise<void>
-  logout: () => Promise<void>
+  signUp: (payload: SignUpFormData) => Promise<void>
   checkAuth: () => Promise<void>
-  refreshToken: () => Promise<void>
-  clearError: () => void
+  setAccessToken: (token: string | null) => void
+  logout: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthState & AuthActions>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      accessToken: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
+export const useAuthStore = create<AuthStore>((set, get) => ({
+  accessToken: null,
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
 
-      login: async (email, password) => {
-        set({ isLoading: true, error: null })
+  login: async (email, password) => {
+    try {
+      set({ isLoading: true, error: null })
+      const { data } = await api.post('/sessions/password', { email, password })
 
-        try {
-          const {
-            data: { accessToken },
-          } = await api.post<{ accessToken: string }>('/sessions/password', {
-            email,
-            password,
-          })
+      set({
+        accessToken: data.accessToken,
+        isAuthenticated: true,
+      })
 
-          set({
-            accessToken,
-            isAuthenticated: true,
-            isLoading: false,
-          })
+      await get().checkAuth()
+    } catch (error) {
+      set({ error: error.response?.data?.message || 'Falha no login' })
+      throw error
+    } finally {
+      set({ isLoading: false })
+    }
+  },
 
-          await get().checkAuth()
-        } catch (error: any) {
-          const errorMessage =
-            error.response?.data?.message || 'Erro ao fazer login'
-          set({
-            error: errorMessage,
-            isLoading: false,
-            isAuthenticated: false,
-            accessToken: null,
-            user: null,
-          })
-          throw error
-        }
-      },
+  signUp: async (payload: SignUpFormData) => {
+    try {
+      set({ isLoading: true })
+      await api.post('/users', payload)
+      await get().login(payload.email, payload.password)
+    } catch (error) {
+      set({ error: error.response?.data?.message || 'Falha no cadastro' })
+      throw error
+    } finally {
+      set({ isLoading: false })
+    }
+  },
 
-      signUp: async ({ name, email, password }: SignUpFormData) => {
-        set({ isLoading: true, error: null })
+  checkAuth: async () => {
+    try {
+      const { data } = await api.get('/profile')
+      set({ user: data.user })
+    } catch (error) {
+      await get().logout()
+      throw error
+    }
+  },
 
-        try {
-          await api.post('/sign-up', {
-            name,
-            email,
-            password,
-          })
-
-          set({ isLoading: false })
-        } catch (error: any) {
-          const errorMessage =
-            error.response?.data?.message || 'Erro ao criar usuário'
-          set({
-            error: errorMessage,
-            isLoading: false,
-          })
-          throw error
-        }
-      },
-
-      logout: async () => {
-        set({ isLoading: true })
-
-        try {
-          await api.post('/sessions/logout')
-        } catch (error) {
-          console.error('Erro durante logout:', error)
-        } finally {
-          set({
-            user: null,
-            accessToken: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: null,
-          })
-        }
-      },
-
-      checkAuth: async () => {
-        const { accessToken } = get()
-        if (!accessToken) return
-
-        set({ isLoading: true })
-
-        try {
-          const { data } = await api.get<{ user: User }>('/profile')
-          set({
-            user: data.user,
-            isAuthenticated: true,
-            isLoading: false,
-          })
-        } catch (error: any) {
-          if (error.response?.status === 401) {
-            try {
-              await get().refreshToken()
-              await get().checkAuth()
-            } catch {
-              await get().logout()
-            }
-          } else {
-            set({ error: 'Erro ao verificar autenticação', isLoading: false })
-          }
-        }
-      },
-
-      refreshToken: async () => {
-        try {
-          const { data } = await api.post<{ accessToken: string }>(
-            '/sessions/refresh',
-          )
-
-          set({
-            accessToken: data.accessToken,
-            isAuthenticated: true,
-          })
-        } catch (error) {
-          await get().logout()
-          throw error
-        }
-      },
-
-      clearError: () => set({ error: null }),
+  setAccessToken: (token) =>
+    set({
+      accessToken: token,
+      isAuthenticated: !!token,
     }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({
-        // ✅ CORREÇÃO: accessToken removido do localStorage
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    },
-  ),
-)
+
+  logout: async () => {
+    try {
+      await api.post('/sessions/logout')
+    } finally {
+      set({
+        accessToken: null,
+        user: null,
+        isAuthenticated: false,
+        error: null,
+      })
+    }
+  },
+}))
