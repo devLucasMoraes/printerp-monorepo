@@ -2,13 +2,13 @@ import { Button, IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useCategoriaQueries } from '../../hooks/queries/useCategoriaQueries'
-import { useCurrentOrg } from '../../hooks/useCurrentOrg'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
 import { ListCatgoriasResponse } from '../../http/categoria/list-categorias'
 import { useAlertStore } from '../../stores/alert-store'
@@ -17,7 +17,7 @@ import { CategoriaModal } from './components/CategoriaModal'
 const Categorias = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
-  const { currentOrg } = useCurrentOrg()
+  const { orgSlug } = useParams()
 
   const [selectedCategoria, setSelectedCategoria] = useState<{
     data: ListCatgoriasResponse
@@ -49,7 +49,7 @@ const Categorias = () => {
   } = useCategoriaQueries()
 
   const { data, isLoading } = useGetCategoriasPaginated(
-    currentOrg?.slug,
+    orgSlug,
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -67,7 +67,7 @@ const Categorias = () => {
 
   const handleDelete = (id: string) => {
     deleteById(
-      { id, orgSlug: currentOrg?.slug },
+      { id, orgSlug },
       {
         onSuccess: () => {
           setSelectedCategoria(undefined)

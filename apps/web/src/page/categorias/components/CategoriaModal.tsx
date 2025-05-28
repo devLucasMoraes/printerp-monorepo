@@ -12,9 +12,9 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { useCategoriaQueries } from '../../../hooks/queries/useCategoriaQueries'
-import { useCurrentOrg } from '../../../hooks/useCurrentOrg'
 import {
   CreateCategoriaDTO,
   createCategoriaSchema,
@@ -41,7 +41,8 @@ export const CategoriaModal = ({
   categoria,
 }: CategoriaModalProps) => {
   const { enqueueSnackbar } = useAlertStore()
-  const { currentOrg } = useCurrentOrg()
+
+  const { orgSlug } = useParams()
 
   const schema =
     categoria?.data && categoria.type === 'UPDATE'
@@ -87,7 +88,7 @@ export const CategoriaModal = ({
   const onSubmit = (data: CreateCategoriaDTO | UpdateCategoriaDTO) => {
     if (categoria?.data && categoria.type === 'UPDATE') {
       updateCategoria(
-        { id: categoria.data.id, orgSlug: currentOrg.slug, data },
+        { id: categoria.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -106,7 +107,7 @@ export const CategoriaModal = ({
       )
     } else {
       createCategoria(
-        { orgSlug: currentOrg.slug, data },
+        { orgSlug, data },
         {
           onSuccess: () => {
             onClose()
