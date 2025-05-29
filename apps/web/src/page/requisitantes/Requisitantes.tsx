@@ -2,23 +2,27 @@ import { Button, IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useRequisitanteQueries } from '../../hooks/queries/useRequisitanteQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { ListRequisitantesResponse } from '../../http/requisitante/list-requisitantes'
 import { useAlertStore } from '../../stores/alert-store'
-import { RequisitanteDto } from '../../types'
 import { RequisitanteModal } from './components/RequisitanteModal'
 
 const Requisitantes = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
+  const { orgSlug } = useParams()
 
   const [selectedRequisitante, setSelectedRequisitante] = useState<{
-    data: RequisitanteDto
+    data: ListRequisitantesResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -38,14 +42,13 @@ const Requisitantes = () => {
     },
   )
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
   const {
-    useGetAllPaginated: useGetRequisitantesPaginated,
+    useListPaginated: useGetRequisitantesPaginated,
     useDelete: useDeleteRequisitante,
   } = useRequisitanteQueries()
 
   const { data, isLoading } = useGetRequisitantesPaginated(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -56,38 +59,45 @@ const Requisitantes = () => {
   )
   const { mutate: deleteById } = useDeleteRequisitante()
 
-  const handleConfirmDelete = (requisitante: RequisitanteDto) => {
+  const handleConfirmDelete = (requisitante: ListRequisitantesResponse) => {
     setSelectedRequisitante({ data: requisitante, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    deleteById(id, {
-      onSuccess: () => {
-        setSelectedRequisitante(undefined)
-        setConfirmModalOpen(false)
-        enqueueSnackbar('Requisitante deletado com sucesso', {
-          variant: 'success',
-        })
+  const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    deleteById(
+      { id, orgSlug },
+      {
+        onSuccess: () => {
+          setSelectedRequisitante(undefined)
+          setConfirmModalOpen(false)
+          enqueueSnackbar('Requisitante deletado com sucesso', {
+            variant: 'success',
+          })
+        },
+        onError: (error) => {
+          console.error(error)
+          enqueueSnackbar(error.message, { variant: 'error' })
+        },
       },
-      onError: (error) => {
-        console.error(error)
-        enqueueSnackbar(error.message, { variant: 'error' })
-      },
-    })
+    )
   }
 
-  const handleEdit = (requisitante: RequisitanteDto) => {
+  const handleEdit = (requisitante: ListRequisitantesResponse) => {
     setSelectedRequisitante({ data: requisitante, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const handleCopy = (requisitante: RequisitanteDto): void => {
+  const handleCopy = (requisitante: ListRequisitantesResponse): void => {
     setSelectedRequisitante({ data: requisitante, type: 'COPY' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<RequisitanteDto>[] = [
+  const columns: GridColDef<ListRequisitantesResponse>[] = [
     { field: 'nome', headerName: 'Nome', minWidth: 120, flex: 1 },
     { field: 'fone', headerName: 'Telefone', minWidth: 120, flex: 1 },
     {
@@ -155,27 +165,31 @@ const Requisitantes = () => {
   return (
     <PageContainer title="Requisitantes" description="">
       {renderModals()}
-      <DashboardCard
-        title="Requisitantes"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setFormOpen(true)}
-          >
-            adicionar requisitante
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard
+          title="Requisitantes"
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setFormOpen(true)}
+            >
+              adicionar requisitante
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

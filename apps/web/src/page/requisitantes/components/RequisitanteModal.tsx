@@ -11,20 +11,25 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { useRequisitanteQueries } from '../../../hooks/queries/useRequisitanteQueries'
 import {
-  requisitanteCreateSchema,
-  requisitanteUpdateSchema,
-} from '../../../schemas/requisitante.schemas'
+  CreateRequisitanteDTO,
+  createRequisitanteSchema,
+} from '../../../http/requisitante/create-requisitante'
+import { ListRequisitantesResponse } from '../../../http/requisitante/list-requisitantes'
+import {
+  UpdateRequisitanteDTO,
+  updateRequisitanteSchema,
+} from '../../../http/requisitante/update-requisitante'
 import { useAlertStore } from '../../../stores/alert-store'
-import { RequisitanteDto } from '../../../types'
 
 interface RequisitanteModalProps {
   open: boolean
   onClose: () => void
   requisitante?: {
-    data: RequisitanteDto
+    data: ListRequisitantesResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }
@@ -36,10 +41,12 @@ export const RequisitanteModal = ({
 }: RequisitanteModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
+  const { orgSlug } = useParams()
+
   const schema =
     requisitante?.data && requisitante.type === 'UPDATE'
-      ? requisitanteUpdateSchema
-      : requisitanteCreateSchema
+      ? updateRequisitanteSchema
+      : createRequisitanteSchema
 
   const { useCreate: useCreateRequisitante, useUpdate: useUpdateRequisitante } =
     useRequisitanteQueries()
@@ -49,30 +56,27 @@ export const RequisitanteModal = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<RequisitanteDto>({
+  } = useForm<CreateRequisitanteDTO | UpdateRequisitanteDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: '',
+      fone: '',
     },
   })
 
   useEffect(() => {
-    console.log(requisitante)
     if (requisitante?.data && requisitante.type === 'UPDATE') {
       reset({
-        id: requisitante.data.id,
         nome: requisitante.data.nome,
         fone: requisitante.data.fone,
       })
     } else if (requisitante?.data && requisitante.type === 'COPY') {
       reset({
-        id: null as any,
         nome: requisitante.data.nome,
         fone: requisitante.data.fone,
       })
     } else {
       reset({
-        id: null as any,
         nome: '',
         fone: '',
       })
@@ -83,11 +87,14 @@ export const RequisitanteModal = ({
 
   const { mutate: updateRequisitante } = useUpdateRequisitante()
 
-  const onSubmit = (data: RequisitanteDto) => {
-    console.log(data)
+  const onSubmit = (data: CreateRequisitanteDTO | UpdateRequisitanteDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (requisitante?.data && requisitante.type === 'UPDATE') {
       updateRequisitante(
-        { id: requisitante.data.id, data },
+        { id: requisitante.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -105,21 +112,24 @@ export const RequisitanteModal = ({
         },
       )
     } else {
-      createRequisitante(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          enqueueSnackbar('Requisitante criado com sucesso', {
-            variant: 'success',
-          })
+      createRequisitante(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            enqueueSnackbar('Requisitante criado com sucesso', {
+              variant: 'success',
+            })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
   const handleClose = () => {
