@@ -26,7 +26,7 @@ export async function updateInsumo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/organizations/:orgSlug/insumos/:insumoId',
+      '/api/v1/organizations/:orgSlug/insumos/:insumoId',
       {
         schema: {
           tags: ['insumos'],

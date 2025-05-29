@@ -20,7 +20,7 @@ export async function createParceiro(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/organizations/:slug/parceiros',
+      '/api/v1/organizations/:slug/parceiros',
       {
         schema: {
           tags: ['parceiros'],

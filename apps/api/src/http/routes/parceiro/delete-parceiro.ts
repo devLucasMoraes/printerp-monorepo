@@ -13,7 +13,7 @@ export async function deleteParceiro(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/organizations/:orgSlug/parceiros/:parceiroId',
+      '/api/v1/organizations/:orgSlug/parceiros/:parceiroId',
       {
         schema: {
           tags: ['parceiros'],

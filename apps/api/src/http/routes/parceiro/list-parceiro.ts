@@ -13,7 +13,7 @@ export async function listParceiros(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/parceiros/list',
+      '/api/v1/organizations/:orgSlug/parceiros/list',
       {
         schema: {
           tags: ['parceiros'],

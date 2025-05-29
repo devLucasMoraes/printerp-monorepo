@@ -13,7 +13,7 @@ export async function deleteArmazem(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/organizations/:orgSlug/armazens/:armazemId',
+      '/api/v1/organizations/:orgSlug/armazens/:armazemId',
       {
         schema: {
           tags: ['armazens'],

@@ -19,7 +19,7 @@ export async function createSetor(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/organizations/:slug/setores',
+      '/api/v1/organizations/:slug/setores',
       {
         schema: {
           tags: ['setores'],

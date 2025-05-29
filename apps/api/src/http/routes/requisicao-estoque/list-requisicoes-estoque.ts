@@ -14,7 +14,7 @@ export async function listRequisicaoEstoques(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/requisicoes-estoque/list',
+      '/api/v1/organizations/:orgSlug/requisicoes-estoque/list',
       {
         schema: {
           tags: ['requisicoes-estoque'],

@@ -20,7 +20,7 @@ export async function updateParceiro(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/organizations/:orgSlug/parceiros/:parceiroId',
+      '/api/v1/organizations/:orgSlug/parceiros/:parceiroId',
       {
         schema: {
           tags: ['parceiros'],

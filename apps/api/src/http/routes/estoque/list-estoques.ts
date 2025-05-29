@@ -13,7 +13,7 @@ export async function listEstoques(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/estoques/list',
+      '/api/v1/organizations/:orgSlug/estoques/list',
       {
         schema: {
           tags: ['estoques'],

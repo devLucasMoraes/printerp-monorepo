@@ -13,7 +13,7 @@ export async function listArmazens(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/armazens/list',
+      '/api/v1/organizations/:orgSlug/armazens/list',
       {
         schema: {
           tags: ['armazens'],

@@ -19,7 +19,7 @@ export async function adjustEstoque(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/organizations/:orgSlug/estoques/adjust/:estoqueId',
+      '/api/v1/organizations/:orgSlug/estoques/adjust/:estoqueId',
       {
         schema: {
           tags: ['estoques'],

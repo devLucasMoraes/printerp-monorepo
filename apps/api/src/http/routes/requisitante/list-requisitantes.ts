@@ -13,7 +13,7 @@ export async function listRequisitantes(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/requisitantes/list',
+      '/api/v1/organizations/:orgSlug/requisitantes/list',
       {
         schema: {
           tags: ['requisitantes'],

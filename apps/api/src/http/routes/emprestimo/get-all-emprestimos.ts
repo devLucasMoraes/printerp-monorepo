@@ -14,7 +14,7 @@ export async function getAllEmprestimo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/organizations/:orgSlug/emprestimos',
+      '/api/v1/organizations/:orgSlug/emprestimos',
       {
         schema: {
           tags: ['emprestimos'],
