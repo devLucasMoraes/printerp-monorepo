@@ -23,7 +23,7 @@ import {
   updateArmazem,
   UpdateArmazemDTO,
 } from '../../http/armazem/update-armazem'
-import { ListCatgoriasResponse } from '../../http/categoria/list-categorias'
+import { ListCategoriasResponse } from '../../http/categoria/list-categorias'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
 export function useArmazemQueries() {
@@ -62,7 +62,7 @@ export function useArmazemQueries() {
     orgSlug: string,
     params: PageParams = {},
     queryOptions?: Omit<
-      UseQueryOptions<Page<ListCatgoriasResponse>, AxiosError<ErrorResponse>>,
+      UseQueryOptions<Page<ListCategoriasResponse>, AxiosError<ErrorResponse>>,
       'queryKey' | 'queryFn'
     >,
   ) => {

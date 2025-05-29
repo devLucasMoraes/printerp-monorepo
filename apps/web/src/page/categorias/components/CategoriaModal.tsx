@@ -19,7 +19,7 @@ import {
   CreateCategoriaDTO,
   createCategoriaSchema,
 } from '../../../http/categoria/create-categoria'
-import { ListCatgoriasResponse } from '../../../http/categoria/list-categorias'
+import { ListCategoriasResponse } from '../../../http/categoria/list-categorias'
 import {
   UpdateCategoriaDTO,
   updateCategoriaSchema,
@@ -30,7 +30,7 @@ interface CategoriaModalProps {
   open: boolean
   onClose: () => void
   categoria?: {
-    data: ListCatgoriasResponse
+    data: ListCategoriasResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }

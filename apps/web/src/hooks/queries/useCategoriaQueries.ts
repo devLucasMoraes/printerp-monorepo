@@ -23,7 +23,7 @@ import {
 } from '../../http/categoria/get-categoria'
 import {
   listCategorias,
-  ListCatgoriasResponse,
+  ListCategoriasResponse,
 } from '../../http/categoria/list-categorias'
 import {
   updateCategoria,
@@ -67,7 +67,7 @@ export function useCategoriaQueries() {
     orgSlug: string,
     params: PageParams = {},
     queryOptions?: Omit<
-      UseQueryOptions<Page<ListCatgoriasResponse>, AxiosError<ErrorResponse>>,
+      UseQueryOptions<Page<ListCategoriasResponse>, AxiosError<ErrorResponse>>,
       'queryKey' | 'queryFn'
     >,
   ) => {

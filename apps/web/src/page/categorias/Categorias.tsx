@@ -11,7 +11,7 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useCategoriaQueries } from '../../hooks/queries/useCategoriaQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { ListCatgoriasResponse } from '../../http/categoria/list-categorias'
+import { ListCategoriasResponse } from '../../http/categoria/list-categorias'
 import { useAlertStore } from '../../stores/alert-store'
 import { CategoriaModal } from './components/CategoriaModal'
 
@@ -22,7 +22,7 @@ const Categorias = () => {
   const { orgSlug } = useParams()
 
   const [selectedCategoria, setSelectedCategoria] = useState<{
-    data: ListCatgoriasResponse
+    data: ListCategoriasResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -60,7 +60,7 @@ const Categorias = () => {
   )
   const { mutate: deleteById } = useDeleteCategoria()
 
-  const handleConfirmDelete = (categoria: ListCatgoriasResponse) => {
+  const handleConfirmDelete = (categoria: ListCategoriasResponse) => {
     setSelectedCategoria({ data: categoria, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
@@ -88,17 +88,17 @@ const Categorias = () => {
     )
   }
 
-  const handleEdit = (categoria: ListCatgoriasResponse) => {
+  const handleEdit = (categoria: ListCategoriasResponse) => {
     setSelectedCategoria({ data: categoria, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const handleCopy = (categoria: ListCatgoriasResponse): void => {
+  const handleCopy = (categoria: ListCategoriasResponse): void => {
     setSelectedCategoria({ data: categoria, type: 'COPY' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<ListCatgoriasResponse>[] = [
+  const columns: GridColDef<ListCategoriasResponse>[] = [
     { field: 'nome', headerName: 'Nome', minWidth: 120, flex: 1 },
     {
       field: 'actions',
