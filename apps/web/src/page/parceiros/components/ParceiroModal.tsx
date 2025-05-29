@@ -11,20 +11,25 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { useParceiroQueries } from '../../../hooks/queries/useParceiroQueries'
 import {
-  parceiroCreateSchema,
-  parceiroUpdateSchema,
-} from '../../../schemas/parceiro.schemas'
+  CreateParceiroDTO,
+  createParceiroSchema,
+} from '../../../http/parceiro/create-parceiro'
+import { ListParceirosResponse } from '../../../http/parceiro/list-parceiros'
+import {
+  UpdateParceiroDTO,
+  updateParceiroSchema,
+} from '../../../http/parceiro/update-parceiro'
 import { useAlertStore } from '../../../stores/alert-store'
-import { ParceiroDto } from '../../../types'
 
 interface ParceiroModalProps {
   open: boolean
   onClose: () => void
   parceiro?: {
-    data: ParceiroDto
+    data: ListParceirosResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }
@@ -36,10 +41,12 @@ export const ParceiroModal = ({
 }: ParceiroModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
+  const { orgSlug } = useParams()
+
   const schema =
     parceiro?.data && parceiro.type === 'UPDATE'
-      ? parceiroUpdateSchema
-      : parceiroCreateSchema
+      ? updateParceiroSchema
+      : createParceiroSchema
 
   const { useCreate: useCreateParceiro, useUpdate: useUpdateParceiro } =
     useParceiroQueries()
@@ -49,7 +56,7 @@ export const ParceiroModal = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<ParceiroDto>({
+  } = useForm<CreateParceiroDTO | UpdateParceiroDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: '',
@@ -59,19 +66,16 @@ export const ParceiroModal = ({
   useEffect(() => {
     if (parceiro?.data && parceiro.type === 'UPDATE') {
       reset({
-        id: parceiro.data.id,
         nome: parceiro.data.nome,
         fone: parceiro.data.fone,
       })
     } else if (parceiro?.data && parceiro.type === 'COPY') {
       reset({
-        id: null as any,
         nome: parceiro.data.nome,
         fone: parceiro.data.fone,
       })
     } else {
       reset({
-        id: null as any,
         nome: '',
         fone: '',
       })
@@ -82,10 +86,14 @@ export const ParceiroModal = ({
 
   const { mutate: updateParceiro } = useUpdateParceiro()
 
-  const onSubmit = (data: ParceiroDto) => {
+  const onSubmit = (data: CreateParceiroDTO | UpdateParceiroDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (parceiro?.data && parceiro.type === 'UPDATE') {
       updateParceiro(
-        { id: parceiro.data.id, data },
+        { id: parceiro.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -103,19 +111,24 @@ export const ParceiroModal = ({
         },
       )
     } else {
-      createParceiro(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          enqueueSnackbar('Parceiro criado com sucesso', { variant: 'success' })
+      createParceiro(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            enqueueSnackbar('Parceiro criado com sucesso', {
+              variant: 'success',
+            })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
   const handleClose = () => {
@@ -174,7 +187,7 @@ export const ParceiroModal = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>
