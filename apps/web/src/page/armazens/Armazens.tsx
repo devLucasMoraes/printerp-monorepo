@@ -2,23 +2,27 @@ import { Button, IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useArmazemQueries } from '../../hooks/queries/useArmazemQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { ListArmazensResponse } from '../../http/armazem/list-armazens'
 import { useAlertStore } from '../../stores/alert-store'
-import { ArmazemDto } from '../../types'
 import { ArmazemModal } from './components/ArmazemModal'
 
 const Armazens = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { orgSlug } = useParams()
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const [selectedArmazem, setSelectedArmazem] = useState<{
-    data: ArmazemDto
+    data: ListArmazensResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -38,14 +42,13 @@ const Armazens = () => {
     },
   )
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
   const {
-    useGetAllPaginated: useGetArmazensPaginated,
+    useListPaginated: useGetArmazensPaginated,
     useDelete: useDeleteArmazem,
   } = useArmazemQueries()
 
   const { data, isLoading } = useGetArmazensPaginated(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -56,36 +59,45 @@ const Armazens = () => {
   )
   const { mutate: deleteById } = useDeleteArmazem()
 
-  const handleConfirmDelete = (armazem: ArmazemDto) => {
+  const handleConfirmDelete = (armazem: ListArmazensResponse) => {
     setSelectedArmazem({ data: armazem, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    deleteById(id, {
-      onSuccess: () => {
-        setSelectedArmazem(undefined)
-        setConfirmModalOpen(false)
-        enqueueSnackbar('Armazém deletado com sucesso', { variant: 'success' })
+  const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    deleteById(
+      { id, orgSlug },
+      {
+        onSuccess: () => {
+          setSelectedArmazem(undefined)
+          setConfirmModalOpen(false)
+          enqueueSnackbar('Armazém deletado com sucesso', {
+            variant: 'success',
+          })
+        },
+        onError: (error) => {
+          console.error(error)
+          enqueueSnackbar(error.message, { variant: 'error' })
+        },
       },
-      onError: (error) => {
-        console.error(error)
-        enqueueSnackbar(error.message, { variant: 'error' })
-      },
-    })
+    )
   }
 
-  const handleEdit = (armazem: ArmazemDto) => {
+  const handleEdit = (armazem: ListArmazensResponse) => {
     setSelectedArmazem({ data: armazem, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const handleCopy = (armazem: ArmazemDto): void => {
+  const handleCopy = (armazem: ListArmazensResponse): void => {
     setSelectedArmazem({ data: armazem, type: 'COPY' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<ArmazemDto>[] = [
+  const columns: GridColDef<ListArmazensResponse>[] = [
     { field: 'nome', headerName: 'Nome', minWidth: 120, flex: 1 },
     {
       field: 'actions',
@@ -152,27 +164,31 @@ const Armazens = () => {
   return (
     <PageContainer title="Armazéns" description="">
       {renderModals()}
-      <DashboardCard
-        title="Armazéns"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setFormOpen(true)}
-          >
-            adicionar armazém
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard
+          title="Armazéns"
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setFormOpen(true)}
+            >
+              adicionar armazém
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

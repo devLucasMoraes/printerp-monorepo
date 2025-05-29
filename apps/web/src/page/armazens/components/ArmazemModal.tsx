@@ -11,28 +11,38 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { useArmazemQueries } from '../../../hooks/queries/useArmazemQueries'
 import {
-  armazemCreateSchema,
-  armazemUpdateSchema,
-} from '../../../schemas/armazem.schema'
+  CreateArmazemDTO,
+  createArmazemSchema,
+} from '../../../http/armazem/create-armazem'
+import { ListArmazensResponse } from '../../../http/armazem/list-armazens'
+import {
+  UpdateArmazemDTO,
+  updateArmazemSchema,
+} from '../../../http/armazem/update-armazem'
 import { useAlertStore } from '../../../stores/alert-store'
-import { ArmazemDto } from '../../../types'
 
 interface ArmazemModalProps {
   open: boolean
   onClose: () => void
-  armazem?: { data: ArmazemDto; type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' }
+  armazem?: {
+    data: ListArmazensResponse
+    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+  }
 }
 
 export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
+  const { orgSlug } = useParams()
+
   const schema =
     armazem?.data && armazem.type === 'UPDATE'
-      ? armazemUpdateSchema
-      : armazemCreateSchema
+      ? updateArmazemSchema
+      : createArmazemSchema
 
   const { useCreate: useCreateArmazem, useUpdate: useUpdateArmazem } =
     useArmazemQueries()
@@ -42,7 +52,7 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<ArmazemDto>({
+  } = useForm<CreateArmazemDTO | UpdateArmazemDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: '',
@@ -52,19 +62,16 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
   useEffect(() => {
     if (armazem?.data && armazem.type === 'UPDATE') {
       reset({
-        id: armazem.data.id,
         nome: armazem.data.nome,
       })
     }
     if (armazem?.data && armazem.type === 'COPY') {
       reset({
-        id: null as any,
         nome: armazem.data.nome,
       })
     }
     if (!armazem?.data || armazem?.type === 'CREATE') {
       reset({
-        id: null as any,
         nome: '',
       })
     }
@@ -74,10 +81,14 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
 
   const { mutate: updateArmazem } = useUpdateArmazem()
 
-  const onSubmit = (data: ArmazemDto) => {
+  const onSubmit = (data: CreateArmazemDTO | UpdateArmazemDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (armazem?.data && armazem.type === 'UPDATE') {
       updateArmazem(
-        { id: armazem.data.id, data },
+        { id: armazem.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -95,19 +106,24 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
         },
       )
     } else {
-      createArmazem(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          enqueueSnackbar('Armazém criado com sucesso', { variant: 'success' })
+      createArmazem(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            enqueueSnackbar('Armazém criado com sucesso', {
+              variant: 'success',
+            })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
   const handleClose = () => {
@@ -151,7 +167,7 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>

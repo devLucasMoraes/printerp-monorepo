@@ -40,7 +40,7 @@ export const CategoriaModal = ({
   onClose,
   categoria,
 }: CategoriaModalProps) => {
-  const { enqueueSnackbar } = useAlertStore()
+  const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 

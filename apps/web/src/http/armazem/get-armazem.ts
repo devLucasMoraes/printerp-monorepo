@@ -1,6 +1,6 @@
 import { api } from '../api/axios'
 
-export interface GetCategoriaResponse {
+export interface GetArmazemResponse {
   id: string
   nome: string
   createdAt: string
@@ -11,9 +11,10 @@ export interface GetCategoriaResponse {
   updatedBy: string
   organizationId: string
 }
-export async function getCategoria(orgSlug: string, categoriaId: string) {
-  const response = await api.get<GetCategoriaResponse>(
-    `/organizations/${orgSlug}/categoria${categoriaId}`,
+
+export async function getArmazem(orgSlug: string, armazemId: string) {
+  const response = await api.get<GetArmazemResponse>(
+    `/organizations/${orgSlug}/armazens/${armazemId}`,
   )
   return response.data
 }

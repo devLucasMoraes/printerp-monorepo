@@ -1,7 +1,7 @@
 import { Page, PageParams } from '../../types'
 import { api } from '../api/axios'
 
-export interface ListCatgoriasResponse {
+export interface ListArmazensResponse {
   id: string
   nome: string
   createdAt: string
@@ -13,15 +13,20 @@ export interface ListCatgoriasResponse {
   organizationId: string
 }
 
-export async function listCategorias(
+export async function listArmazens(
   orgSlug: string,
-  { page = 0, size = 20, sort }: PageParams = {},
+  { page = 0, size = 20, sort }: PageParams,
 ) {
-  const response = await api.get<Page<ListCatgoriasResponse>>(
-    `/organizations/${orgSlug}/categorias/list`,
+  const response = await api.get<Page<ListArmazensResponse>>(
+    `/organizations/${orgSlug}/armazens/list`,
     {
-      params: { page, size, sort },
+      params: {
+        page,
+        size,
+        sort,
+      },
     },
   )
+
   return response.data
 }

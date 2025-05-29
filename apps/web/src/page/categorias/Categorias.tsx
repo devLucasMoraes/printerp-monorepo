@@ -1,10 +1,10 @@
-import { Box, Button, IconButton, Typography } from '@mui/material'
+import { Button, IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useParams } from 'react-router'
 
-import BlankCard from '../../components/cards/BlankCard'
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
@@ -188,28 +188,7 @@ const Categorias = () => {
           />
         </DashboardCard>
       ) : (
-        <BlankCard>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: 300,
-              p: 4,
-            }}
-          >
-            <Typography
-              variant="h4"
-              color="textSecondary" // Cor mais suave
-              sx={{
-                fontWeight: 500, // Peso da fonte
-                letterSpacing: 0.5, // Espaçamento entre letras
-              }}
-            >
-              Selecione uma organização
-            </Typography>
-          </Box>
-        </BlankCard>
+        <CenteredMessageCard message="Selecione uma organização" />
       )}
     </PageContainer>
   )

@@ -18,8 +18,8 @@ import {
   GetAllCategoriasResponse,
 } from '../../http/categoria/get-all-categorias'
 import {
-  GetAllCategoriaResponse,
   getCategoria,
+  GetCategoriaResponse,
 } from '../../http/categoria/get-categoria'
 import {
   listCategorias,
@@ -28,18 +28,17 @@ import {
 import {
   updateCategoria,
   UpdateCategoriaDTO,
-  UpdateCategoriaResponse,
 } from '../../http/categoria/update-categoria'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
 export function useCategoriaQueries() {
-  const resourceKey = 'categoria'
+  const resourceKey = 'categorias'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,
     orgSlug: string,
     queryOptions?: Omit<
-      UseQueryOptions<GetAllCategoriaResponse, AxiosError<ErrorResponse>>,
+      UseQueryOptions<GetCategoriaResponse, AxiosError<ErrorResponse>>,
       'queryKey' | 'queryFn'
     >,
   ) => {
@@ -107,7 +106,7 @@ export function useCategoriaQueries() {
   const useUpdate = (
     mutationOptions?: Omit<
       UseMutationOptions<
-        UpdateCategoriaResponse,
+        void,
         AxiosError<ErrorResponse>,
         { id: string; orgSlug: string; data: UpdateCategoriaDTO }
       >,

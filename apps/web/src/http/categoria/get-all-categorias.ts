@@ -5,8 +5,8 @@ export interface GetAllCategoriasResponse {
   nome: string
   createdAt: string
   updatedAt: string
-  deletedAt: string
-  deletedBy: string
+  deletedAt: string | null
+  deletedBy: string | null
   createdBy: string
   updatedBy: string
   organizationId: string
