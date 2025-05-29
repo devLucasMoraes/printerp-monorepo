@@ -1,9 +1,10 @@
-import { Button, IconButton } from '@mui/material'
+import { Box, Button, IconButton, Typography } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useParams } from 'react-router'
 
+import BlankCard from '../../components/cards/BlankCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
@@ -17,6 +18,7 @@ import { CategoriaModal } from './components/CategoriaModal'
 const Categorias = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
   const { orgSlug } = useParams()
 
   const [selectedCategoria, setSelectedCategoria] = useState<{
@@ -41,15 +43,13 @@ const Categorias = () => {
     },
   )
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
   const {
     useListPaginated: useGetCategoriasPaginated,
     useDelete: useDeleteCategoria,
   } = useCategoriaQueries()
 
   const { data, isLoading } = useGetCategoriasPaginated(
-    orgSlug,
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -66,6 +66,10 @@ const Categorias = () => {
   }
 
   const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     deleteById(
       { id, orgSlug },
       {
@@ -161,27 +165,52 @@ const Categorias = () => {
   return (
     <PageContainer title="Categorias" description="">
       {renderModals()}
-      <DashboardCard
-        title="Categorias"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setFormOpen(true)}
+      {orgSlug ? (
+        <DashboardCard
+          title="Categorias"
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setFormOpen(true)}
+            >
+              adicionar categoria
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <BlankCard>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: 300,
+              p: 4,
+            }}
           >
-            adicionar categoria
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+            <Typography
+              variant="h4"
+              color="textSecondary" // Cor mais suave
+              sx={{
+                fontWeight: 500, // Peso da fonte
+                letterSpacing: 0.5, // Espaçamento entre letras
+              }}
+            >
+              Selecione uma organização
+            </Typography>
+          </Box>
+        </BlankCard>
+      )}
     </PageContainer>
   )
 }

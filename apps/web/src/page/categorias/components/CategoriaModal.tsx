@@ -65,7 +65,6 @@ export const CategoriaModal = ({
   })
 
   useEffect(() => {
-    console.log(categoria)
     if (categoria?.data && categoria.type === 'UPDATE') {
       reset({
         nome: categoria.data.nome,
@@ -86,6 +85,10 @@ export const CategoriaModal = ({
   const { mutate: updateCategoria } = useUpdateCategoria()
 
   const onSubmit = (data: CreateCategoriaDTO | UpdateCategoriaDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (categoria?.data && categoria.type === 'UPDATE') {
       updateCategoria(
         { id: categoria.data.id, orgSlug, data },
@@ -169,7 +172,7 @@ export const CategoriaModal = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>
