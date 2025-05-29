@@ -2,23 +2,27 @@ import { Button, IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useSetorQueries } from '../../hooks/queries/useSetorQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { ListSetoresResponse } from '../../http/setor/list-setores'
 import { useAlertStore } from '../../stores/alert-store'
-import { SetorDto } from '../../types'
 import { SetorModal } from './components/SetorModal'
 
 const Setores = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
+  const { orgSlug } = useParams()
 
   const [selectedSetor, setSelectedSetor] = useState<{
-    data: SetorDto
+    data: ListSetoresResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -38,14 +42,13 @@ const Setores = () => {
     },
   )
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
   const {
-    useGetAllPaginated: useGetSetoresPaginated,
+    useListPaginated: useGetSetoresPaginated,
     useDelete: useDeleteSetor,
   } = useSetorQueries()
 
   const { data, isLoading } = useGetSetoresPaginated(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -56,36 +59,43 @@ const Setores = () => {
   )
   const { mutate: deleteById } = useDeleteSetor()
 
-  const handleConfirmDelete = (setor: SetorDto) => {
+  const handleConfirmDelete = (setor: ListSetoresResponse) => {
     setSelectedSetor({ data: setor, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    deleteById(id, {
-      onSuccess: () => {
-        setSelectedSetor(undefined)
-        setConfirmModalOpen(false)
-        enqueueSnackbar('Setor deletado com sucesso', { variant: 'success' })
+  const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    deleteById(
+      { id, orgSlug },
+      {
+        onSuccess: () => {
+          setSelectedSetor(undefined)
+          setConfirmModalOpen(false)
+          enqueueSnackbar('Setor deletado com sucesso', { variant: 'success' })
+        },
+        onError: (error) => {
+          console.error(error)
+          enqueueSnackbar(error.message, { variant: 'error' })
+        },
       },
-      onError: (error) => {
-        console.error(error)
-        enqueueSnackbar(error.message, { variant: 'error' })
-      },
-    })
+    )
   }
 
-  const handleEdit = (setor: SetorDto) => {
+  const handleEdit = (setor: ListSetoresResponse) => {
     setSelectedSetor({ data: setor, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const handleCopy = (setor: SetorDto): void => {
+  const handleCopy = (setor: ListSetoresResponse): void => {
     setSelectedSetor({ data: setor, type: 'COPY' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<SetorDto>[] = [
+  const columns: GridColDef<ListSetoresResponse>[] = [
     { field: 'nome', headerName: 'Nome', minWidth: 120, flex: 1 },
     {
       field: 'actions',
@@ -152,27 +162,31 @@ const Setores = () => {
   return (
     <PageContainer title="Setores" description="">
       {renderModals()}
-      <DashboardCard
-        title="Setores"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setFormOpen(true)}
-          >
-            adicionar setor
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard
+          title="Setores"
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setFormOpen(true)}
+            >
+              adicionar setor
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

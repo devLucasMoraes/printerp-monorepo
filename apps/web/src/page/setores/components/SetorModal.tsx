@@ -11,20 +11,25 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { useSetorQueries } from '../../../hooks/queries/useSetorQueries'
+import { ListCatgoriasResponse } from '../../../http/categoria/list-categorias'
 import {
-  setorCreateSchema,
-  setorUpdateSchema,
-} from '../../../schemas/setor.schemas'
+  CreateSetorDTO,
+  createSetorSchema,
+} from '../../../http/setor/create-setor'
+import {
+  UpdateSetorDTO,
+  updateSetorSchema,
+} from '../../../http/setor/update-setor'
 import { useAlertStore } from '../../../stores/alert-store'
-import { SetorDto } from '../../../types'
 
 interface SetorModalProps {
   open: boolean
   onClose: () => void
   setor?: {
-    data: SetorDto
+    data: ListCatgoriasResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }
@@ -32,10 +37,12 @@ interface SetorModalProps {
 export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
+  const { orgSlug } = useParams()
+
   const schema =
     setor?.data && setor.type === 'UPDATE'
-      ? setorUpdateSchema
-      : setorCreateSchema
+      ? updateSetorSchema
+      : createSetorSchema
 
   const { useCreate: useCreateSetor, useUpdate: useUpdateSetor } =
     useSetorQueries()
@@ -45,7 +52,7 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<SetorDto>({
+  } = useForm<CreateSetorDTO | UpdateSetorDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       nome: '',
@@ -55,17 +62,14 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
   useEffect(() => {
     if (setor?.data && setor.type === 'UPDATE') {
       reset({
-        id: setor.data.id,
         nome: setor.data.nome,
       })
     } else if (setor?.data && setor.type === 'COPY') {
       reset({
-        id: null as any,
         nome: setor.data.nome,
       })
     } else {
       reset({
-        id: null as any,
         nome: '',
       })
     }
@@ -75,10 +79,14 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
 
   const { mutate: updateSetor } = useUpdateSetor()
 
-  const onSubmit = (data: SetorDto) => {
+  const onSubmit = (data: CreateSetorDTO | UpdateSetorDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (setor?.data && setor.type === 'UPDATE') {
       updateSetor(
-        { id: setor.data.id, data },
+        { id: setor.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -96,19 +104,22 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
         },
       )
     } else {
-      createSetor(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          enqueueSnackbar('Setor criado com sucesso', { variant: 'success' })
+      createSetor(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            enqueueSnackbar('Setor criado com sucesso', { variant: 'success' })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
   const handleClose = () => {
@@ -150,7 +161,7 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>
