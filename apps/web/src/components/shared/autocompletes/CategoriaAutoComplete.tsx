@@ -1,12 +1,12 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { useParams } from 'react-router'
 
 import { useCategoriaQueries } from '../../../hooks/queries/useCategoriaQueries'
-import { CategoriaDto } from '../../../types'
 
 type FieldProps = {
   field: {
-    value: CategoriaDto | null
-    onChange: (value: CategoriaDto | null) => void
+    value: string | null
+    onChange: (value: string | null) => void
     onBlur: () => void
     name: string
   }
@@ -16,8 +16,9 @@ type FieldProps = {
 }
 
 export const CategoriaAutoComplete = ({ field, error }: FieldProps) => {
+  const { orgSlug } = useParams()
   const { useGetAll: useGetAllCategorias } = useCategoriaQueries()
-  const { data: categorias = [], isLoading } = useGetAllCategorias()
+  const { data: categorias = [], isLoading } = useGetAllCategorias(orgSlug)
 
   const options = [...categorias]
 
@@ -28,7 +29,7 @@ export const CategoriaAutoComplete = ({ field, error }: FieldProps) => {
       options={options}
       getOptionLabel={(option) => option.nome}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      onChange={(_, newValue) => newValue && field.onChange(newValue)}
+      onChange={(_, newValue) => newValue && field.onChange(newValue.id)}
       renderInput={(params) => (
         <TextField
           {...params}

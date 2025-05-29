@@ -16,22 +16,28 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { CategoriaAutoComplete } from '../../../components/shared/autocompletes/CategoriaAutoComplete'
 import { unidades } from '../../../constants'
+import { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import {
-  insumoCreateSchema,
-  insumoUpdateSchema,
-} from '../../../schemas/insumo.schemas'
+  CreateInsumoDTO,
+  createInsumoSchema,
+} from '../../../http/insumo/create-insumo'
+import { ListInsumosResponse } from '../../../http/insumo/list-insumos'
+import {
+  UpdateInsumoDTO,
+  updateInsumoSchema,
+} from '../../../http/insumo/update-insumo'
 import { useAlertStore } from '../../../stores/alert-store'
-import { InsumoDto } from '../../../types'
 
 interface InsumoModalProps {
   open: boolean
   onClose: () => void
   insumo?: {
-    data: InsumoDto
+    data: ListInsumosResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }
@@ -39,10 +45,12 @@ interface InsumoModalProps {
 export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
+  const { orgSlug } = useParams()
+
   const schema =
     insumo?.data && insumo.type === 'UPDATE'
-      ? insumoUpdateSchema
-      : insumoCreateSchema
+      ? updateInsumoSchema
+      : createInsumoSchema
 
   const { useCreate: useCreateInsumo, useUpdate: useUpdateInsumo } =
     useInsumoQueries()
@@ -52,48 +60,39 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<InsumoDto>({
+  } = useForm<CreateInsumoDTO | UpdateInsumoDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       descricao: '',
-      valorUntMedAuto: false,
-      valorUntMed: null as any,
-      undEstoque: null as any,
-      estoqueMinimo: null as any,
-      categoria: null as any,
+      categoriaId: '',
+      undEstoque: Unidade.KG,
     },
   })
 
   useEffect(() => {
     if (insumo?.data && insumo.type === 'UPDATE') {
       reset({
-        id: insumo.data.id,
         descricao: insumo.data.descricao,
         valorUntMedAuto: insumo.data.valorUntMedAuto,
         valorUntMed: insumo.data.valorUntMed,
         undEstoque: insumo.data.undEstoque,
         estoqueMinimo: insumo.data.estoqueMinimo,
-        categoria: insumo.data.categoria,
+        categoriaId: insumo.data.categoria.id,
       })
     } else if (insumo?.data && insumo.type === 'COPY') {
       reset({
-        id: null as any,
         descricao: insumo.data.descricao,
         valorUntMedAuto: insumo.data.valorUntMedAuto,
         valorUntMed: insumo.data.valorUntMed,
         undEstoque: insumo.data.undEstoque,
         estoqueMinimo: insumo.data.estoqueMinimo,
-        categoria: insumo.data.categoria,
+        categoriaId: insumo.data.categoria.id,
       })
     } else {
       reset({
-        id: null as any,
         descricao: '',
-        valorUntMedAuto: false,
-        valorUntMed: null as any,
-        undEstoque: null as any,
-        estoqueMinimo: null as any,
-        categoria: null as any,
+        undEstoque: Unidade.KG,
+        categoriaId: '',
       })
     }
   }, [insumo, reset])
@@ -102,10 +101,14 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
 
   const { mutate: updateInsumo } = useUpdateInsumo()
 
-  const onSubmit = (data: InsumoDto) => {
+  const onSubmit = (data: CreateInsumoDTO | UpdateInsumoDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (insumo?.data && insumo.type === 'UPDATE') {
       updateInsumo(
-        { id: insumo.data.id, data },
+        { id: insumo.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -123,19 +126,22 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
         },
       )
     } else {
-      createInsumo(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          enqueueSnackbar('Insumo criada com sucesso', { variant: 'success' })
+      createInsumo(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            enqueueSnackbar('Insumo criada com sucesso', { variant: 'success' })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
   const handleClose = () => {
@@ -263,10 +269,13 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
           </Grid2>
           <Grid2 size={12}>
             <Controller
-              name="categoria"
+              name="categoriaId"
               control={control}
               render={({ field }) => (
-                <CategoriaAutoComplete field={field} error={errors.categoria} />
+                <CategoriaAutoComplete
+                  field={field}
+                  error={errors.categoriaId}
+                />
               )}
             />
           </Grid2>
@@ -274,7 +283,7 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>
