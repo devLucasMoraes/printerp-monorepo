@@ -4,13 +4,13 @@ import { Unidade } from '../../constants/Unidade'
 import { api } from '../api/axios'
 
 export const createInsumoSchema = z.object({
-  descricao: z.string(),
+  descricao: z.string().nonempty(),
   undEstoque: z.nativeEnum(Unidade),
   valorUntMed: z.number().optional(),
   valorUntMedAuto: z.boolean().optional(),
   permiteEstoqueNegativo: z.boolean().optional(),
   estoqueMinimo: z.number().optional(),
-  categoriaId: z.string(),
+  categoriaId: z.string().uuid(),
 })
 
 export type CreateInsumoDTO = z.infer<typeof createInsumoSchema>

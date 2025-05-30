@@ -4,9 +4,9 @@ import { Unidade } from '../../constants/Unidade'
 import { api } from '../api/axios'
 
 export const updateInsumoSchema = z.object({
-  descricao: z.string(),
+  descricao: z.string().nonempty(),
   undEstoque: z.nativeEnum(Unidade),
-  categoriaId: z.string(),
+  categoriaId: z.string().uuid(),
   valorUntMed: z.number().optional(),
   valorUntMedAuto: z.boolean().optional(),
   permiteEstoqueNegativo: z.boolean().optional(),

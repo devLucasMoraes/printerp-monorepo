@@ -65,34 +65,31 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
     defaultValues: {
       descricao: '',
       categoriaId: '',
-      undEstoque: Unidade.KG,
+      undEstoque: '' as unknown as Unidade,
+      valorUntMedAuto: false,
+      valorUntMed: 0,
+      estoqueMinimo: 0,
     },
   })
 
   useEffect(() => {
-    if (insumo?.data && insumo.type === 'UPDATE') {
+    if (insumo?.data && (insumo.type === 'UPDATE' || insumo.type === 'COPY')) {
       reset({
         descricao: insumo.data.descricao,
-        valorUntMedAuto: insumo.data.valorUntMedAuto,
-        valorUntMed: insumo.data.valorUntMed,
-        undEstoque: insumo.data.undEstoque,
-        estoqueMinimo: insumo.data.estoqueMinimo,
         categoriaId: insumo.data.categoria.id,
-      })
-    } else if (insumo?.data && insumo.type === 'COPY') {
-      reset({
-        descricao: insumo.data.descricao,
-        valorUntMedAuto: insumo.data.valorUntMedAuto,
-        valorUntMed: insumo.data.valorUntMed,
         undEstoque: insumo.data.undEstoque,
+        valorUntMed: insumo.data.valorUntMed,
+        valorUntMedAuto: insumo.data.valorUntMedAuto,
         estoqueMinimo: insumo.data.estoqueMinimo,
-        categoriaId: insumo.data.categoria.id,
       })
     } else {
       reset({
         descricao: '',
-        undEstoque: Unidade.KG,
         categoriaId: '',
+        undEstoque: '' as unknown as Unidade,
+        valorUntMedAuto: false,
+        valorUntMed: 0,
+        estoqueMinimo: 0,
       })
     }
   }, [insumo, reset])

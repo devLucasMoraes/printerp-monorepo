@@ -10,9 +10,9 @@ import { getUserPermissions } from '@/utils/get-user-permissions'
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
-  descricao: z.string(),
+  descricao: z.string().nonempty(),
   undEstoque: z.nativeEnum(Unidade),
-  categoriaId: z.string(),
+  categoriaId: z.string().uuid(),
   valorUntMed: z.number().optional(),
   valorUntMedAuto: z.boolean().optional(),
   permiteEstoqueNegativo: z.boolean().optional(),
