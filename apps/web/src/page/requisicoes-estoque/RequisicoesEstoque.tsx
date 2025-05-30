@@ -3,23 +3,27 @@ import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useRequisicaoEstoqueQueries } from '../../hooks/queries/useRequisicaoEstoqueQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { ListRequisicoesEstoqueResponse } from '../../http/requisicao-estoque/list-requisicoes-estoque'
 import { useAlertStore } from '../../stores/alert-store'
-import { RequisicaoEstoqueDto } from '../../types'
 import { RequisicaoEstoqueModal } from './components/RequisicaoEstoqueModal'
 
 const RequisicoesEstoque = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
+  const { orgSlug } = useParams()
 
   const [selectedRequisicaoEstoque, setSelectedRequisicaoEstoque] = useState<{
-    data?: RequisicaoEstoqueDto
+    data?: ListRequisicoesEstoqueResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -42,14 +46,13 @@ const RequisicoesEstoque = () => {
     },
   )
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
   const {
-    useGetAllPaginated: useGetRequisicoesEstoquePaginated,
+    useListPaginated: useGetRequisicoesEstoquePaginated,
     useDelete: useDeleteRequisicaoEstoque,
   } = useRequisicaoEstoqueQueries()
 
   const { data, isLoading } = useGetRequisicoesEstoquePaginated(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -60,39 +63,48 @@ const RequisicoesEstoque = () => {
   )
   const { mutate: deleteById } = useDeleteRequisicaoEstoque()
 
-  const handleConfirmDelete = (requisicao: RequisicaoEstoqueDto) => {
+  const handleConfirmDelete = (requisicao: ListRequisicoesEstoqueResponse) => {
     setSelectedRequisicaoEstoque({ data: requisicao, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    deleteById(id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['estoque'] })
-        setSelectedRequisicaoEstoque(undefined)
-        setConfirmModalOpen(false)
-        enqueueSnackbar('Requisição deletada com sucesso', {
-          variant: 'success',
-        })
+  const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    deleteById(
+      { id, orgSlug },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['estoque'] })
+          setSelectedRequisicaoEstoque(undefined)
+          setConfirmModalOpen(false)
+          enqueueSnackbar('Requisição deletada com sucesso', {
+            variant: 'success',
+          })
+        },
+        onError: (error) => {
+          console.error(error)
+          enqueueSnackbar(error.message, { variant: 'error' })
+        },
       },
-      onError: (error) => {
-        console.error(error)
-        enqueueSnackbar(error.message, { variant: 'error' })
-      },
-    })
+    )
   }
 
-  const handleEdit = (requisicaoEstoque: RequisicaoEstoqueDto) => {
+  const handleEdit = (requisicaoEstoque: ListRequisicoesEstoqueResponse) => {
     setSelectedRequisicaoEstoque({ data: requisicaoEstoque, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const handleCopy = (requisicaoEstoque: RequisicaoEstoqueDto): void => {
+  const handleCopy = (
+    requisicaoEstoque: ListRequisicoesEstoqueResponse,
+  ): void => {
     setSelectedRequisicaoEstoque({ data: requisicaoEstoque, type: 'COPY' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<RequisicaoEstoqueDto>[] = [
+  const columns: GridColDef<ListRequisicoesEstoqueResponse>[] = [
     {
       field: 'dataRequisicao',
       headerName: 'Requerido em',
@@ -198,30 +210,37 @@ const RequisicoesEstoque = () => {
   return (
     <PageContainer title="Requisições de Estoque" description="">
       {renderModals()}
-      <DashboardCard
-        title="Requisições de Estoque"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setFormOpen(true)
-              setSelectedRequisicaoEstoque({ data: undefined, type: 'CREATE' })
-            }}
-          >
-            nova requisição
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard
+          title="Requisições de Estoque"
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setFormOpen(true)
+                setSelectedRequisicaoEstoque({
+                  data: undefined,
+                  type: 'CREATE',
+                })
+              }}
+            >
+              nova requisição
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

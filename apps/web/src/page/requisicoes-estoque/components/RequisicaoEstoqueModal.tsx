@@ -22,31 +22,26 @@ import { IconCircleMinus, IconPlus } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { ArmazemAutoComplete } from '../../../components/shared/autocompletes/ArmazemAutoComplete'
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { RequisitanteAutoComplete } from '../../../components/shared/autocompletes/RequisitanteAutoComplete'
 import { SetorAutoComplete } from '../../../components/shared/autocompletes/SetorAutoComplete'
 import { unidades } from '../../../constants'
+import { Unidade } from '../../../constants/Unidade'
 import { useRequisicaoEstoqueQueries } from '../../../hooks/queries/useRequisicaoEstoqueQueries'
 import {
-  requisicaoEstoqueCreateSchema,
-  requisicaoEstoqueUpdateSchema,
-} from '../../../schemas/requisicaoEstoque.schemas'
+  CreateRequisicaoEstoqueDTO,
+  createRequisicaoEstoqueSchema,
+} from '../../../http/requisicao-estoque/create-requisicao-estoque'
+import { ListRequisicoesEstoqueResponse } from '../../../http/requisicao-estoque/list-requisicoes-estoque'
+import {
+  UpdateRequisicaoEstoqueDTO,
+  updateRequisicaoEstoqueSchema,
+} from '../../../http/requisicao-estoque/update-requisicao-estoque'
 import { useAlertStore } from '../../../stores/alert-store'
-import { InsumoDto, RequisicaoEstoqueDto } from '../../../types'
-
-const defaultValues = {
-  id: null as any,
-  dataRequisicao: null as any,
-  ordemProducao: '',
-  obs: '',
-  setor: null as any,
-  requisitante: null as any,
-  armazem: null as any,
-  valorTotal: 0,
-  itens: [],
-}
+import { InsumoDto } from '../../../types'
 
 export const RequisicaoEstoqueModal = ({
   open,
@@ -56,11 +51,13 @@ export const RequisicaoEstoqueModal = ({
   open: boolean
   onClose: () => void
   requisicaoEstoque?: {
-    data?: RequisicaoEstoqueDto
+    data?: ListRequisicoesEstoqueResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
+
+  const { orgSlug } = useParams()
 
   const queryClient = useQueryClient()
 
@@ -69,8 +66,8 @@ export const RequisicaoEstoqueModal = ({
   const isUpdate = requisicaoEstoque?.type === 'UPDATE'
 
   const schema = isUpdate
-    ? requisicaoEstoqueUpdateSchema
-    : requisicaoEstoqueCreateSchema
+    ? updateRequisicaoEstoqueSchema
+    : createRequisicaoEstoqueSchema
 
   const {
     control,
@@ -78,9 +75,18 @@ export const RequisicaoEstoqueModal = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
-  } = useForm<RequisicaoEstoqueDto>({
+  } = useForm<CreateRequisicaoEstoqueDTO | UpdateRequisicaoEstoqueDTO>({
     resolver: zodResolver(schema),
-    defaultValues,
+    defaultValues: {
+      dataRequisicao: '',
+      valorTotal: 0,
+      ordemProducao: null,
+      obs: null,
+      armazemId: '',
+      setorId: '',
+      requisitanteId: '',
+      itens: [],
+    },
   })
 
   const { fields, prepend, remove } = useFieldArray({
@@ -107,27 +113,28 @@ export const RequisicaoEstoqueModal = ({
 
   useEffect(() => {
     if (!requisicaoEstoque?.data) {
-      reset(defaultValues)
+      reset()
       return
     }
 
-    const { data, type } = requisicaoEstoque
+    const { data } = requisicaoEstoque
 
-    const formData: RequisicaoEstoqueDto = {
-      ...data,
-      id: type === 'COPY' ? null : (data.id as any),
-      dataRequisicao: new Date(data.dataRequisicao),
-      valorTotal: Number(data.valorTotal),
+    reset({
+      dataRequisicao: data.dataRequisicao,
+      valorTotal: data.valorTotal,
+      ordemProducao: data.ordemProducao,
+      obs: data.obs,
+      armazemId: data.armazem.id,
+      setorId: data.setor.id,
+      requisitanteId: data.requisitante.id,
       itens: data.itens.map((item) => ({
-        id: type === 'COPY' ? null : (item.id as any),
+        id: item.id,
         insumo: item.insumo,
         quantidade: Number(item.quantidade),
         valorUnitario: Number(item.valorUnitario),
         unidade: item.unidade,
       })),
-    }
-
-    reset(formData)
+    })
   }, [requisicaoEstoque, reset])
 
   const { mutate: createRequisicaoEstoque } = useCreate()
@@ -135,7 +142,7 @@ export const RequisicaoEstoqueModal = ({
 
   const handleSuccess = () => {
     onClose()
-    reset(defaultValues)
+    reset()
     queryClient.invalidateQueries({ queryKey: ['estoque'] })
     enqueueSnackbar(
       `Requisição ${isUpdate ? 'atualizada' : 'criada'} com sucesso`,
@@ -143,24 +150,39 @@ export const RequisicaoEstoqueModal = ({
     )
   }
 
-  const handleError = (error: any) => {
-    console.error(error)
-    enqueueSnackbar(error.response?.data.message || error.message, {
-      variant: 'error',
-    })
-  }
-
-  const onSubmit = (data: RequisicaoEstoqueDto) => {
+  const onSubmit = (
+    data: CreateRequisicaoEstoqueDTO | UpdateRequisicaoEstoqueDTO,
+  ) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (isUpdate && requisicaoEstoque?.data) {
       updateRequisicaoEstoque(
-        { id: requisicaoEstoque.data.id, data },
-        { onSuccess: handleSuccess, onError: handleError },
+        { id: requisicaoEstoque.data.id, orgSlug, data },
+        {
+          onSuccess: handleSuccess,
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
+        },
       )
     } else {
-      createRequisicaoEstoque(data, {
-        onSuccess: handleSuccess,
-        onError: handleError,
-      })
+      createRequisicaoEstoque(
+        { orgSlug, data },
+        {
+          onSuccess: handleSuccess,
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
+        },
+      )
     }
   }
 
@@ -176,16 +198,15 @@ export const RequisicaoEstoqueModal = ({
 
   const handleAddItem = () => {
     prepend({
-      id: null as any,
       quantidade: 0,
-      unidade: null as any,
+      unidade: '' as unknown as Unidade,
       valorUnitario: 0,
       insumo: null as any,
     })
   }
 
   const handleClose = () => {
-    reset(defaultValues)
+    reset()
     onClose()
   }
 
