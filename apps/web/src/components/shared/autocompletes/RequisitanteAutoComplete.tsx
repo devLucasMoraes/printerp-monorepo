@@ -1,12 +1,12 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { useParams } from 'react-router'
 
 import { useRequisitanteQueries } from '../../../hooks/queries/useRequisitanteQueries'
-import { RequisitanteDto } from '../../../types'
 
 type FieldProps = {
   field: {
-    value: RequisitanteDto | null
-    onChange: (value: RequisitanteDto | null) => void
+    value: string | null
+    onChange: (value: string | null) => void
     onBlur: () => void
     name: string
   }
@@ -16,24 +16,32 @@ type FieldProps = {
 }
 
 export const RequisitanteAutoComplete = ({ field, error }: FieldProps) => {
+  const { orgSlug } = useParams()
   const { useGetAll: useGetAllRequisitantes } = useRequisitanteQueries()
-  const { data: requisitantes = [], isLoading } = useGetAllRequisitantes()
+  const { data: requisitantes = [], isLoading } = useGetAllRequisitantes(
+    orgSlug!,
+  )
 
-  const options = [...requisitantes]
+  const selectedRequisitante =
+    requisitantes.find((requisitante) => requisitante.id === field.value) ||
+    null
 
   return (
     <Autocomplete
-      value={field.value}
+      value={selectedRequisitante}
       id="categoria-select"
-      options={options}
+      options={requisitantes}
       getOptionLabel={(option) => option.nome}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      onChange={(_, newValue) => newValue && field.onChange(newValue)}
+      onChange={(_, newValue) => {
+        field.onChange(newValue ? newValue.id : null)
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
           error={!!error}
           helperText={error?.message}
+          onBlur={field.onBlur}
           label="Requisitante"
           slotProps={{
             input: {

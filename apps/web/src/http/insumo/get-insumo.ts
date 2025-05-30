@@ -1,3 +1,4 @@
+import { Unidade } from '../../constants/Unidade'
 import { api } from '../api/axios'
 
 export interface GetInsumoResponse {
@@ -6,7 +7,7 @@ export interface GetInsumoResponse {
   valorUntMed: number
   valorUntMedAuto: boolean
   permiteEstoqueNegativo: boolean
-  undEstoque: string
+  undEstoque: Unidade
   estoqueMinimo: number
   createdAt: string
   updatedAt: string

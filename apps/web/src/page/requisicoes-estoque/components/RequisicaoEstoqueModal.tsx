@@ -30,6 +30,7 @@ import { RequisitanteAutoComplete } from '../../../components/shared/autocomplet
 import { SetorAutoComplete } from '../../../components/shared/autocompletes/SetorAutoComplete'
 import { unidades } from '../../../constants'
 import { Unidade } from '../../../constants/Unidade'
+import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useRequisicaoEstoqueQueries } from '../../../hooks/queries/useRequisicaoEstoqueQueries'
 import {
   CreateRequisicaoEstoqueDTO,
@@ -41,7 +42,6 @@ import {
   updateRequisicaoEstoqueSchema,
 } from '../../../http/requisicao-estoque/update-requisicao-estoque'
 import { useAlertStore } from '../../../stores/alert-store'
-import { InsumoDto } from '../../../types'
 
 export const RequisicaoEstoqueModal = ({
   open,
@@ -63,6 +63,9 @@ export const RequisicaoEstoqueModal = ({
 
   const { useCreate, useUpdate } = useRequisicaoEstoqueQueries()
 
+  const { useGetAll: useGetAllInsumos } = useInsumoQueries()
+  const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
+
   const isUpdate = requisicaoEstoque?.type === 'UPDATE'
 
   const schema = isUpdate
@@ -78,7 +81,7 @@ export const RequisicaoEstoqueModal = ({
   } = useForm<CreateRequisicaoEstoqueDTO | UpdateRequisicaoEstoqueDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
-      dataRequisicao: '',
+      dataRequisicao: '' as unknown as Date,
       valorTotal: 0,
       ordemProducao: null,
       obs: null,
@@ -113,14 +116,23 @@ export const RequisicaoEstoqueModal = ({
 
   useEffect(() => {
     if (!requisicaoEstoque?.data) {
-      reset()
+      reset({
+        dataRequisicao: '' as unknown as Date,
+        valorTotal: 0,
+        ordemProducao: null,
+        obs: null,
+        armazemId: '',
+        setorId: '',
+        requisitanteId: '',
+        itens: [],
+      })
       return
     }
 
     const { data } = requisicaoEstoque
 
     reset({
-      dataRequisicao: data.dataRequisicao,
+      dataRequisicao: new Date(data.dataRequisicao),
       valorTotal: data.valorTotal,
       ordemProducao: data.ordemProducao,
       obs: data.obs,
@@ -187,13 +199,14 @@ export const RequisicaoEstoqueModal = ({
   }
 
   const handleInsumoChange = useCallback(
-    (index: number, insumo?: InsumoDto | null) => {
-      if (insumo) {
-        setValue(`itens.${index}.unidade`, insumo.undEstoque)
-        setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed))
-      }
+    (index: number, insumoId?: string | null) => {
+      const insumo = insumos.find((insumo) => insumo.id === insumoId)
+      if (!insumo) return
+
+      setValue(`itens.${index}.unidade`, insumo.undEstoque)
+      setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed))
     },
-    [setValue],
+    [insumos, setValue],
   )
 
   const handleAddItem = () => {
@@ -201,7 +214,7 @@ export const RequisicaoEstoqueModal = ({
       quantidade: 0,
       unidade: '' as unknown as Unidade,
       valorUnitario: 0,
-      insumo: null as any,
+      insumoId: '',
     })
   }
 
@@ -261,7 +274,7 @@ export const RequisicaoEstoqueModal = ({
             <Grid2 container spacing={2}>
               <Grid2 size={4}>
                 <Controller
-                  name={`itens.${index}.insumo`}
+                  name={`itens.${index}.insumoId`}
                   control={control}
                   render={({ field }) => (
                     <InsumoAutoComplete
@@ -273,7 +286,7 @@ export const RequisicaoEstoqueModal = ({
                           handleInsumoChange(index, value)
                         },
                       }}
-                      error={errors.itens?.[index]?.insumo}
+                      error={errors.itens?.[index]?.insumoId}
                     />
                   )}
                 />
@@ -421,10 +434,10 @@ export const RequisicaoEstoqueModal = ({
 
           <Grid2 size={4}>
             <Controller
-              name="armazem"
+              name="armazemId"
               control={control}
               render={({ field }) => (
-                <ArmazemAutoComplete field={field} error={errors.armazem} />
+                <ArmazemAutoComplete field={field} error={errors.armazemId} />
               )}
             />
           </Grid2>
@@ -482,22 +495,22 @@ export const RequisicaoEstoqueModal = ({
 
           <Grid2 size={4}>
             <Controller
-              name="setor"
+              name="setorId"
               control={control}
               render={({ field }) => (
-                <SetorAutoComplete field={field} error={errors.setor} />
+                <SetorAutoComplete field={field} error={errors.setorId} />
               )}
             />
           </Grid2>
 
           <Grid2 size={4}>
             <Controller
-              name="requisitante"
+              name="requisitanteId"
               control={control}
               render={({ field }) => (
                 <RequisitanteAutoComplete
                   field={field}
-                  error={errors.requisitante}
+                  error={errors.requisitanteId}
                 />
               )}
             />
@@ -533,7 +546,7 @@ export const RequisicaoEstoqueModal = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>

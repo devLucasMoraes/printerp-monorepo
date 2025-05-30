@@ -1,12 +1,12 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { useParams } from 'react-router'
 
 import { useParceiroQueries } from '../../../hooks/queries/useParceiroQueries'
-import { ParceiroDto } from '../../../types'
 
 type FieldProps = {
   field: {
-    value: ParceiroDto | null
-    onChange: (value: ParceiroDto | null) => void
+    value: string | null
+    onChange: (value: string | null) => void
     onBlur: () => void
     name: string
   }
@@ -16,24 +16,29 @@ type FieldProps = {
 }
 
 export const ParceiroAutoComplete = ({ field, error }: FieldProps) => {
+  const { orgSlug } = useParams()
   const { useGetAll: useGetAllParceiros } = useParceiroQueries()
-  const { data: parceiros = [], isLoading } = useGetAllParceiros()
+  const { data: parceiros = [], isLoading } = useGetAllParceiros(orgSlug!)
 
-  const options = [...parceiros]
+  const selectedParceiro =
+    parceiros.find((parceiro) => parceiro.id === field.value) || null
 
   return (
     <Autocomplete
-      value={field.value}
+      value={selectedParceiro}
       id="categoria-select"
-      options={options}
+      options={parceiros}
       getOptionLabel={(option) => option.nome}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      onChange={(_, newValue) => newValue && field.onChange(newValue)}
+      onChange={(_, newValue) => {
+        field.onChange(newValue ? newValue.id : null)
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
           error={!!error}
           helperText={error?.message}
+          onBlur={field.onBlur}
           label="Parceiro"
           slotProps={{
             input: {

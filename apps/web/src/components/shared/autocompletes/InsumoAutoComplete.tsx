@@ -1,13 +1,13 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { useParams } from 'react-router'
 
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
-import { InsumoDto } from '../../../types'
 
 type FieldProps = {
   size?: 'small' | 'medium'
   field: {
-    value: InsumoDto | null
-    onChange: (value: InsumoDto | null) => void
+    value: string | null
+    onChange: (value: string | null) => void
     onBlur: () => void
     name: string
   }
@@ -21,19 +21,23 @@ export const InsumoAutoComplete = ({
   error,
   size = 'medium',
 }: FieldProps) => {
+  const { orgSlug } = useParams()
   const { useGetAll: useGetAllInsumos } = useInsumoQueries()
-  const { data: insumos = [], isLoading } = useGetAllInsumos()
+  const { data: insumos = [], isLoading } = useGetAllInsumos(orgSlug!)
 
-  const options = [...insumos]
+  const selectedInsumo =
+    insumos.find((insumo) => insumo.id === field.value) || null
 
   return (
     <Autocomplete
-      value={field.value}
+      value={selectedInsumo}
       id="insumo-select"
-      options={options}
+      options={insumos}
       getOptionLabel={(option) => option.descricao}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      onChange={(_, newValue) => newValue && field.onChange(newValue)}
+      onChange={(_, newValue) => {
+        field.onChange(newValue ? newValue.id : null)
+      }}
       size={size}
       renderInput={(params) => (
         <TextField
@@ -42,6 +46,7 @@ export const InsumoAutoComplete = ({
           helperText={error?.message}
           label="Insumo"
           autoFocus
+          onBlur={field.onBlur}
           slotProps={{
             input: {
               ...params.InputProps,

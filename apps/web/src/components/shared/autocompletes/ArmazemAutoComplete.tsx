@@ -1,12 +1,12 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { useParams } from 'react-router'
 
 import { useArmazemQueries } from '../../../hooks/queries/useArmazemQueries'
-import { ArmazemDto } from '../../../types'
 
 type FieldProps = {
   field: {
-    value: ArmazemDto | null
-    onChange: (value: ArmazemDto | null) => void
+    value: string | null
+    onChange: (value: string | null) => void
     onBlur: () => void
     name: string
   }
@@ -16,24 +16,29 @@ type FieldProps = {
 }
 
 export const ArmazemAutoComplete = ({ field, error }: FieldProps) => {
+  const { orgSlug } = useParams()
   const { useGetAll: useGetAllArmazems } = useArmazemQueries()
-  const { data: armazens = [], isLoading } = useGetAllArmazems()
+  const { data: armazens = [], isLoading } = useGetAllArmazems(orgSlug!)
 
-  const options = [...armazens]
+  const selectedArmazem =
+    armazens.find((armazem) => armazem.id === field.value) || null
 
   return (
     <Autocomplete
-      value={field.value}
+      value={selectedArmazem}
       id="categoria-select"
-      options={options}
+      options={armazens}
       getOptionLabel={(option) => option.nome}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      onChange={(_, newValue) => newValue && field.onChange(newValue)}
+      onChange={(_, newValue) => {
+        field.onChange(newValue ? newValue.id : null)
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
           error={!!error}
           helperText={error?.message}
+          onBlur={field.onBlur}
           label="Armazem"
           slotProps={{
             input: {

@@ -1,12 +1,12 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import { useParams } from 'react-router'
 
 import { useSetorQueries } from '../../../hooks/queries/useSetorQueries'
-import { SetorDto } from '../../../types'
 
 type FieldProps = {
   field: {
-    value: SetorDto | null
-    onChange: (value: SetorDto | null) => void
+    value: string | null
+    onChange: (value: string | null) => void
     onBlur: () => void
     name: string
   }
@@ -16,24 +16,29 @@ type FieldProps = {
 }
 
 export const SetorAutoComplete = ({ field, error }: FieldProps) => {
+  const { orgSlug } = useParams()
   const { useGetAll: useGetAllSetores } = useSetorQueries()
-  const { data: equipamentos = [], isLoading } = useGetAllSetores()
+  const { data: setores = [], isLoading } = useGetAllSetores(orgSlug!)
 
-  const options = [...equipamentos]
+  const selectedSetor =
+    setores.find((setor) => setor.id === field.value) || null
 
   return (
     <Autocomplete
-      value={field.value}
+      value={selectedSetor}
       id="categoria-select"
-      options={options}
+      options={setores}
       getOptionLabel={(option) => option.nome}
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      onChange={(_, newValue) => newValue && field.onChange(newValue)}
+      onChange={(_, newValue) => {
+        field.onChange(newValue ? newValue.id : null)
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
           error={!!error}
           helperText={error?.message}
+          onBlur={field.onBlur}
           label="Setor"
           slotProps={{
             input: {
