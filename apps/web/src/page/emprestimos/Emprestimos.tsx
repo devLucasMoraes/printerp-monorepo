@@ -3,23 +3,27 @@ import { GridColDef } from '@mui/x-data-grid'
 import { IconEdit, IconEraser } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useEmprestimoQueries } from '../../hooks/queries/useEmprestimosQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { ListEmprestimosResponse } from '../../http/emprestimo/list-emprestimos'
 import { useAlertStore } from '../../stores/alert-store'
-import { EmprestimoDto } from '../../types'
 import { EmprestimoModal } from './components/EmprestimoModal'
 
 const Emprestimos = () => {
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
+  const { orgSlug } = useParams()
 
   const [selectedEmprestimo, setSelectedEmprestimo] = useState<{
-    data?: EmprestimoDto
+    data?: ListEmprestimosResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -42,14 +46,13 @@ const Emprestimos = () => {
     },
   )
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
   const {
-    useGetAllPaginated: useGetEmprestimos,
+    useListPaginated: useGetEmprestimos,
     useDelete: useDeleteEmprestimo,
   } = useEmprestimoQueries()
 
   const { data, isLoading } = useGetEmprestimos(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -61,29 +64,36 @@ const Emprestimos = () => {
 
   const { mutate: deleteById } = useDeleteEmprestimo()
 
-  const handleConfirmDelete = (emprestimo: EmprestimoDto) => {
+  const handleConfirmDelete = (emprestimo: ListEmprestimosResponse) => {
     setSelectedEmprestimo({ data: emprestimo, type: 'DELETE' })
     setConfirmModalOpen(true)
   }
 
-  const handleDelete = (id: number) => {
-    deleteById(id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['emprestimo'] })
-        setSelectedEmprestimo(undefined)
-        setConfirmModalOpen(false)
-        enqueueSnackbar('Empréstimo excluído com sucesso!', {
-          variant: 'success',
-        })
+  const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    deleteById(
+      { id, orgSlug },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['emprestimo'] })
+          setSelectedEmprestimo(undefined)
+          setConfirmModalOpen(false)
+          enqueueSnackbar('Empréstimo excluído com sucesso!', {
+            variant: 'success',
+          })
+        },
+        onError: (error) => {
+          console.error(error)
+          enqueueSnackbar(error.message, { variant: 'error' })
+        },
       },
-      onError: (error) => {
-        console.error(error)
-        enqueueSnackbar(error.message, { variant: 'error' })
-      },
-    })
+    )
   }
 
-  const handleEdit = (emprestimo: EmprestimoDto) => {
+  const handleEdit = (emprestimo: ListEmprestimosResponse) => {
     setSelectedEmprestimo({ data: emprestimo, type: 'UPDATE' })
     setFormOpen(true)
   }
@@ -91,11 +101,12 @@ const Emprestimos = () => {
   const handleCreate = () => {
     setSelectedEmprestimo({
       type: 'CREATE',
+      data: undefined,
     })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<EmprestimoDto>[] = [
+  const columns: GridColDef<ListEmprestimosResponse>[] = [
     {
       field: 'dataEmprestimo',
       headerName: 'Emprestado em',
@@ -189,23 +200,27 @@ const Emprestimos = () => {
   return (
     <PageContainer title="Empréstimos" description="">
       {renderModals()}
-      <DashboardCard
-        title="Empréstimos"
-        action={
-          <Button variant="contained" color="primary" onClick={handleCreate}>
-            Novo empréstimo
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard
+          title="Empréstimos"
+          action={
+            <Button variant="contained" color="primary" onClick={handleCreate}>
+              Novo empréstimo
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

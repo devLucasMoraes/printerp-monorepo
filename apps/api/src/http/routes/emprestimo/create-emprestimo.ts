@@ -16,14 +16,14 @@ const bodySchema = z.object({
   tipo: z.enum(['ENTRADA', 'SAIDA']),
   status: z.enum(['EM_ABERTO', 'FECHADO']),
   obs: z.string().nullable(),
-  parceiroId: z.string(),
-  armazemId: z.string(),
+  parceiroId: z.string().uuid(),
+  armazemId: z.string().uuid(),
   itens: z.array(
     z.object({
       quantidade: z.number().nonnegative(),
       unidade: z.nativeEnum(Unidade),
       valorUnitario: z.number().nonnegative(),
-      insumoId: z.string(),
+      insumoId: z.string().uuid(),
     }),
   ),
 })

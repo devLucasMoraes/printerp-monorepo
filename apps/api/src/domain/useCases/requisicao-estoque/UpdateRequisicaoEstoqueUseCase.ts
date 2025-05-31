@@ -188,20 +188,8 @@ async function updateRequisicao(
     armazem: {
       id: dto.armazemId,
     },
+    updatedBy: membership.user.id,
     itens: dto.itens.map((itemDTO) => {
-      if (itemDTO.id === null) {
-        return {
-          insumo: {
-            id: itemDTO.insumoId,
-          },
-          quantidade: itemDTO.quantidade,
-          unidade: itemDTO.unidade,
-          valorUnitario: itemDTO.valorUnitario,
-          createdBy: membership.user.id,
-          updatedBy: membership.user.id,
-          organizationId: membership.organization.id,
-        }
-      }
       return {
         id: itemDTO.id || undefined,
         insumo: {
@@ -210,10 +198,11 @@ async function updateRequisicao(
         quantidade: itemDTO.quantidade,
         unidade: itemDTO.unidade,
         valorUnitario: itemDTO.valorUnitario,
+        createdBy: !itemDTO.id ? membership.user.id : undefined,
         updatedBy: membership.user.id,
+        organizationId: requisicaoToUpdate.organizationId,
       }
     }),
-    updatedBy: membership.user.id,
   })
 
   const updatedRequisicaoEstoque = repository.requisicaoEstoque.merge(

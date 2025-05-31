@@ -17,10 +17,13 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { IconCircleMinus, IconPlus } from '@tabler/icons-react'
 import { useCallback } from 'react'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { unidades } from '../../../constants'
-import { EmprestimoDto, InsumoDto } from '../../../types'
+import { Unidade } from '../../../constants/Unidade'
+import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
+import { UpdateEmprestimoDTO } from '../../../http/emprestimo/update-emprestimo'
 
 export const DevolucaoModal = ({
   open,
@@ -31,7 +34,12 @@ export const DevolucaoModal = ({
   onClose: () => void
   itemIndex: number
 }) => {
-  const { control, setValue } = useFormContext<EmprestimoDto>()
+  const { orgSlug } = useParams()
+
+  const { useGetAll: useGetAllInsumos } = useInsumoQueries()
+  const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
+
+  const { control, setValue } = useFormContext<UpdateEmprestimoDTO>()
 
   const { fields, prepend, remove } = useFieldArray({
     control,
@@ -40,29 +48,30 @@ export const DevolucaoModal = ({
 
   const handleAddItem = () => {
     prepend({
-      id: null as any,
-      quantidade: null as any,
-      unidade: null as any,
+      id: null,
+      quantidade: 0,
+      unidade: '' as unknown as Unidade,
       valorUnitario: 0,
-      insumo: null as any,
-      dataDevolucao: null as any,
+      insumoId: '',
+      dataDevolucao: '' as unknown as Date,
     })
   }
 
   const handleInsumoChange = useCallback(
-    (index: number, insumo?: InsumoDto | null) => {
-      if (insumo) {
-        setValue(
-          `itens.${itemIndex}.devolucaoItens.${index}.valorUnitario`,
-          Number(insumo.valorUntMed),
-        )
-        setValue(
-          `itens.${itemIndex}.devolucaoItens.${index}.unidade`,
-          insumo.undEstoque,
-        )
-      }
+    (index: number, insumoId?: string | null) => {
+      const insumo = insumos.find((insumo) => insumo.id === insumoId)
+      if (!insumo) return
+
+      setValue(
+        `itens.${itemIndex}.devolucaoItens.${index}.valorUnitario`,
+        Number(insumo.valorUntMed),
+      )
+      setValue(
+        `itens.${itemIndex}.devolucaoItens.${index}.unidade`,
+        insumo.undEstoque,
+      )
     },
-    [itemIndex],
+    [insumos, itemIndex, setValue],
   )
 
   return (
@@ -138,7 +147,7 @@ export const DevolucaoModal = ({
                         <Grid2 container spacing={2}>
                           <Grid2 size={3}>
                             <Controller
-                              name={`itens.${itemIndex}.devolucaoItens.${index}.insumo`}
+                              name={`itens.${itemIndex}.devolucaoItens.${index}.insumoId`}
                               control={control}
                               render={({ field, formState: { errors } }) => (
                                 <InsumoAutoComplete
@@ -153,7 +162,7 @@ export const DevolucaoModal = ({
                                   error={
                                     errors.itens?.[itemIndex]?.devolucaoItens?.[
                                       index
-                                    ]?.insumo
+                                    ]?.insumoId
                                   }
                                 />
                               )}

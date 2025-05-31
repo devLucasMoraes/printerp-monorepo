@@ -18,6 +18,11 @@ export const deleteRequisicaoEstoqueUseCase = {
         )
 
         await reverterMovimentacoes(requisicaoToDelete, membership, manager)
+
+        await manager.update(RequisicaoEstoque, requisicaoToDelete.id, {
+          deletedBy: membership.user.id,
+        })
+
         await manager.softRemove(RequisicaoEstoque, requisicaoToDelete)
       },
     )

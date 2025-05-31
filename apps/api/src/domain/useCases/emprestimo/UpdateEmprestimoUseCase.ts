@@ -3,7 +3,7 @@ import { EntityManager } from 'typeorm'
 import { Member } from '@/domain/entities/Member'
 import { repository } from '@/domain/repositories'
 import { BadRequestError } from '@/http/_errors/bad-request-error'
-import { UpdateEmprestimoDTO } from '@/http/routes/emprestimo/update-requisicao-estoque'
+import { UpdateEmprestimoDTO } from '@/http/routes/emprestimo/update-emprestimo'
 
 import { Armazem } from '../../entities/Armazem'
 import { Emprestimo } from '../../entities/Emprestimo'
@@ -29,6 +29,7 @@ export const updateEmprestimoUseCase = {
       const emprestimoAtualizada = await updateEmprestimo(
         emprestimoToUpdate,
         dto,
+        membership,
         manager,
       )
       await processarNovasMovimentacoes(
@@ -218,6 +219,7 @@ async function reverterMovimentacoes(
 async function updateEmprestimo(
   emprestimoToUpdate: Emprestimo,
   dto: UpdateEmprestimoDTO,
+  membership: Member,
   manager: EntityManager,
 ): Promise<Emprestimo> {
   const emprestimoDto = repository.emprestimo.create({
@@ -229,6 +231,7 @@ async function updateEmprestimo(
     parceiro: { id: dto.parceiroId },
     armazem: { id: dto.armazemId },
     obs: dto.obs,
+    updatedBy: membership.user.id,
     itens: dto.itens.map((itemDTO) => {
       return {
         id: itemDTO.id || undefined,
@@ -236,6 +239,9 @@ async function updateEmprestimo(
         quantidade: itemDTO.quantidade,
         unidade: itemDTO.unidade,
         valorUnitario: itemDTO.valorUnitario,
+        createdBy: !itemDTO.id ? membership.user.id : undefined,
+        updatedBy: membership.user.id,
+        organizationId: emprestimoToUpdate.organizationId,
         devolucaoItens: itemDTO.devolucaoItens.map((devolucaoItem) => {
           return {
             id: devolucaoItem.id || undefined,
@@ -244,16 +250,17 @@ async function updateEmprestimo(
             unidade: devolucaoItem.unidade,
             valorUnitario: devolucaoItem.valorUnitario,
             dataDevolucao: devolucaoItem.dataDevolucao,
+            createdBy: !devolucaoItem.id ? membership.user.id : undefined,
+            updatedBy: membership.user.id,
+            organizationId: emprestimoToUpdate.organizationId,
           }
         }),
       }
     }),
   })
 
-  const { ...emprestimoWithoutRelations } = emprestimoToUpdate
-
   const updatedEmprestimo = repository.emprestimo.merge(
-    emprestimoWithoutRelations as Emprestimo,
+    { id: emprestimoToUpdate.id } as Emprestimo,
     emprestimoDto,
   )
 

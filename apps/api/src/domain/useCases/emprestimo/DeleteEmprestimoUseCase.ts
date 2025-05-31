@@ -18,6 +18,11 @@ export const deleteEmprestimoUseCase = {
       )
 
       await reverterMovimentacoes(emprestimoToDelete, membership, manager)
+
+      await manager.update(Emprestimo, emprestimoToDelete.id, {
+        deletedBy: membership.user.id,
+      })
+
       await manager.softRemove(Emprestimo, emprestimoToDelete)
     })
   },

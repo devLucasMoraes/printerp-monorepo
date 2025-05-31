@@ -9,7 +9,7 @@ import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
-export async function getAllEmprestimo(app: FastifyInstance) {
+export async function getAllEmprestimos(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)

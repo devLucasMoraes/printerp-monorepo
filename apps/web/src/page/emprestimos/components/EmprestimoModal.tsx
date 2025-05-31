@@ -33,18 +33,22 @@ import {
   useForm,
   useWatch,
 } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { ArmazemAutoComplete } from '../../../components/shared/autocompletes/ArmazemAutoComplete'
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { ParceiroAutoComplete } from '../../../components/shared/autocompletes/ParceiroAutoComplete'
 import { unidades } from '../../../constants'
+import { Unidade } from '../../../constants/Unidade'
 import { useEmprestimoQueries } from '../../../hooks/queries/useEmprestimosQueries'
+import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
+import { createEmprestimoSchema } from '../../../http/emprestimo/create-emprestimo'
+import { ListEmprestimosResponse } from '../../../http/emprestimo/list-emprestimos'
 import {
-  emprestimoCreateSchema,
-  emprestimoUpdateSchema,
-} from '../../../schemas/emprestimo.schema'
+  UpdateEmprestimoDTO,
+  updateEmprestimoSchema,
+} from '../../../http/emprestimo/update-emprestimo'
 import { useAlertStore } from '../../../stores/alert-store'
-import { EmprestimoDto, InsumoDto } from '../../../types'
 import { DevolucaoModal } from './DevolucaoModal'
 
 export const EmprestimoModal = ({
@@ -55,7 +59,7 @@ export const EmprestimoModal = ({
   open: boolean
   onClose: () => void
   emprestimo?: {
-    data?: EmprestimoDto
+    data?: ListEmprestimosResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }) => {
@@ -64,27 +68,31 @@ export const EmprestimoModal = ({
 
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
+  const { orgSlug } = useParams()
+
+  const { useGetAll: useGetAllInsumos } = useInsumoQueries()
+  const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
+
   const queryClient = useQueryClient()
 
   const schema =
     emprestimo?.data && emprestimo.type === 'UPDATE'
-      ? emprestimoUpdateSchema
-      : emprestimoCreateSchema
+      ? updateEmprestimoSchema
+      : createEmprestimoSchema
 
   const { useCreate: useCreateEmprestimo, useUpdate: useUpdateEmprestimo } =
     useEmprestimoQueries()
 
-  const methods = useForm<EmprestimoDto>({
+  const methods = useForm<UpdateEmprestimoDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
-      id: null as any,
-      dataEmprestimo: null as any,
-      previsaoDevolucao: null as any,
+      dataEmprestimo: '' as unknown as Date,
+      previsaoDevolucao: null,
       custoEstimado: 0,
-      tipo: null as any,
+      tipo: '' as unknown as 'ENTRADA' | 'SAIDA',
       status: 'EM_ABERTO',
-      parceiro: null as any,
-      armazem: null as any,
+      parceiroId: '',
+      armazemId: '',
       obs: null,
       itens: [],
     },
@@ -119,91 +127,68 @@ export const EmprestimoModal = ({
       }, 0) || 0
 
     setValue('custoEstimado', Number(total.toFixed(2)))
-  }, [items])
+  }, [items, setValue])
 
   useEffect(() => {
-    if (emprestimo?.data && emprestimo.type === 'UPDATE') {
+    if (!emprestimo?.data) {
       reset({
-        id: emprestimo.data.id,
-        dataEmprestimo: new Date(emprestimo.data.dataEmprestimo),
-        previsaoDevolucao: emprestimo.data.previsaoDevolucao
-          ? new Date(emprestimo.data.previsaoDevolucao)
-          : null,
-        custoEstimado: Number(emprestimo.data.custoEstimado),
-        tipo: emprestimo.data.tipo,
-        status: emprestimo.data.status,
-        parceiro: emprestimo.data.parceiro,
-        armazem: emprestimo.data.armazem,
-        obs: emprestimo.data.obs,
-        itens: emprestimo.data.itens.map((item) => ({
-          id: item.id,
-          insumo: item.insumo,
-          quantidade: Number(item.quantidade),
-          valorUnitario: Number(item.valorUnitario),
-          unidade: item.unidade,
-          devolucaoItens: item.devolucaoItens.map((devolucaoItem) => ({
-            id: devolucaoItem.id,
-            insumo: devolucaoItem.insumo,
-            quantidade: Number(devolucaoItem.quantidade),
-            valorUnitario: Number(devolucaoItem.valorUnitario),
-            unidade: devolucaoItem.unidade,
-            dataDevolucao: new Date(devolucaoItem.dataDevolucao),
-          })),
-        })),
-      })
-    } else if (emprestimo?.data && emprestimo.type === 'COPY') {
-      reset({
-        id: emprestimo.data.id,
-        dataEmprestimo: new Date(emprestimo.data.dataEmprestimo),
-        previsaoDevolucao: emprestimo.data.previsaoDevolucao
-          ? new Date(emprestimo.data.previsaoDevolucao)
-          : null,
-        custoEstimado: Number(emprestimo.data.custoEstimado),
-        tipo: emprestimo.data.tipo,
-        status: 'EM_ABERTO',
-        parceiro: emprestimo.data.parceiro,
-        armazem: emprestimo.data.armazem,
-        obs: emprestimo.data.obs,
-        itens: emprestimo.data.itens.map((item) => ({
-          id: item.id,
-          insumo: item.insumo,
-          quantidade: Number(item.quantidade),
-          valorUnitario: Number(item.valorUnitario),
-          unidade: item.unidade,
-          devolucaoItens: item.devolucaoItens.map((devolucaoItem) => ({
-            id: devolucaoItem.id,
-            insumo: devolucaoItem.insumo,
-            quantidade: Number(devolucaoItem.quantidade),
-            valorUnitario: Number(devolucaoItem.valorUnitario),
-            unidade: devolucaoItem.unidade,
-            dataDevolucao: new Date(devolucaoItem.dataDevolucao),
-          })),
-        })),
-      })
-    } else {
-      reset({
-        id: null as any,
-        dataEmprestimo: null as any,
-        previsaoDevolucao: null as any,
+        dataEmprestimo: '' as unknown as Date,
+        previsaoDevolucao: null,
         custoEstimado: 0,
-        tipo: null as any,
+        tipo: '' as unknown as 'ENTRADA' | 'SAIDA',
         status: 'EM_ABERTO',
-        parceiro: null as any,
-        armazem: null as any,
+        parceiroId: '',
+        armazemId: '',
         obs: null,
         itens: [],
       })
+      return
     }
-  }, [emprestimo])
+
+    const { data } = emprestimo
+
+    reset({
+      dataEmprestimo: new Date(data.dataEmprestimo),
+      previsaoDevolucao: data.previsaoDevolucao
+        ? new Date(data.previsaoDevolucao)
+        : null,
+      custoEstimado: Number(data.custoEstimado),
+      tipo: data.tipo,
+      status: data.status,
+      parceiroId: data.parceiro.id,
+      armazemId: data.armazem.id,
+      obs: data.obs,
+      itens: data.itens.map((item) => ({
+        id: item.id,
+        insumoId: item.insumo.id,
+        quantidade: Number(item.quantidade),
+        valorUnitario: Number(item.valorUnitario),
+        unidade: item.unidade,
+        devolucaoItens: item.devolucaoItens.map((devolucaoItem) => ({
+          id: devolucaoItem.id,
+          insumoId: devolucaoItem.insumo.id,
+          quantidade: Number(devolucaoItem.quantidade),
+          valorUnitario: Number(devolucaoItem.valorUnitario),
+          unidade: devolucaoItem.unidade,
+          dataDevolucao: new Date(devolucaoItem.dataDevolucao),
+        })),
+      })),
+    })
+  }, [emprestimo, reset])
 
   const { mutate: createEmprestimo } = useCreateEmprestimo()
   const { mutate: updateEmprestimo } = useUpdateEmprestimo()
 
-  const onSubmit = (data: EmprestimoDto) => {
+  const onSubmit = (data: UpdateEmprestimoDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (emprestimo?.data && emprestimo?.type === 'UPDATE') {
       updateEmprestimo(
         {
           id: emprestimo.data.id,
+          orgSlug,
           data,
         },
         {
@@ -226,42 +211,46 @@ export const EmprestimoModal = ({
     }
 
     if (emprestimo?.type === 'CREATE') {
-      createEmprestimo(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
-          enqueueSnackbar('Emprestimo criado com sucesso', {
-            variant: 'success',
-          })
+      createEmprestimo(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
+            enqueueSnackbar('Emprestimo criado com sucesso', {
+              variant: 'success',
+            })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
 
   const handleInsumoChange = useCallback(
-    (index: number, insumo?: InsumoDto | null) => {
-      if (insumo) {
-        setValue(`itens.${index}.unidade`, insumo.undEstoque)
-        setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed))
-      }
+    (index: number, insumoId?: string | null) => {
+      const insumo = insumos.find((insumo) => insumo.id === insumoId)
+      if (!insumo) return
+
+      setValue(`itens.${index}.unidade`, insumo.undEstoque)
+      setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed))
     },
-    [setValue],
+    [insumos, setValue],
   )
 
   const handleAddItem = () => {
     prepend({
-      id: null as any,
+      id: null,
       quantidade: 0,
-      unidade: null as any,
+      unidade: '' as unknown as Unidade,
       valorUnitario: 0,
-      insumo: null as any,
+      insumoId: '',
       devolucaoItens: [],
     })
   }
@@ -419,20 +408,23 @@ export const EmprestimoModal = ({
 
             <Grid2 size={4}>
               <Controller
-                name="armazem"
+                name="armazemId"
                 control={control}
                 render={({ field }) => (
-                  <ArmazemAutoComplete field={field} error={errors.armazem} />
+                  <ArmazemAutoComplete field={field} error={errors.armazemId} />
                 )}
               />
             </Grid2>
 
             <Grid2 size={4}>
               <Controller
-                name="parceiro"
+                name="parceiroId"
                 control={control}
                 render={({ field }) => (
-                  <ParceiroAutoComplete field={field} error={errors.parceiro} />
+                  <ParceiroAutoComplete
+                    field={field}
+                    error={errors.parceiroId}
+                  />
                 )}
               />
             </Grid2>
@@ -522,7 +514,7 @@ export const EmprestimoModal = ({
                           <Grid2 container spacing={2}>
                             <Grid2 size={4}>
                               <Controller
-                                name={`itens.${index}.insumo`}
+                                name={`itens.${index}.insumoId`}
                                 control={control}
                                 render={({ field }) => (
                                   <InsumoAutoComplete
@@ -534,7 +526,7 @@ export const EmprestimoModal = ({
                                         handleInsumoChange(index, value)
                                       },
                                     }}
-                                    error={errors.itens?.[index]?.insumo}
+                                    error={errors.itens?.[index]?.insumoId}
                                   />
                                 )}
                               />
@@ -672,7 +664,7 @@ export const EmprestimoModal = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancelar</Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
+          <Button type="submit" variant="contained" loading={isSubmitting}>
             {isSubmitting ? 'Salvando...' : 'Salvar'}
           </Button>
         </DialogActions>

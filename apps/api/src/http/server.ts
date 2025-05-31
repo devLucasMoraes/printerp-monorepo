@@ -36,10 +36,10 @@ import { listCategorias } from './routes/categoria/list-categorias'
 import { updateCategoria } from './routes/categoria/update-categoria'
 import { createEmprestimo } from './routes/emprestimo/create-emprestimo'
 import { deleteEmprestimo } from './routes/emprestimo/delete-emprestimo'
-import { getAllEmprestimo } from './routes/emprestimo/get-all-emprestimos'
+import { getAllEmprestimos } from './routes/emprestimo/get-all-emprestimos'
 import { getEmprestimo } from './routes/emprestimo/get-emprestimo'
 import { listEmprestimos } from './routes/emprestimo/list-emprestimos'
-import { updateEmprestimo } from './routes/emprestimo/update-requisicao-estoque'
+import { updateEmprestimo } from './routes/emprestimo/update-emprestimo'
 import { adjustEstoque } from './routes/estoque/adjust-estoque'
 import { listEstoques } from './routes/estoque/list-estoques'
 import { createInsumo } from './routes/insumo/create-insumo'
@@ -205,7 +205,7 @@ app.register(updateRequisicaoEstoque)
 
 app.register(createEmprestimo)
 app.register(deleteEmprestimo)
-app.register(getAllEmprestimo)
+app.register(getAllEmprestimos)
 app.register(getEmprestimo)
 app.register(listEmprestimos)
 app.register(updateEmprestimo)
