@@ -2,19 +2,23 @@ import { IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconTool } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useEstoqueQueries } from '../../hooks/queries/useEstoqueQueries'
 import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
-import { EstoqueDto } from '../../types'
+import { ListEstoquesResponse } from '../../http/estoque/list-estoques'
 import { EstoqueModal } from './components/EstoqueModal'
 
 const Estoques = () => {
   const [formOpen, setFormOpen] = useState(false)
+
+  const { orgSlug } = useParams()
   const [selectedEstoque, setSelectedEstoque] = useState<{
-    data: EstoqueDto
+    data: ListEstoquesResponse
     type: 'UPDATE' | 'COPY' | 'CREATE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -24,9 +28,10 @@ const Estoques = () => {
 
   const isSocketConnected = useEntityChangeSocket('estoque')
 
-  const { useGetAllPaginated: useGetEstoquesPaginated } = useEstoqueQueries()
+  const { useListPaginated: useGetEstoquesPaginated } = useEstoqueQueries()
 
   const { data, isLoading } = useGetEstoquesPaginated(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -36,12 +41,12 @@ const Estoques = () => {
     },
   )
 
-  const handleEdit = (estoque: EstoqueDto) => {
+  const handleEdit = (estoque: ListEstoquesResponse) => {
     setSelectedEstoque({ data: estoque, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<EstoqueDto>[] = [
+  const columns: GridColDef<ListEstoquesResponse>[] = [
     {
       field: 'insumo',
       headerName: 'Insumo',
@@ -109,16 +114,20 @@ const Estoques = () => {
   return (
     <PageContainer title="Estoques" description="">
       {renderModals()}
-      <DashboardCard title="Estoques">
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard title="Estoques">
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

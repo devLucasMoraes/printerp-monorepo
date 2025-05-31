@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { Unidade } from '@/domain/entities/Unidade'
 import { listEstoqueUseCase } from '@/domain/useCases/estoque/ListEstoqueUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
@@ -51,6 +52,7 @@ export async function listEstoques(app: FastifyInstance) {
                   insumo: z.object({
                     id: z.string().uuid(),
                     descricao: z.string(),
+                    undEstoque: z.nativeEnum(Unidade),
                   }),
                 }),
               ),

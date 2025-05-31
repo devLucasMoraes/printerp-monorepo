@@ -7,17 +7,24 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
-import { estoqueService } from '../../http/EstoqueService'
-import { AdjustEstoqueDTO } from '../../schemas/estoque.schema'
-import { ErrorResponse, EstoqueDto, Page, PageParams } from '../../types'
+import {
+  adjustEstoque,
+  AdjustEstoqueDTO,
+} from '../../http/estoque/adjust-estoque'
+import {
+  listEstoques,
+  ListEstoquesResponse,
+} from '../../http/estoque/list-estoques'
+import { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = 'estoque'
 export function useEstoqueQueries() {
   const queryClient = useQueryClient()
-  const useGetAllPaginated = (
+  const useListPaginated = (
+    orgSlug: string,
     params: PageParams = {},
     queryOptions?: Omit<
-      UseQueryOptions<Page<EstoqueDto>, AxiosError<ErrorResponse>>,
+      UseQueryOptions<Page<ListEstoquesResponse>, AxiosError<ErrorResponse>>,
       'queryKey' | 'queryFn'
     >,
   ) => {
@@ -25,25 +32,24 @@ export function useEstoqueQueries() {
 
     return useQuery({
       ...queryOptions,
-      queryKey: [resourceKey, 'paginated', page, size, sort, filters],
-      queryFn: () =>
-        estoqueService.getAllPaginated({ page, size, sort, filters }),
+      queryKey: [resourceKey, orgSlug, 'paginated', page, size, sort, filters],
+      queryFn: () => listEstoques(orgSlug, { page, size, sort, filters }),
     })
   }
 
   const useAdjustEstoque = (
     mutationOptions?: Omit<
       UseMutationOptions<
-        EstoqueDto,
+        void,
         AxiosError<ErrorResponse>,
-        { id: number; data: AdjustEstoqueDTO }
+        { id: string; orgSlug: string; data: AdjustEstoqueDTO }
       >,
       'mutationFn'
     >,
   ) => {
     return useMutation({
       ...mutationOptions,
-      mutationFn: ({ id, data }) => estoqueService.adjust(id, data),
+      mutationFn: ({ id, orgSlug, data }) => adjustEstoque(id, orgSlug, data),
       onSuccess: (data, variables, context) => {
         queryClient.invalidateQueries({ queryKey: [resourceKey] })
 
@@ -56,7 +62,7 @@ export function useEstoqueQueries() {
   }
 
   return {
-    useGetAllPaginated,
+    useListPaginated,
     useAdjustEstoque,
   }
 }

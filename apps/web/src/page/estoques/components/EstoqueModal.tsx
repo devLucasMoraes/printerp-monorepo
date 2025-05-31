@@ -12,23 +12,29 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
 import { useEstoqueQueries } from '../../../hooks/queries/useEstoqueQueries'
-import { adjustEstoqueSchema } from '../../../schemas/estoque.schema'
+import {
+  AdjustEstoqueDTO,
+  adjustEstoqueSchema,
+} from '../../../http/estoque/adjust-estoque'
+import { ListEstoquesResponse } from '../../../http/estoque/list-estoques'
 import { useAlertStore } from '../../../stores/alert-store'
-import { EstoqueDto } from '../../../types'
 
 interface EstoqueModalProps {
   open: boolean
   onClose: () => void
   estoque?: {
-    data: EstoqueDto
+    data: ListEstoquesResponse
     type: 'UPDATE' | 'COPY' | 'CREATE'
   }
 }
 
 export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
+
+  const { orgSlug } = useParams()
 
   const { useAdjustEstoque } = useEstoqueQueries()
 
@@ -37,12 +43,9 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<EstoqueDto>({
+  } = useForm<AdjustEstoqueDTO>({
     resolver: zodResolver(adjustEstoqueSchema),
     defaultValues: {
-      id: null as any,
-      armazem: null as any,
-      insumo: null as any,
       quantidade: 0,
     },
   })
@@ -52,19 +55,20 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
       return
     }
     reset({
-      id: estoque.data.id,
-      armazem: estoque.data.armazem,
-      insumo: estoque.data.insumo,
       quantidade: estoque.data.quantidade,
     })
   }, [estoque, reset])
 
   const { mutate: adjustEstoque } = useAdjustEstoque()
 
-  const onSubmit = (data: EstoqueDto) => {
+  const onSubmit = (data: AdjustEstoqueDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
     if (estoque?.data && estoque.type === 'UPDATE') {
       adjustEstoque(
-        { id: estoque.data.id, data },
+        { id: estoque.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -98,7 +102,7 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
       <DialogTitle>Ajuste de estoque</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {`Informe a quantidade real do insumo: ${estoque?.data?.insumo?.descricao}, no armazém: ${estoque?.data?.armazem?.nome}`}
+          {`Informe a quantidade real do insumo: ${estoque?.data?.insumo?.descricao}, do armazém: ${estoque?.data?.armazem?.nome}`}
         </DialogContentText>
         <Grid2 container spacing={2} sx={{ mt: 2 }}>
           <Grid2 size={12}>
@@ -135,7 +139,7 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>
