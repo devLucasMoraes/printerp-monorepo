@@ -32,10 +32,7 @@ import { unidades } from '../../../constants'
 import { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useRequisicaoEstoqueQueries } from '../../../hooks/queries/useRequisicaoEstoqueQueries'
-import {
-  CreateRequisicaoEstoqueDTO,
-  createRequisicaoEstoqueSchema,
-} from '../../../http/requisicao-estoque/create-requisicao-estoque'
+import { createRequisicaoEstoqueSchema } from '../../../http/requisicao-estoque/create-requisicao-estoque'
 import { ListRequisicoesEstoqueResponse } from '../../../http/requisicao-estoque/list-requisicoes-estoque'
 import {
   UpdateRequisicaoEstoqueDTO,
@@ -78,7 +75,7 @@ export const RequisicaoEstoqueModal = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
-  } = useForm<CreateRequisicaoEstoqueDTO | UpdateRequisicaoEstoqueDTO>({
+  } = useForm<UpdateRequisicaoEstoqueDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       dataRequisicao: '' as unknown as Date,
@@ -141,7 +138,7 @@ export const RequisicaoEstoqueModal = ({
       requisitanteId: data.requisitante.id,
       itens: data.itens.map((item) => ({
         id: item.id,
-        insumo: item.insumo,
+        insumoId: item.insumo.id,
         quantidade: Number(item.quantidade),
         valorUnitario: Number(item.valorUnitario),
         unidade: item.unidade,
@@ -162,9 +159,7 @@ export const RequisicaoEstoqueModal = ({
     )
   }
 
-  const onSubmit = (
-    data: CreateRequisicaoEstoqueDTO | UpdateRequisicaoEstoqueDTO,
-  ) => {
+  const onSubmit = (data: UpdateRequisicaoEstoqueDTO) => {
     if (!orgSlug) {
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
@@ -211,6 +206,7 @@ export const RequisicaoEstoqueModal = ({
 
   const handleAddItem = () => {
     prepend({
+      id: null,
       quantidade: 0,
       unidade: '' as unknown as Unidade,
       valorUnitario: 0,

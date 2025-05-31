@@ -216,10 +216,8 @@ async function updateRequisicao(
     updatedBy: membership.user.id,
   })
 
-  const { ...requisicaoEstoqueWithoutRelations } = requisicaoToUpdate
-
   const updatedRequisicaoEstoque = repository.requisicaoEstoque.merge(
-    requisicaoEstoqueWithoutRelations as RequisicaoEstoque,
+    { id: requisicaoToUpdate.id } as RequisicaoEstoque,
     requisicaoDto,
   )
 
