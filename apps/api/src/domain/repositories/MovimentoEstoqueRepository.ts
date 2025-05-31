@@ -20,4 +20,19 @@ export class MovimentoEstoqueRepository extends BaseRepository<MovimentoEstoque>
       },
     )
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<MovimentoEstoque>> {
+    return this.paginate(
+      pageRequest,
+      { organizationId },
+      {
+        insumo: true,
+        armazemOrigem: true,
+        armazemDestino: true,
+      },
+    )
+  }
 }

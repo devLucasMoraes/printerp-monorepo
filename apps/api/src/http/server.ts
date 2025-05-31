@@ -48,6 +48,7 @@ import { getAllInsumos } from './routes/insumo/get-all-insumos'
 import { getInsumo } from './routes/insumo/get-insumo'
 import { listInsumos } from './routes/insumo/list-insumos'
 import { updateInsumo } from './routes/insumo/update-insumo'
+import { listMovimentacoesEstoque } from './routes/movimentacao-estoque/list-movimentacoes-estoque'
 import { createOrganization } from './routes/orgs/create-organization'
 import { getMembership } from './routes/orgs/get-membership'
 import { getOrganization } from './routes/orgs/get-organization'
@@ -209,6 +210,8 @@ app.register(getAllEmprestimos)
 app.register(getEmprestimo)
 app.register(listEmprestimos)
 app.register(updateEmprestimo)
+
+app.register(listMovimentacoesEstoque)
 
 const start = async () => {
   console.log('Starting server...')

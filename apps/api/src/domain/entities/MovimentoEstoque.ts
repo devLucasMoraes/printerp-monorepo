@@ -29,11 +29,11 @@ export class MovimentoEstoque extends BaseAuditEntity {
   valorUnitario: number
 
   @Column({
-    name: 'undidade',
+    name: 'unidade',
     type: 'enum',
     enum: Unidade,
   })
-  undidade: Unidade
+  unidade: Unidade
 
   @Column({ name: 'documento_origem_id', type: 'uuid' })
   documentoOrigemId: string
@@ -45,15 +45,19 @@ export class MovimentoEstoque extends BaseAuditEntity {
   estorno: boolean
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  observacao?: string | null
+  observacao: string | null
 
-  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida)
+  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'armazem_origem_id' })
-  armazemOrigem: Armazem
+  armazemOrigem: Armazem | null
 
-  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosEntrada)
+  @ManyToOne(() => Armazem, (armazem) => armazem.movimentosEntrada, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'armazem_destino_id' })
-  armazemDestino: Armazem
+  armazemDestino: Armazem | null
 
   @ManyToOne(() => Insumo, (insumo) => insumo.movimentos)
   @JoinColumn({ name: 'insumo_id' })

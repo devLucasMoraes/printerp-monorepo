@@ -1,6 +1,5 @@
 import {
   Box,
-  Chip,
   debounce,
   Table,
   TableBody,
@@ -12,13 +11,14 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useEstoqueQueries } from '../../../hooks/queries/useEstoqueQueries'
 import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
-import { formatDateBR } from '../../../util/formatDateBR'
 
 export const EstimativasEstoque = () => {
+  const { orgSlug } = useParams()
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
@@ -49,9 +49,10 @@ export const EstimativasEstoque = () => {
 
   const isSocketConnected = useEntityChangeSocket('estoque')
 
-  const { useGetAllPaginated: useGetEstoquesPaginated } = useEstoqueQueries()
+  const { useListPaginated: useGetEstoquesPaginated } = useEstoqueQueries()
 
   const { data } = useGetEstoquesPaginated(
+    orgSlug || '',
     {
       page: paginationModel.page,
       size: paginationModel.pageSize,
@@ -168,7 +169,7 @@ export const EstimativasEstoque = () => {
                     </Box>
                   </Box>
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   {item.abaixoMinimo ? (
                     <Chip
                       sx={{
@@ -201,7 +202,7 @@ export const EstimativasEstoque = () => {
                   <Typography variant="h6">
                     {formatDateBR(item.previsaoFimEstoque)}
                   </Typography>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

@@ -3,22 +3,22 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
-import { listEstoqueUseCase } from '@/domain/useCases/estoque/ListEstoqueUseCase'
+import { listMovimentoEstoqueUseCase } from '@/domain/useCases/movimento-estoque/ListMovimentoEstoqueUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
-export async function listEstoques(app: FastifyInstance) {
+export async function listMovimentacoesEstoque(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/estoques/list',
+      '/api/v1/organizations/:orgSlug/movimentacoes-estoque/list',
       {
         schema: {
-          tags: ['estoques'],
-          summary: 'List estoques',
+          tags: ['movimentacoes-estoque'],
+          summary: 'List movimentacoes-estoque',
           security: [{ bearerAuth: [] }],
           params: z.object({
             orgSlug: z.string(),
@@ -35,9 +35,15 @@ export async function listEstoques(app: FastifyInstance) {
               content: z.array(
                 z.object({
                   id: z.string().uuid(),
+                  tipo: z.enum(['ENTRADA', 'SAIDA', 'TRANSFERENCIA']),
+                  data: z.date(),
                   quantidade: z.coerce.number(),
-                  consumoMedioDiario: z.coerce.number().nullable(),
-                  ultimaAtualizacaoConsumo: z.date().nullable(),
+                  valorUnitario: z.coerce.number(),
+                  unidade: z.nativeEnum(Unidade),
+                  documentoOrigemId: z.string().uuid(),
+                  tipoDocumento: z.string(),
+                  estorno: z.boolean(),
+                  observacao: z.string().nullable(),
                   createdAt: z.date(),
                   updatedAt: z.date(),
                   deletedAt: z.date().nullable(),
@@ -45,18 +51,22 @@ export async function listEstoques(app: FastifyInstance) {
                   createdBy: z.string().uuid(),
                   updatedBy: z.string().uuid(),
                   organizationId: z.string().uuid(),
-                  armazem: z.object({
-                    id: z.string().uuid(),
-                    nome: z.string(),
-                  }),
+                  armazemOrigem: z
+                    .object({
+                      id: z.string().uuid(),
+                      nome: z.string(),
+                    })
+                    .nullable(),
+                  armazemDestino: z
+                    .object({
+                      id: z.string().uuid(),
+                      nome: z.string(),
+                    })
+                    .nullable(),
                   insumo: z.object({
                     id: z.string().uuid(),
                     descricao: z.string(),
                     undEstoque: z.nativeEnum(Unidade),
-                    categoria: z.object({
-                      id: z.string().uuid(),
-                      nome: z.string(),
-                    }),
                   }),
                 }),
               ),
@@ -92,7 +102,10 @@ export async function listEstoques(app: FastifyInstance) {
           sort: req.query?.sort,
         }
 
-        const result = await listEstoqueUseCase.execute(membership, pageRequest)
+        const result = await listMovimentoEstoqueUseCase.execute(
+          membership,
+          pageRequest,
+        )
 
         return res.status(201).send(result)
       },

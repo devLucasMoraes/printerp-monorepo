@@ -9,6 +9,7 @@ import {
   TimelineSeparator,
 } from '@mui/lab'
 import { Link, Typography } from '@mui/material'
+import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useMovimentoEstoqueQueries } from '../../../hooks/queries/useMovimentoEstoqueQueries'
@@ -16,8 +17,8 @@ import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
 import { formatDateBR } from '../../../util/formatDateBR'
 
 const MovimentacoesRecentes = () => {
-  const { useGetAllPaginated: useGetMovimentacoes } =
-    useMovimentoEstoqueQueries()
+  const { orgSlug } = useParams()
+  const { useListPaginated: useGetMovimentacoes } = useMovimentoEstoqueQueries()
 
   const isSocketConnected = useEntityChangeSocket(
     'movimento-estoque',
@@ -26,6 +27,7 @@ const MovimentacoesRecentes = () => {
   )
 
   const { data: movimentacoes } = useGetMovimentacoes(
+    orgSlug || '',
     {
       page: 0,
       size: 5,
@@ -41,8 +43,8 @@ const MovimentacoesRecentes = () => {
         <Timeline
           className="theme-timeline"
           nonce={undefined}
-          onResize={undefined}
-          onResizeCapture={undefined}
+          // onResize={undefined}
+          // onResizeCapture={undefined}
           sx={{
             p: 0,
 
@@ -85,7 +87,7 @@ const MovimentacoesRecentes = () => {
                   ).toFixed(2)}`}
                 </Typography>
                 <Link href="#" underline="none">
-                  {mov.tipoDocumento}-{mov.documentoOrigem}
+                  {mov.tipoDocumento}-{mov.documentoOrigemId}
                 </Link>
               </TimelineContent>
             </TimelineItem>
