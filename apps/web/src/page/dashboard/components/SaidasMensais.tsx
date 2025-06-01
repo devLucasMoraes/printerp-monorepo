@@ -6,6 +6,7 @@ import {
   IconCurrencyDollar,
 } from '@tabler/icons-react'
 import Chart from 'react-apexcharts'
+import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useChartsQueries } from '../../../hooks/queries/useChartsQueries'
@@ -25,9 +26,11 @@ const SaidasMensais = () => {
     { showNotifications: false },
   )
 
-  const { chartSaidasMensais } = useChartsQueries()
+  const { orgSlug } = useParams()
 
-  const { data } = chartSaidasMensais({
+  const { useGetChartSaidasMensais: chartSaidasMensais } = useChartsQueries()
+
+  const { data } = chartSaidasMensais(orgSlug || '', {
     staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
   })
 

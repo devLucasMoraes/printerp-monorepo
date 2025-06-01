@@ -34,6 +34,8 @@ import { getAllCategorias } from './routes/categoria/get-all-categorias'
 import { getCategoria } from './routes/categoria/get-categoria'
 import { listCategorias } from './routes/categoria/list-categorias'
 import { updateCategoria } from './routes/categoria/update-categoria'
+import { getChartInsumosPorSetor } from './routes/chart/get-chart-insumos-por-setor'
+import { getChartSaidasMensais } from './routes/chart/get-chart-saidas-mensais'
 import { createEmprestimo } from './routes/emprestimo/create-emprestimo'
 import { deleteEmprestimo } from './routes/emprestimo/delete-emprestimo'
 import { getAllEmprestimos } from './routes/emprestimo/get-all-emprestimos'
@@ -212,6 +214,9 @@ app.register(listEmprestimos)
 app.register(updateEmprestimo)
 
 app.register(listMovimentacoesEstoque)
+
+app.register(getChartInsumosPorSetor)
+app.register(getChartSaidasMensais)
 
 const start = async () => {
   console.log('Starting server...')

@@ -53,7 +53,7 @@ export const registrarEntradaEstoqueUseCase = {
       data,
       quantidade,
       valorUnitario,
-      undidade: undEstoque,
+      unidade: undEstoque,
       documentoOrigemId,
       tipoDocumento,
       estorno,

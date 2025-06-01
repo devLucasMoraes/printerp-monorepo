@@ -2,6 +2,7 @@ import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useState } from 'react'
 import Chart from 'react-apexcharts'
+import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useChartsQueries } from '../../../hooks/queries/useChartsQueries'
@@ -11,6 +12,8 @@ const VisaoGeralInsumosPorSetor = () => {
   const [period, setPeriod] = useState('1')
   const theme = useTheme()
 
+  const { orgSlug } = useParams()
+
   // Socket para revalidação em tempo real
   const isSocketConnected = useEntityChangeSocket(
     'charts',
@@ -19,9 +22,10 @@ const VisaoGeralInsumosPorSetor = () => {
   )
 
   // Usar React Query para gerenciar estado e cache
-  const { chartInsumosPorSetor } = useChartsQueries()
+  const { useGetChartInsumosPorSetor: chartInsumosPorSetor } =
+    useChartsQueries()
 
-  const { data } = chartInsumosPorSetor(period, {
+  const { data } = chartInsumosPorSetor(orgSlug || '', period, {
     staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
   })
 
