@@ -56,7 +56,6 @@ import { getMembership } from './routes/orgs/get-membership'
 import { getOrganization } from './routes/orgs/get-organization'
 import { getOrganizations } from './routes/orgs/get-organizations'
 import { shtutdownOrganization } from './routes/orgs/shutdown-organization'
-import { transferOrganization } from './routes/orgs/transfer-organization'
 import { updateOrganization } from './routes/orgs/update-organization'
 import { createParceiro } from './routes/parceiro/create-parceiro'
 import { deleteParceiro } from './routes/parceiro/delete-parceiro'
@@ -82,6 +81,12 @@ import { getAllSetores } from './routes/setor/get-all-setores'
 import { getSetor } from './routes/setor/get-setor'
 import { listSetores } from './routes/setor/list-setores'
 import { updateSetor } from './routes/setor/update-setor'
+import { createOrganizationalUser } from './routes/user/create-organizational-user'
+import { deleteUser } from './routes/user/delete-user'
+import { getAllUsers } from './routes/user/get-all-users'
+import { getUser } from './routes/user/get-user'
+import { listUsers } from './routes/user/list-users'
+import { updateUser } from './routes/user/update-user'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -152,7 +157,7 @@ app.register(getOrganizations)
 app.register(getOrganization)
 app.register(updateOrganization)
 app.register(shtutdownOrganization)
-app.register(transferOrganization)
+// app.register(transferOrganization)
 
 app.register(createCategoria)
 app.register(deleteCategoria)
@@ -217,6 +222,13 @@ app.register(listMovimentacoesEstoque)
 
 app.register(getChartInsumosPorSetor)
 app.register(getChartSaidasMensais)
+
+app.register(createOrganizationalUser)
+app.register(deleteUser)
+app.register(getAllUsers)
+app.register(getUser)
+app.register(listUsers)
+app.register(updateUser)
 
 const start = async () => {
   console.log('Starting server...')

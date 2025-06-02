@@ -3,8 +3,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -15,6 +13,11 @@ import { Member } from './Member'
 import { Organization } from './Organization'
 import { Token } from './Token'
 
+export enum UserType {
+  MASTER = 'MASTER',
+  ORGANIZATIONAL = 'ORGANIZATIONAL',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -23,11 +26,8 @@ export class User {
   @Column({ type: 'varchar', length: 255 })
   name: string
 
-  @Column({ type: 'varchar', length: 255 })
-  username: string
-
-  @Column({ type: 'varchar', length: 255, unique: true, nullable: true })
-  email: string | null
+  @Column({ type: 'varchar', length: 255, unique: true })
+  email: string
 
   @Column({ type: 'varchar', length: 255 })
   password: string
@@ -35,21 +35,34 @@ export class User {
   @Column({ type: 'varchar', length: 255, name: 'avatar_url', nullable: true })
   avatarUrl: string | null
 
-  @Column({ type: 'boolean', default: true })
-  active: boolean
+  @Column({
+    type: 'enum',
+    enum: UserType,
+    default: UserType.MASTER,
+    name: 'user_type',
+  })
+  userType: UserType
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 
+  @Column({ type: 'uuid', name: 'created_by', nullable: true })
+  createdBy: string | null
+
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
 
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt?: Date
+  @Column({ type: 'uuid', name: 'updated_by', nullable: true })
+  updatedBy: string | null
 
-  @ManyToOne(() => Organization, (org) => org.users, { nullable: true })
-  @JoinColumn({ name: 'organization_id' })
-  organization: Organization | null
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  deletedAt: Date | null
+
+  @Column({ type: 'uuid', name: 'deleted_by', nullable: true })
+  deletedBy: string | null
+
+  @OneToMany(() => Organization, (org) => org.owner)
+  owns_organization: Organization[]
 
   @OneToMany(() => Token, (token) => token.user)
   tokens: Token[]

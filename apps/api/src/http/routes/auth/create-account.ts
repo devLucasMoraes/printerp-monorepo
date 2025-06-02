@@ -35,34 +35,15 @@ export async function createAccount(app: FastifyInstance) {
         )
       }
 
-      const [, domain] = email.split('@')
-
-      const autoJoinOrganization = await repository.organization.findOne({
-        where: {
-          domain,
-          shouldAttachUsersByDomain: true,
-        },
-      })
-
       const passwordHash = await hash(password, 6)
 
       const userData = repository.user.create({
         name,
-        username: email,
         email,
         password: passwordHash,
       })
 
-      const user = await repository.user.save(userData)
-
-      if (autoJoinOrganization) {
-        const memberData = repository.member.create({
-          user,
-          organization: autoJoinOrganization,
-        })
-
-        await repository.member.save(memberData)
-      }
+      await repository.user.save(userData)
 
       return res.status(201).send({
         message: 'User created successfully',

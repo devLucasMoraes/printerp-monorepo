@@ -1,15 +1,16 @@
-import { NotFoundError } from "../../../shared/errors";
-import { User } from "../../entities/User";
-import { userRepository } from "../../repositories";
+import { repository } from '@/domain/repositories'
+import { BadRequestError } from '@/http/_errors/bad-request-error'
+
+import { User } from '../../entities/User'
 
 export const getUserUseCase = {
   async execute(id: string): Promise<User> {
-    const user = await userRepository.findOneBy({ id });
+    const user = await repository.user.findOneBy({ id })
 
     if (!user) {
-      throw new NotFoundError("Usuário não encontrado");
+      throw new BadRequestError('Usuário não encontrado')
     }
 
-    return user;
+    return user
   },
-};
+}

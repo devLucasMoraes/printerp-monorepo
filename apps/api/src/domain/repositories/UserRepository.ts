@@ -12,4 +12,19 @@ export class UserRepository extends BaseRepository<User> {
   async findAllPaginated(pageRequest?: PageRequest): Promise<Page<User>> {
     return this.paginate(pageRequest)
   }
+
+  async findAllPaginatedByOrganizationId(
+    organizationId: string,
+    pageRequest?: PageRequest,
+  ): Promise<Page<User>> {
+    return this.paginate(
+      pageRequest,
+      {
+        memberOn: {
+          organization: { id: organizationId },
+        },
+      },
+      { memberOn: true },
+    )
+  }
 }
