@@ -58,6 +58,7 @@ export async function createOrganizationalUser(app: FastifyInstance) {
           )
         }
 
+        console.time('createOrganizationalUserUseCase')
         await createOrganizationalUserUseCase.execute(
           {
             name,
@@ -67,6 +68,7 @@ export async function createOrganizationalUser(app: FastifyInstance) {
           },
           membership,
         )
+        console.timeEnd('createOrganizationalUserUseCase')
 
         return res.status(201).send({
           message: 'User created successfully',

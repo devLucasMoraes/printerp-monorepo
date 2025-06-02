@@ -59,7 +59,9 @@ export async function updateUser(app: FastifyInstance) {
         const updateCategoriaDTO = req.body
         const { userId } = req.params
 
+        console.time('updateUser')
         await updateUserUseCase.execute(userId, updateCategoriaDTO, membership)
+        console.timeEnd('updateUser')
 
         return res.status(204).send()
       },
