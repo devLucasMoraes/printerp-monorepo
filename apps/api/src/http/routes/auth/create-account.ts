@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { UserType } from '@/domain/entities/User'
 import { repository } from '@/domain/repositories'
 
 import { BadRequestError } from '../../_errors/bad-request-error'
@@ -41,6 +42,7 @@ export async function createAccount(app: FastifyInstance) {
         name,
         email,
         password: passwordHash,
+        userType: UserType.MASTER,
       })
 
       await repository.user.save(userData)

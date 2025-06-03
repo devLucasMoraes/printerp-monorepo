@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { repository } from '@/domain/repositories'
+import { deleteOrganizationUseCase } from '@/domain/useCases/organization/DeleteOrganizationUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
@@ -43,7 +43,7 @@ export async function shtutdownOrganization(app: FastifyInstance) {
           )
         }
 
-        await repository.organization.softDelete(authOrganization.id)
+        await deleteOrganizationUseCase.execute(organization.id, membership)
 
         return res.status(204).send()
       },

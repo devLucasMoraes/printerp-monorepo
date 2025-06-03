@@ -2,10 +2,14 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { Role } from '@/domain/entities/Role'
-import { repository } from '@/domain/repositories'
+import { createOrganizationUseCase } from '@/domain/useCases/organization/CreateOrganizationUseCase'
 import { auth } from '@/http/middleware/auth'
-import { createSlug } from '@/utils/create-slug'
+
+const bodySchema = z.object({
+  name: z.string(),
+})
+
+export type CreateOrganizationDto = z.infer<typeof bodySchema>
 
 export async function createOrganization(app: FastifyInstance) {
   app
@@ -18,9 +22,7 @@ export async function createOrganization(app: FastifyInstance) {
           tags: ['organizations'],
           summary: 'create new organization',
           security: [{ bearerAuth: [] }],
-          body: z.object({
-            name: z.string(),
-          }),
+          body: bodySchema,
           response: {
             201: z.object({
               organizationId: z.string(),
@@ -34,25 +36,10 @@ export async function createOrganization(app: FastifyInstance) {
 
         const { name } = req.body
 
-        const organizationData = repository.organization.create({
-          name,
-          slug: createSlug(name),
-          ownerId: userId,
-          owner: { id: userId },
-          createdBy: userId,
-          updatedBy: userId,
-        })
-
-        const organization =
-          await repository.organization.save(organizationData)
-
-        const memberData = repository.member.create({
-          user: { id: userId },
-          role: Role.ADMIN,
-          organization,
-        })
-
-        await repository.member.save(memberData)
+        const organization = await createOrganizationUseCase.execute(
+          { name },
+          userId,
+        )
 
         return res
           .status(201)

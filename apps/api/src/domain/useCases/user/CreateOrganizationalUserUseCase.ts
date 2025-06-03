@@ -10,12 +10,11 @@ import { User, UserType } from '../../entities/User'
 export const createOrganizationalUserUseCase = {
   async execute(dto: CreateUserDTO, membership: Member): Promise<User> {
     return repository.user.manager.transaction(async (manager) => {
-      const existingUser = await manager
-        .createQueryBuilder(User, 'user')
-        .select(['user.id', 'user.name', 'user.deletedAt'])
-        .where('user.email = :email', { email: dto.email })
-        .withDeleted()
-        .getOne()
+      const existingUser = await manager.findOne(User, {
+        where: { email: dto.email },
+        withDeleted: true,
+        select: ['id', 'name', 'deletedAt'],
+      })
 
       if (existingUser) {
         throw new BadRequestError(
@@ -25,7 +24,7 @@ export const createOrganizationalUserUseCase = {
         )
       }
 
-      const [passwordHash] = await Promise.all([hash(dto.password, 6)])
+      const passwordHash = await hash(dto.password, 6)
 
       const user = repository.user.create({
         name: dto.name,

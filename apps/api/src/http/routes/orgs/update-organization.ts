@@ -3,11 +3,17 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { repository } from '@/domain/repositories'
+import { updateOrganizationUseCase } from '@/domain/useCases/organization/UpdateOrganizationUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
+
+const bodySchema = z.object({
+  name: z.string(),
+})
+
+export type UpdateOrganizationDto = z.infer<typeof bodySchema>
 
 export async function updateOrganization(app: FastifyInstance) {
   app
@@ -23,9 +29,7 @@ export async function updateOrganization(app: FastifyInstance) {
           params: z.object({
             slug: z.string(),
           }),
-          body: z.object({
-            name: z.string(),
-          }),
+          body: bodySchema,
           response: {
             204: z.null(),
           },
@@ -48,11 +52,10 @@ export async function updateOrganization(app: FastifyInstance) {
           )
         }
 
-        await repository.organization.update(
-          { id: organization.id },
-          {
-            name,
-          },
+        await updateOrganizationUseCase.execute(
+          organization.id,
+          { name },
+          membership,
         )
 
         return res.status(204).send()
