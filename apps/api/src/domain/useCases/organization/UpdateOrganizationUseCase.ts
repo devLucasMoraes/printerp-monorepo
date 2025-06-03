@@ -3,6 +3,7 @@ import { Organization } from '@/domain/entities/Organization'
 import { repository } from '@/domain/repositories'
 import { BadRequestError } from '@/http/_errors/bad-request-error'
 import { UpdateOrganizationDto } from '@/http/routes/orgs/update-organization'
+import { createSlug } from '@/utils/create-slug'
 
 export const updateOrganizationUseCase = {
   async execute(
@@ -22,6 +23,7 @@ export const updateOrganizationUseCase = {
 
       manager.merge(Organization, organization, {
         name: dto.name,
+        slug: createSlug(dto.name),
         updatedBy: membership.user.id,
       })
 

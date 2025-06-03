@@ -5,9 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
   Stack,
-  Switch,
   TextField,
   Typography,
 } from '@mui/material'
@@ -36,8 +34,6 @@ const CreateOrganizationDialog = ({ open, onClose, onSuccess }: Props) => {
     resolver: zodResolver(createOrganizationSchema),
     defaultValues: {
       name: '',
-      domain: null,
-      shouldAttachUsersByDomain: false,
     },
   })
 
@@ -92,38 +88,6 @@ const CreateOrganizationDialog = ({ open, onClose, onSuccess }: Props) => {
                 helperText={errors.name?.message}
                 fullWidth
                 autoFocus
-              />
-            )}
-          />
-
-          <Controller
-            name="domain"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Domínio (opcional)"
-                placeholder="ex: minhaempresa.com"
-                error={!!errors.domain}
-                helperText={errors.domain?.message}
-                fullWidth
-              />
-            )}
-          />
-
-          <Controller
-            name="shouldAttachUsersByDomain"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={field.value}
-                    onChange={field.onChange}
-                    color="primary"
-                  />
-                }
-                label="Vincular usuários automaticamente por domínio"
               />
             )}
           />

@@ -5,10 +5,6 @@ export interface GetOrganizationResponse {
     id: string
     name: string
     slug: string
-    domain: string | null
-    shouldAttachUsersByDomain: boolean
-    avatarUrl: string | null
-    active: boolean
     createdAt: Date
     updatedAt: Date
   }
