@@ -2,62 +2,86 @@ import { Button, IconButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useParams } from 'react-router'
 
+import CenteredMessageCard from '../../components/cards/CenteredMessageCard'
 import DashboardCard from '../../components/cards/DashboardCard'
 import PageContainer from '../../components/container/PageContainer'
+import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
-import { profiles } from '../../constants'
+import { role } from '../../constants'
 import { useUserQueries } from '../../hooks/queries/useUserQueries'
-import { UserDto } from '../../schemas/user.schemas'
+import { ListUsersResponse } from '../../http/user/list-users'
 import { useAlertStore } from '../../stores/alert-store'
 import { UserModal } from './components/UserModal'
 
 const Users = () => {
   const [formOpen, setFormOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<UserDto>()
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const { enqueueSnackbar } = useAlertStore((state) => state)
+  const { orgSlug } = useParams()
+
+  const [selectedUser, setSelectedUser] = useState<{
+    data: ListUsersResponse
+    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+  }>()
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   })
 
-  const { enqueueSnackbar } = useAlertStore((state) => state)
-
-  const { useGetAllPaginated: useGetUsersPaginated, useDelete: useDeleteUser } =
+  const { useListPaginated: useGetUsersPaginated, useDelete: useDeleteUser } =
     useUserQueries()
 
-  const { data, isLoading } = useGetUsersPaginated({
+  const { data, isLoading } = useGetUsersPaginated(orgSlug || '', {
     page: paginationModel.page,
     size: paginationModel.pageSize,
   })
   const { mutate: deleteById } = useDeleteUser()
 
-  const handleDelete = (id: string) => {
-    deleteById(id, {
-      onSuccess: () => {
-        enqueueSnackbar('Usuário deletado com sucesso', { variant: 'success' })
-      },
-      onError: (error) => {
-        console.error(error)
-        enqueueSnackbar(error.message, { variant: 'error' })
-      },
-    })
+  const handleConfirmDelete = (user: ListUsersResponse) => {
+    setSelectedUser({ data: user, type: 'DELETE' })
+    setConfirmModalOpen(true)
   }
 
-  const handleEdit = (user: UserDto) => {
-    setSelectedUser(user)
+  const handleDelete = (id: string) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    deleteById(
+      { id, orgSlug },
+      {
+        onSuccess: () => {
+          setSelectedUser(undefined)
+          setConfirmModalOpen(false)
+          enqueueSnackbar('Usuário deletado com sucesso', {
+            variant: 'success',
+          })
+        },
+        onError: (error) => {
+          console.error(error)
+          enqueueSnackbar(error.message, { variant: 'error' })
+        },
+      },
+    )
+  }
+
+  const handleEdit = (user: ListUsersResponse) => {
+    setSelectedUser({ data: user, type: 'UPDATE' })
     setFormOpen(true)
   }
 
-  const columns: GridColDef<UserDto>[] = [
+  const columns: GridColDef<ListUsersResponse>[] = [
     { field: 'name', headerName: 'Nome', minWidth: 120, flex: 1 },
     { field: 'email', headerName: 'Email', minWidth: 120, flex: 1 },
     {
-      field: 'profile',
-      headerName: 'Perfil',
+      field: 'role',
+      headerName: 'Cargo',
       minWidth: 120,
       flex: 1,
       valueFormatter: (_, row) => {
-        return profiles.find((profile) => profile.value === row.profile)?.label
+        return role.find((profile) => profile.value === row.role)?.label
       },
     },
     {
@@ -79,7 +103,7 @@ const Users = () => {
           <IconButton
             size="small"
             color="inherit"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleConfirmDelete(params.row)}
           >
             <IconEraser />
           </IconButton>
@@ -98,33 +122,51 @@ const Users = () => {
         }}
         user={selectedUser}
       />
+      <ConfirmationModal
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false)
+          setSelectedUser(undefined)
+        }}
+        onConfirm={() => {
+          if (!selectedUser) return
+          handleDelete(selectedUser.data.id)
+        }}
+        title="Deletar usuário"
+      >
+        Tem certeza que deseja deletar esse usuário?
+      </ConfirmationModal>
     </>
   )
 
   return (
     <PageContainer title="Usuários" description="">
       {renderModals()}
-      <DashboardCard
-        title="Usuários"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setFormOpen(true)}
-          >
-            adicionar usuário
-          </Button>
-        }
-      >
-        <ServerDataTable
-          rows={data?.content || []}
-          columns={columns}
-          isLoading={isLoading}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
-        />
-      </DashboardCard>
+      {orgSlug ? (
+        <DashboardCard
+          title="Usuários"
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setFormOpen(true)}
+            >
+              adicionar usuário
+            </Button>
+          }
+        >
+          <ServerDataTable
+            rows={data?.content || []}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            totalRowCount={data?.totalElements}
+          />
+        </DashboardCard>
+      ) : (
+        <CenteredMessageCard message="Selecione uma organização" />
+      )}
     </PageContainer>
   )
 }

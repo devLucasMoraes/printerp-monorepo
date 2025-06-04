@@ -33,6 +33,11 @@ export async function createOrganizationalUser(app: FastifyInstance) {
             slug: z.string(),
           }),
           body: bodySchema,
+          response: {
+            201: z.object({
+              userId: z.string(),
+            }),
+          },
         },
       },
       async (req, res) => {
@@ -58,8 +63,7 @@ export async function createOrganizationalUser(app: FastifyInstance) {
           )
         }
 
-        console.time('createOrganizationalUserUseCase')
-        await createOrganizationalUserUseCase.execute(
+        const user = await createOrganizationalUserUseCase.execute(
           {
             name,
             email,
@@ -68,11 +72,8 @@ export async function createOrganizationalUser(app: FastifyInstance) {
           },
           membership,
         )
-        console.timeEnd('createOrganizationalUserUseCase')
 
-        return res.status(201).send({
-          message: 'User created successfully',
-        })
+        return res.status(201).send({ userId: user.id })
       },
     )
 }

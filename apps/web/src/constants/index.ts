@@ -1,11 +1,11 @@
-export const profiles = [
+export const role = [
   {
-    value: 'user',
-    label: 'usuário',
+    value: 'MEMBER',
+    label: 'membro',
   },
   {
-    value: 'admin',
-    label: 'administrador',
+    value: 'ADMIN',
+    label: 'Administrador',
   },
 ]
 

@@ -12,72 +12,94 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useParams } from 'react-router'
 
-import { profiles } from '../../../constants'
+import { role } from '../../../constants'
+import { Role } from '../../../constants/Role'
 import { useUserQueries } from '../../../hooks/queries/useUserQueries'
 import {
-  userCreateSchema,
-  UserDto,
-  userUpdateSchema,
-} from '../../../schemas/user.schemas'
+  CreateOrganizationalUserDTO,
+  createOrganizationalUserSchema,
+} from '../../../http/user/create-organizational-user'
+import { ListUsersResponse } from '../../../http/user/list-users'
+import { UpdateUserDTO, updateUserSchema } from '../../../http/user/update-user'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface UserModalProps {
+export const UserModal = ({
+  open,
+  onClose,
+  user,
+}: {
   open: boolean
   onClose: () => void
-  user?: UserDto
-}
-
-export const UserModal = ({ open, onClose, user }: UserModalProps) => {
+  user?: {
+    data?: ListUsersResponse
+    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+  }
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
-  const schema = user ? userUpdateSchema : userCreateSchema
+  const { orgSlug } = useParams()
 
-  const { useCreate: useCreateUser, useUpdate: useUpdateUser } =
-    useUserQueries()
+  const isUpdate = user?.type === 'UPDATE'
+
+  const schema =
+    user?.data || isUpdate ? updateUserSchema : createOrganizationalUserSchema
 
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<UserDto>({
+  } = useForm<CreateOrganizationalUserDTO | UpdateUserDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
       email: '',
       password: '',
-      profile: 'user',
+      role: Role.MEMBER,
+      avatarUrl: null,
     },
   })
 
+  const { useCreate: useCreateUser, useUpdate: useUpdateUser } =
+    useUserQueries()
+
   useEffect(() => {
-    if (user) {
-      reset({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        password: '',
-        profile: user.profile,
-      })
-    } else {
+    if (!user?.data) {
       reset({
         name: '',
         email: '',
         password: '',
-        profile: 'user',
+        role: Role.MEMBER,
+        avatarUrl: null,
       })
+      return
     }
+
+    const { data } = user
+
+    reset({
+      name: data.name,
+      email: data.email,
+      password: '',
+      avatarUrl: data.avatarUrl,
+      role: data.role as Role,
+    })
   }, [user, reset])
 
   const { mutate: createUser } = useCreateUser()
 
   const { mutate: updateUser } = useUpdateUser()
 
-  const onSubmit = (data: UserDto) => {
-    if (user) {
+  const onSubmit = (data: UpdateUserDTO) => {
+    if (!orgSlug) {
+      enqueueSnackbar('Selecione uma organização', { variant: 'error' })
+      return
+    }
+    if (isUpdate && user.data) {
       updateUser(
-        { id: user.id, data },
+        { id: user.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -95,19 +117,24 @@ export const UserModal = ({ open, onClose, user }: UserModalProps) => {
         },
       )
     } else {
-      createUser(data, {
-        onSuccess: () => {
-          onClose()
-          reset()
-          enqueueSnackbar('Usuário criado com sucesso', { variant: 'success' })
+      createUser(
+        { orgSlug, data },
+        {
+          onSuccess: () => {
+            onClose()
+            reset()
+            enqueueSnackbar('Usuário criado com sucesso', {
+              variant: 'success',
+            })
+          },
+          onError: (error) => {
+            console.error(error)
+            enqueueSnackbar(error.response?.data.message || error.message, {
+              variant: 'error',
+            })
+          },
         },
-        onError: (error) => {
-          console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
-            variant: 'error',
-          })
-        },
-      })
+      )
     }
   }
   const handleClose = () => {
@@ -178,18 +205,18 @@ export const UserModal = ({ open, onClose, user }: UserModalProps) => {
           </Grid2>
           <Grid2 size="auto">
             <Controller
-              name="profile"
+              name="role"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
                   label="Perfil"
-                  error={!!errors.profile}
-                  helperText={errors.profile?.message}
+                  error={!!errors.role}
+                  helperText={errors.role?.message}
                   fullWidth
                   select
                 >
-                  {profiles.map((option) => (
+                  {role.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
                     </MenuItem>
@@ -202,7 +229,7 @@ export const UserModal = ({ open, onClose, user }: UserModalProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
+        <Button type="submit" variant="contained" loading={isSubmitting}>
           {isSubmitting ? 'Salvando...' : 'Salvar'}
         </Button>
       </DialogActions>
