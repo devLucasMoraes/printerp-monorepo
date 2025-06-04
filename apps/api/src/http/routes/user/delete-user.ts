@@ -1,3 +1,4 @@
+import { userSchema } from '@printerp/auth'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
@@ -29,22 +30,27 @@ export async function deleteUser(app: FastifyInstance) {
         },
       },
       async (req, res) => {
-        const { orgSlug } = req.params
+        const { orgSlug, userId } = req.params
 
-        const { membership } = await req.getUserMembership(orgSlug)
+        const { membership, organization } =
+          await req.getUserMembership(orgSlug)
 
         const { cannot } = getUserPermissions(
           membership.user.id,
           membership.role,
         )
 
-        if (cannot('delete', 'User')) {
+        const user = userSchema.parse({
+          id: userId,
+          role: membership.role,
+          organizationOwnerId: organization.ownerId,
+        })
+
+        if (cannot('delete', user)) {
           throw new UnauthorizedError(
             'Você não tem permissão para realizar essa ação',
           )
         }
-
-        const { userId } = req.params
 
         await deleteUserUseCase.execute(userId, membership)
 

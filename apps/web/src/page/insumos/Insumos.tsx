@@ -80,7 +80,9 @@ const Insumos = () => {
         },
         onError: (error) => {
           console.error(error)
-          enqueueSnackbar(error.message, { variant: 'error' })
+          enqueueSnackbar(error.response?.data.message || error.message, {
+            variant: 'error',
+          })
         },
       },
     )
