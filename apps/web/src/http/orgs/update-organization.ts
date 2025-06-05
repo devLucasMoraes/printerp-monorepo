@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { api } from '../api/axios'
 
-const updateOrganizationSchema = z.object({
+export const updateOrganizationSchema = z.object({
   name: z.string(),
 })
 

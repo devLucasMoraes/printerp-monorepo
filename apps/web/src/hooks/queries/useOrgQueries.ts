@@ -20,12 +20,16 @@ import {
   getOrganizations,
   GetOrganizationsResponse,
 } from '../../http/orgs/get-organizations'
+import {
+  listOrganizations,
+  ListOrganizationsResponse,
+} from '../../http/orgs/list-organizations'
 import { shtutdownOrganization } from '../../http/orgs/shutdown-organization'
 import {
   updateOrganization,
   UpdateOrganizationDto,
 } from '../../http/orgs/update-organization'
-import { ErrorResponse } from '../../types'
+import { ErrorResponse, Page, PageParams } from '../../types'
 
 export function useOrgQueries() {
   const resourceKey = 'organizations'
@@ -54,6 +58,25 @@ export function useOrgQueries() {
       ...queryOptions,
       queryKey: [resourceKey],
       queryFn: () => getOrganizations(),
+    })
+  }
+
+  const useListPaginated = (
+    params: PageParams = {},
+    queryOptions?: Omit<
+      UseQueryOptions<
+        Page<ListOrganizationsResponse>,
+        AxiosError<ErrorResponse>
+      >,
+      'queryKey' | 'queryFn'
+    >,
+  ) => {
+    const { page = 0, size = 20, sort } = params
+
+    return useQuery({
+      ...queryOptions,
+      queryKey: [resourceKey, 'paginated', page, size, sort],
+      queryFn: () => listOrganizations({ page, size, sort }),
     })
   }
 
@@ -124,6 +147,7 @@ export function useOrgQueries() {
 
   return {
     useGetBySlug,
+    useListPaginated,
     useGetAll,
     useCreate,
     useUpdate,

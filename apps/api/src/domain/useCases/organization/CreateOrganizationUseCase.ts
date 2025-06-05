@@ -17,7 +17,11 @@ export const createOrganizationUseCase = {
         select: ['id', 'userType'],
       })
 
-      if (user && user.userType === UserType.ORGANIZATIONAL) {
+      if (!user) {
+        throw new BadRequestError('Usuário não encontrado')
+      }
+
+      if (user.userType === UserType.ORGANIZATIONAL) {
         throw new BadRequestError('Você não pode criar organizações')
       }
 

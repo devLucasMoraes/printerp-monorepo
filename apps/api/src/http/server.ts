@@ -55,6 +55,7 @@ import { createOrganization } from './routes/orgs/create-organization'
 import { getMembership } from './routes/orgs/get-membership'
 import { getOrganization } from './routes/orgs/get-organization'
 import { getOrganizations } from './routes/orgs/get-organizations'
+import { listOrganizations } from './routes/orgs/list-organizations'
 import { shtutdownOrganization } from './routes/orgs/shutdown-organization'
 import { updateOrganization } from './routes/orgs/update-organization'
 import { createParceiro } from './routes/parceiro/create-parceiro'
@@ -140,7 +141,7 @@ app.register(fastifyCookie, {
 app.register(fastifyCors, {
   origin: 'http://localhost:5173',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 })
 
 app.register(createAccount)
@@ -157,6 +158,7 @@ app.register(getOrganizations)
 app.register(getOrganization)
 app.register(updateOrganization)
 app.register(shtutdownOrganization)
+app.register(listOrganizations)
 // app.register(transferOrganization)
 
 app.register(createCategoria)

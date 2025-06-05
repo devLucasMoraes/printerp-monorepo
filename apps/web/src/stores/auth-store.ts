@@ -1,7 +1,9 @@
+import { AxiosError } from 'axios'
 import { create } from 'zustand'
 
 import { api } from '../http/api/axios'
 import { SignUpFormData } from '../schemas/auth'
+import { ErrorResponse } from '../types'
 
 type User = {
   id: string
@@ -15,7 +17,7 @@ type AuthStore = {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  error: string | null
+  error: AxiosError<ErrorResponse> | null
 
   // Actions
   login: (email: string, password: string) => Promise<void>

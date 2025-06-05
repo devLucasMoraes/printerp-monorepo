@@ -19,7 +19,7 @@ export async function updateOrganization(app: FastifyInstance) {
   app
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
-    .put(
+    .patch(
       '/api/v1/organizations/:slug',
       {
         schema: {

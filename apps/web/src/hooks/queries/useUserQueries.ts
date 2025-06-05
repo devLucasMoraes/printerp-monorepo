@@ -8,8 +8,8 @@ import {
 import { AxiosError } from 'axios'
 
 import {
-  CreateOrganizatinalUserDTO,
   createOrganizationalUser,
+  CreateOrganizationalUserDTO,
   CreateOrganizationalUserResponse,
 } from '../../http/user/create-organizational-user'
 import { deleteUser } from '../../http/user/delete-user'
@@ -73,7 +73,7 @@ export function useUserQueries() {
       UseMutationOptions<
         CreateOrganizationalUserResponse,
         AxiosError<ErrorResponse>,
-        { orgSlug: string; data: CreateOrganizatinalUserDTO }
+        { orgSlug: string; data: CreateOrganizationalUserDTO }
       >,
       'mutationFn'
     >,

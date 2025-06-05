@@ -1,5 +1,6 @@
 import {
   IconAffiliate,
+  IconBinaryTree,
   IconBox,
   IconBuildingWarehouse,
   IconCategoryPlus,
@@ -89,6 +90,12 @@ const Menuitems = [
     title: 'Usuários',
     icon: IconUsers,
     href: '/users',
+  },
+  {
+    id: uuidv4(),
+    title: 'Organizações',
+    icon: IconBinaryTree,
+    href: '/organizations',
   },
   {
     id: uuidv4(),
