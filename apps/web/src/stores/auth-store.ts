@@ -92,6 +92,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         isAuthenticated: false,
         error: null,
       })
+      localStorage.removeItem('selectedOrg')
     }
   },
 }))

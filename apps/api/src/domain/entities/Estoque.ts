@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   Entity,
   JoinColumn,
@@ -34,6 +35,13 @@ export class Estoque extends BaseAuditEntity {
   })
   ultimaAtualizacaoConsumo: Date | null
 
+  @Column({
+    name: 'abaixo_minimo',
+    type: 'boolean',
+    default: false,
+  })
+  abaixoMinimo: boolean
+
   @ManyToOne(() => Armazem, (armazem) => armazem.estoques)
   @JoinColumn({ name: 'armazem_id' })
   armazem: Armazem
@@ -42,12 +50,16 @@ export class Estoque extends BaseAuditEntity {
   @JoinColumn({ name: 'insumo_id' })
   insumo: Insumo
 
-  possuiQuantidadeSuficiente(quantidadeDesejada: number): boolean {
-    return this.quantidade >= quantidadeDesejada
+  @AfterLoad()
+  recalcularEstaAbaixoMinimo() {
+    if (this.insumo?.estoqueMinimo !== undefined) {
+      this.abaixoMinimo =
+        Number(this.quantidade) < Number(this.insumo.estoqueMinimo)
+    }
   }
 
-  estaAbaixoMinimo(): boolean {
-    return Number(this.quantidade) < Number(this.insumo.estoqueMinimo)
+  possuiQuantidadeSuficiente(quantidadeDesejada: number): boolean {
+    return this.quantidade >= quantidadeDesejada
   }
 
   calcularDiasRestantes(): number | null {

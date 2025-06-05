@@ -41,12 +41,18 @@ export class EstoqueRepository extends BaseRepository<Estoque> {
     const where: FindOptionsWhere<Estoque> = {}
     where.organizationId = organizationId
 
-    if (Object.keys(filters).length > 0) {
-      where.insumo = {}
-
-      if (filters.insumo) {
-        where.insumo.descricao = ILike(`%${filters.insumo}%`)
+    if (filters.insumo) {
+      where.insumo = {
+        descricao: ILike(`%${filters.insumo}%`),
       }
+    }
+
+    if (
+      filters.abaixoMinimo !== undefined &&
+      filters.abaixoMinimo !== null &&
+      typeof filters.abaixoMinimo === 'boolean'
+    ) {
+      where.abaixoMinimo = filters.abaixoMinimo
     }
 
     return this.paginate(pageRequest, where, {

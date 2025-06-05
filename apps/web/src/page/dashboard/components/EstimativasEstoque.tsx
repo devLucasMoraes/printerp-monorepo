@@ -1,5 +1,6 @@
 import {
   Box,
+  Chip,
   debounce,
   Table,
   TableBody,
@@ -16,6 +17,7 @@ import { useParams } from 'react-router'
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useEstoqueQueries } from '../../../hooks/queries/useEstoqueQueries'
 import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
+import { formatDateBR } from '../../../util/formatDateBR'
 
 export const EstimativasEstoque = () => {
   const { orgSlug } = useParams()
@@ -169,8 +171,8 @@ export const EstimativasEstoque = () => {
                     </Box>
                   </Box>
                 </TableCell>
-                {/* <TableCell>
-                  {item.abaixoMinimo ? (
+                <TableCell>
+                  {item.insumo.abaixoMinimo ? (
                     <Chip
                       sx={{
                         px: '4px',
@@ -202,7 +204,7 @@ export const EstimativasEstoque = () => {
                   <Typography variant="h6">
                     {formatDateBR(item.previsaoFimEstoque)}
                   </Typography>
-                </TableCell> */}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

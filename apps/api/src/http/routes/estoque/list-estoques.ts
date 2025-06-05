@@ -57,7 +57,12 @@ export async function listEstoques(app: FastifyInstance) {
                       id: z.string().uuid(),
                       nome: z.string(),
                     }),
+                    abaixoMinimo: z.boolean(),
                   }),
+                  abaixoMinimo: z.boolean(),
+                  diasRestantes: z.number().nullable(),
+                  previsaoFimEstoque: z.date().nullable(),
+                  previsaoEstoqueMinimo: z.date().nullable(),
                 }),
               ),
               totalPages: z.number(),
@@ -94,7 +99,17 @@ export async function listEstoques(app: FastifyInstance) {
 
         const result = await listEstoqueUseCase.execute(membership, pageRequest)
 
-        return res.status(201).send(result)
+        const estoquesComCalculos = {
+          ...result,
+          content: result.content.map((estoque) => ({
+            ...estoque,
+            diasRestantes: estoque.calcularDiasRestantes(),
+            previsaoFimEstoque: estoque.calcularPrevisaoFimEstoque(),
+            previsaoEstoqueMinimo: estoque.calcularPrevisaoEstoqueMinimo(),
+          })),
+        }
+
+        return res.status(201).send(estoquesComCalculos)
       },
     )
 }

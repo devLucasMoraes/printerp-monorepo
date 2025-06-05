@@ -14,6 +14,10 @@ export interface ListEstoquesResponse {
   createdBy: string
   updatedBy: string
   organizationId: string
+  abaixoMinimo: boolean
+  diasRestantes: number | null
+  previsaoFimEstoque: string | null
+  previsaoEstoqueMinimo: string | null
   armazem: {
     id: string
     nome: string
@@ -26,6 +30,7 @@ export interface ListEstoquesResponse {
       id: string
       nome: string
     }
+    abaixoMinimo: boolean
   }
 }
 

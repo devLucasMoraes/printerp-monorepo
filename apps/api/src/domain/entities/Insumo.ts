@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   Entity,
   JoinColumn,
@@ -54,6 +55,13 @@ export class Insumo extends BaseAuditEntity {
   })
   estoqueMinimo: number
 
+  @Column({
+    name: 'abaixo_minimo',
+    type: 'boolean',
+    default: false,
+  })
+  abaixoMinimo: boolean
+
   @ManyToOne(() => Categoria, (categoria) => categoria.insumos)
   @JoinColumn({ name: 'categoria_id' })
   categoria: Categoria
@@ -63,6 +71,18 @@ export class Insumo extends BaseAuditEntity {
 
   @OneToMany(() => MovimentoEstoque, (movimento) => movimento.insumo)
   movimentos: MovimentoEstoque[]
+
+  @AfterLoad()
+  recalcularEstaAbaixoMinimo() {
+    if (this.estoques !== undefined) {
+      const saldoTotal = this.estoques.reduce(
+        (total, estoque) => total + estoque.quantidade,
+        0,
+      )
+      console.log({ saldoTotal })
+      this.abaixoMinimo = Number(saldoTotal) < Number(this.estoqueMinimo)
+    }
+  }
 
   getSaldoTotal(): number {
     return this.estoques.reduce(
