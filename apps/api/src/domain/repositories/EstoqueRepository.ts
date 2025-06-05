@@ -59,6 +59,7 @@ export class EstoqueRepository extends BaseRepository<Estoque> {
       armazem: true,
       insumo: {
         categoria: true,
+        estoques: true,
       },
     })
   }

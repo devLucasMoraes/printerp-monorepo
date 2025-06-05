@@ -79,7 +79,8 @@ export class Insumo extends BaseAuditEntity {
         (total, estoque) => total + estoque.quantidade,
         0,
       )
-      console.log({ saldoTotal })
+      console.log({ saldoTotal: Number(saldoTotal) })
+      console.log(Number(saldoTotal) < Number(this.estoqueMinimo))
       this.abaixoMinimo = Number(saldoTotal) < Number(this.estoqueMinimo)
     }
   }
