@@ -7,8 +7,8 @@ import {
   useTheme,
 } from '@mui/material'
 
-import Logo from '../shared/logo/Logo'
-import SidebarItems from './SidebarItems'
+import Logo from '../shared/Logo'
+import SidebarItems from './sidebarItems'
 
 // Sidebar width constant
 const SIDEBAR_WIDTH = 270

@@ -8,12 +8,11 @@ import {
   styled,
   Toolbar,
 } from '@mui/material'
-// components
 import { IconBellRinging, IconMenu } from '@tabler/icons-react'
 
 import { useSocket } from '../../../hooks/useSocket'
-import ThemeToggle from '../shared/ThemeToggle'
 import Profile from './Profile'
+import ThemeToggle from './ThemeToggle'
 
 interface ItemType {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLButtonElement>) => void

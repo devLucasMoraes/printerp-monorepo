@@ -1,7 +1,7 @@
 import { lazy } from 'react'
 import { Navigate } from 'react-router'
 
-import Loadable from '../layouts/full/shared/loadable/Loadable'
+import Loadable from '../layouts/full/shared/Loadable'
 import PrivateRoute from './PrivateRoute'
 import PublicRoute from './PublicRoute'
 
@@ -36,7 +36,7 @@ const Organizations = Loadable(
 const Register = Loadable(lazy(() => import('../page/authentication/Register')))
 const Login = Loadable(lazy(() => import('../page/authentication/Login')))
 
-const Error = Loadable(lazy(() => import('../page/authentication/Error')))
+const Error = Loadable(lazy(() => import('../page/Error')))
 
 const Router = [
   {

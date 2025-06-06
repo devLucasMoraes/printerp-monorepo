@@ -9,7 +9,7 @@ import {
 import { IconDeviceDesktop, IconMoonStars, IconSun } from '@tabler/icons-react'
 import { useState } from 'react'
 
-import { useThemeMode } from '../../../../hooks/useThemeMode'
+import { useThemeMode } from '../../../hooks/useThemeMode'
 
 type ThemeMode = 'light' | 'dark' | 'system'
 

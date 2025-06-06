@@ -1,8 +1,8 @@
 import { Box, List } from '@mui/material'
 import { useLocation } from 'react-router'
 
-import Menuitems from './MenuItems'
-import NavGroup from './NavGroup/NavGroup'
+import Menuitems from '../MenuItems'
+import NavGroup from './NavGroup'
 import NavItem from './NavItem'
 
 const SidebarItems = () => {

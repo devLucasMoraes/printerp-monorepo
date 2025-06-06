@@ -2,7 +2,7 @@ import { Box, Card, Grid, Stack, styled, Typography } from '@mui/material'
 import { Link } from 'react-router'
 
 import PageContainer from '../../components/container/PageContainer'
-import Logo from '../../layouts/full/shared/logo/Logo'
+import Logo from '../../layouts/full/shared/Logo'
 import AuthLogin from './auth/AuthLogin'
 
 // Styled Components

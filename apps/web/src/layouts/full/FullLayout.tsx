@@ -2,8 +2,8 @@ import { Box, Container, styled } from '@mui/material'
 import { useState } from 'react'
 import { Outlet } from 'react-router'
 
+import OrganizationBreadcrumbs from './breadcrumbs/OrganizationBreadcrumbs'
 import Header from './header/Header'
-import OrganizationBreadcrumbs from './shared/OrganizationBreadcrumbs'
 import Sidebar from './sidebar/Sidebar'
 
 const MainWrapper = styled('div')(() => ({
