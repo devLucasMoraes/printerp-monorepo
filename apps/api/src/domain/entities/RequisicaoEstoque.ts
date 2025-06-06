@@ -35,16 +35,16 @@ export class RequisicaoEstoque extends BaseAuditEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   obs: string | null
 
-  @ManyToOne(() => Requisitante, (requisitante) => requisitante.requisicoes)
-  @JoinColumn({ name: 'requisitante_id' })
+  @ManyToOne(() => Requisitante)
+  @JoinColumn({ name: 'requisitante' })
   requisitante: Requisitante
 
-  @ManyToOne(() => Setor, (setor) => setor.requisicoes)
-  @JoinColumn({ name: 'setor_id' })
+  @ManyToOne(() => Setor)
+  @JoinColumn({ name: 'setor' })
   setor: Setor
 
   @ManyToOne(() => Armazem)
-  @JoinColumn({ name: 'armazem_id' })
+  @JoinColumn({ name: 'armazem' })
   armazem: Armazem
 
   @OneToMany(

@@ -50,16 +50,16 @@ export class MovimentoEstoque extends BaseAuditEntity {
   @ManyToOne(() => Armazem, (armazem) => armazem.movimentosSaida, {
     nullable: true,
   })
-  @JoinColumn({ name: 'armazem_origem_id' })
+  @JoinColumn({ name: 'armazem_origem' })
   armazemOrigem: Armazem | null
 
   @ManyToOne(() => Armazem, (armazem) => armazem.movimentosEntrada, {
     nullable: true,
   })
-  @JoinColumn({ name: 'armazem_destino_id' })
+  @JoinColumn({ name: 'armazem_destino' })
   armazemDestino: Armazem | null
 
   @ManyToOne(() => Insumo, (insumo) => insumo.movimentos)
-  @JoinColumn({ name: 'insumo_id' })
+  @JoinColumn({ name: 'insumo' })
   insumo: Insumo
 }

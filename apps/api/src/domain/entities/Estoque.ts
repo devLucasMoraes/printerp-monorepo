@@ -43,11 +43,11 @@ export class Estoque extends BaseAuditEntity {
   abaixoMinimo: boolean
 
   @ManyToOne(() => Armazem, (armazem) => armazem.estoques)
-  @JoinColumn({ name: 'armazem_id' })
+  @JoinColumn({ name: 'armazem' })
   armazem: Armazem
 
   @ManyToOne(() => Insumo, (insumo) => insumo.estoques)
-  @JoinColumn({ name: 'insumo_id' })
+  @JoinColumn({ name: 'insumo' })
   insumo: Insumo
 
   @AfterLoad()

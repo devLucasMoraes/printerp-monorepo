@@ -29,8 +29,8 @@ export class RequisicaoEstoqueItem extends BaseAuditEntity {
   @Column({ name: 'valor_unitario', type: 'numeric', precision: 10, scale: 2 })
   valorUnitario: number
 
-  @ManyToOne(() => Insumo, (insumo) => insumo.id)
-  @JoinColumn({ name: 'insumos_id' })
+  @ManyToOne(() => Insumo)
+  @JoinColumn({ name: 'insumo' })
   insumo: Insumo
 
   @ManyToOne(
@@ -38,10 +38,6 @@ export class RequisicaoEstoqueItem extends BaseAuditEntity {
     (requisicaoEstoque) => requisicaoEstoque.itens,
     { orphanedRowAction: 'soft-delete' },
   )
-  @JoinColumn({ name: 'requisicoes_estoque_id' })
+  @JoinColumn({ name: 'requisicao_estoque' })
   requisicaoEstoque: RequisicaoEstoque
-
-  public getValorTotal() {
-    return this.quantidade * this.valorUnitario
-  }
 }

@@ -62,8 +62,8 @@ export class Insumo extends BaseAuditEntity {
   })
   abaixoMinimo: boolean
 
-  @ManyToOne(() => Categoria, (categoria) => categoria.insumos)
-  @JoinColumn({ name: 'categoria_id' })
+  @ManyToOne(() => Categoria)
+  @JoinColumn({ name: 'categoria' })
   categoria: Categoria
 
   @OneToMany(() => Estoque, (estoque) => estoque.insumo)

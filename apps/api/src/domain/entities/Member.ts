@@ -24,10 +24,10 @@ export class Member {
   role: Role
 
   @ManyToOne(() => Organization, (org) => org.members)
-  @JoinColumn({ name: 'organization_id' })
+  @JoinColumn({ name: 'organization' })
   organization: Organization
 
   @ManyToOne(() => User, (user) => user.memberOn)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user' })
   user: User
 }

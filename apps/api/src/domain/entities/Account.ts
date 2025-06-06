@@ -29,10 +29,10 @@ export class Account {
   providerAccountId: string
 
   @ManyToOne(() => User, (user) => user.accounts)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user' })
   user: User
 
   @ManyToOne(() => Organization, (org) => org.accounts, { nullable: true })
-  @JoinColumn({ name: 'organization_id' })
-  organization?: Organization
+  @JoinColumn({ name: 'organization' })
+  organization: Organization | null
 }

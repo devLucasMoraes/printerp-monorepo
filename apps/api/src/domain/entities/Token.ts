@@ -27,10 +27,10 @@ export class Token {
   updatedAt: Date
 
   @ManyToOne(() => User, (user) => user.tokens)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user' })
   user: User
 
   @ManyToOne(() => Organization, (org) => org.tokens, { nullable: true })
-  @JoinColumn({ name: 'organization_id' })
-  organization?: Organization
+  @JoinColumn({ name: 'organization' })
+  organization: Organization | null
 }

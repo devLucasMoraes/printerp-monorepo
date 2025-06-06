@@ -3,18 +3,16 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
 import { BaseAuditEntity } from './BaseAuditEntity'
-import { DevolucaoItem } from './DevolucaoItem'
-import { Emprestimo } from './Emprestimo'
 import { Insumo } from './Insumo'
+import { NfeDeCompra } from './NfeDeCompra'
 import { Unidade } from './Unidade'
 
-@Entity('emprestimo_itens')
-export class EmprestimoItem extends BaseAuditEntity {
+@Entity('nfes_de_compra_itens')
+export class NfeDeCompraItem extends BaseAuditEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -31,20 +29,22 @@ export class EmprestimoItem extends BaseAuditEntity {
   @Column({ name: 'valor_unitario', type: 'numeric', precision: 10, scale: 2 })
   valorUnitario: number
 
+  @Column({ name: 'valor_ipi', type: 'numeric', precision: 10, scale: 2 })
+  valorIpi: number
+
+  @Column({ type: 'varchar', length: 255, name: 'descricao_fornecedora' })
+  descricaoFornecedora: string
+
+  @Column({ type: 'varchar', length: 255, name: 'referencia_fornecedora' })
+  referenciaFornecedora: string
+
   @ManyToOne(() => Insumo)
   @JoinColumn({ name: 'insumo' })
   insumo: Insumo
 
-  @ManyToOne(() => Emprestimo, (emprestimo) => emprestimo.itens, {
+  @ManyToOne(() => NfeDeCompra, (nfeDeCompra) => nfeDeCompra.itens, {
     orphanedRowAction: 'soft-delete',
   })
-  @JoinColumn({ name: 'emprestimo' })
-  emprestimo: Emprestimo
-
-  @OneToMany(
-    () => DevolucaoItem,
-    (devolucaoItem) => devolucaoItem.emprestimoItem,
-    { cascade: true },
-  )
-  devolucaoItens: DevolucaoItem[]
+  @JoinColumn({ name: 'nfe_de_compra' })
+  nfeDeCompra: NfeDeCompra
 }

@@ -32,13 +32,13 @@ export class DevolucaoItem extends BaseAuditEntity {
   @Column({ name: 'valor_unitario', type: 'numeric', precision: 10, scale: 2 })
   valorUnitario: number
 
-  @ManyToOne(() => Insumo, (insumo) => insumo.id)
-  @JoinColumn({ name: 'insumos_id' })
+  @ManyToOne(() => Insumo)
+  @JoinColumn({ name: 'insumo' })
   insumo: Insumo
 
   @ManyToOne(() => EmprestimoItem, (emprestimo) => emprestimo.devolucaoItens, {
     orphanedRowAction: 'soft-delete',
   })
-  @JoinColumn({ name: 'emprestimo_item_id' })
+  @JoinColumn({ name: 'emprestimo_item' })
   emprestimoItem: EmprestimoItem
 }

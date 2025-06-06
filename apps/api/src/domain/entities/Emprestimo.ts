@@ -42,11 +42,11 @@ export class Emprestimo extends BaseAuditEntity {
   obs: string | null
 
   @ManyToOne(() => Armazem)
-  @JoinColumn({ name: 'armazem_id' })
+  @JoinColumn({ name: 'armazem' })
   armazem: Armazem
 
   @ManyToOne(() => Parceiro)
-  @JoinColumn({ name: 'parceiro_id' })
+  @JoinColumn({ name: 'parceiro' })
   parceiro: Parceiro
 
   @OneToMany(
