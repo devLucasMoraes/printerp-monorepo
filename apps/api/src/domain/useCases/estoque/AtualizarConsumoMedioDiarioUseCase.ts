@@ -90,10 +90,10 @@ export const atualizarConsumoMedioDiarioUseCase = {
           ) AS saida_liquida
         FROM movimentos_estoque me
           JOIN docs_filtrados d
-            ON me.documento_origem_id = d.documento_origem_id
+            ON me.documento_origem_id = d.documento_origem_id 
         WHERE me.insumo_id = $1
           AND (me.tipo = 'SAIDA' OR me.estorno = 'true')
-          AND me.tipo_documento = 'REQUISICAO'  -- Adicionado filtro aqui também
+          AND me.tipo_documento = 'REQUISICAO-ESTOQUE'
         GROUP BY d.documento_origem_id, d.ultima_data
         HAVING
           -- somente documentos com saída líquida positiva

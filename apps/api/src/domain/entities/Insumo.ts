@@ -76,28 +76,10 @@ export class Insumo extends BaseAuditEntity {
   recalcularEstaAbaixoMinimo() {
     if (this.estoques !== undefined) {
       const saldoTotal = this.estoques.reduce(
-        (total, estoque) => total + estoque.quantidade,
+        (total, estoque) => Number(total) + Number(estoque.quantidade),
         0,
       )
-      console.log({ saldoTotal: Number(saldoTotal) })
-      console.log(Number(saldoTotal) < Number(this.estoqueMinimo))
       this.abaixoMinimo = Number(saldoTotal) < Number(this.estoqueMinimo)
     }
-  }
-
-  getSaldoTotal(): number {
-    return this.estoques.reduce(
-      (total, estoque) => total + estoque.quantidade,
-      0,
-    )
-  }
-
-  public getValorTotal() {
-    const saldo = this.getSaldoTotal()
-    return saldo * this.valorUntMed
-  }
-
-  estaAbaixoDoMinimo(): boolean {
-    return this.getSaldoTotal() < this.estoqueMinimo
   }
 }

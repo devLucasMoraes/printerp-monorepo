@@ -5,6 +5,11 @@ import { z } from 'zod'
 import { Unidade } from '@/domain/entities/Unidade'
 import { listEstoqueUseCase } from '@/domain/useCases/estoque/ListEstoqueUseCase'
 import { auth } from '@/http/middleware/auth'
+import {
+  calcularDiasRestantes,
+  calcularPrevisaoEstoqueMinimo,
+  calcularPrevisaoFimEstoque,
+} from '@/utils/estoque-calculations'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
@@ -103,9 +108,19 @@ export async function listEstoques(app: FastifyInstance) {
           ...result,
           content: result.content.map((estoque) => ({
             ...estoque,
-            diasRestantes: estoque.calcularDiasRestantes(),
-            previsaoFimEstoque: estoque.calcularPrevisaoFimEstoque(),
-            previsaoEstoqueMinimo: estoque.calcularPrevisaoEstoqueMinimo(),
+            diasRestantes: calcularDiasRestantes(
+              estoque.quantidade,
+              estoque.consumoMedioDiario,
+            ),
+            previsaoFimEstoque: calcularPrevisaoFimEstoque(
+              estoque.quantidade,
+              estoque.consumoMedioDiario,
+            ),
+            previsaoEstoqueMinimo: calcularPrevisaoEstoqueMinimo(
+              estoque.quantidade,
+              estoque.consumoMedioDiario,
+              estoque.insumo.estoqueMinimo,
+            ),
           })),
         }
 

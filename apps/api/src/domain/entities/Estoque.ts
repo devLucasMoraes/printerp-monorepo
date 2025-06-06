@@ -57,43 +57,4 @@ export class Estoque extends BaseAuditEntity {
         Number(this.quantidade) < Number(this.insumo.estoqueMinimo)
     }
   }
-
-  possuiQuantidadeSuficiente(quantidadeDesejada: number): boolean {
-    return this.quantidade >= quantidadeDesejada
-  }
-
-  calcularDiasRestantes(): number | null {
-    if (!this.consumoMedioDiario || this.consumoMedioDiario <= 0) {
-      return null
-    }
-    return Math.floor(this.quantidade / this.consumoMedioDiario)
-  }
-
-  calcularPrevisaoFimEstoque(): Date | null {
-    const diasRestantes = this.calcularDiasRestantes()
-    if (diasRestantes === null) {
-      return null
-    }
-
-    const dataPrevisao = new Date()
-    dataPrevisao.setDate(dataPrevisao.getDate() + diasRestantes)
-    return dataPrevisao
-  }
-
-  calcularPrevisaoEstoqueMinimo(): Date | null {
-    if (!this.consumoMedioDiario || this.consumoMedioDiario <= 0) {
-      return null
-    }
-
-    const diasAteEstoqueMinimo = Math.floor(
-      (this.quantidade - this.insumo.estoqueMinimo) / this.consumoMedioDiario,
-    )
-    if (diasAteEstoqueMinimo < 0) {
-      return null // Já está abaixo do mínimo
-    }
-
-    const dataPrevisao = new Date()
-    dataPrevisao.setDate(dataPrevisao.getDate() + diasAteEstoqueMinimo)
-    return dataPrevisao
-  }
 }
