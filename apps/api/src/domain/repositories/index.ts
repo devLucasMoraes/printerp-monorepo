@@ -12,6 +12,7 @@ import { RequisicaoEstoqueRepository } from './RequisicaoEstoqueRepository'
 import { RequisitanteRepository } from './RequisitanteRepository'
 import { SetorRepository } from './SetorRepository'
 import { TokenRepository } from './TokenRepository'
+import { TransportadoraRepository } from './TransportadoraRepository'
 import { UserRepository } from './UserRepository'
 
 const user = new UserRepository()
@@ -29,6 +30,7 @@ const organization = new OrganizationRepository()
 const member = new MemberRepository()
 const token = new TokenRepository()
 const fornecedora = new FornecedoraRepository()
+const transportadora = new TransportadoraRepository()
 
 export const repository = {
   user,
@@ -46,4 +48,5 @@ export const repository = {
   member,
   token,
   fornecedora,
+  transportadora,
 }

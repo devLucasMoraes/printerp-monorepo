@@ -88,6 +88,12 @@ import { getAllSetores } from './routes/setor/get-all-setores'
 import { getSetor } from './routes/setor/get-setor'
 import { listSetores } from './routes/setor/list-setores'
 import { updateSetor } from './routes/setor/update-setor'
+import { createTransportadora } from './routes/transportadora/create-transportadora'
+import { deleteTransportadora } from './routes/transportadora/delete-transportadora'
+import { getAllTransportadoras } from './routes/transportadora/get-all-transportadoras'
+import { getTransportadora } from './routes/transportadora/get-transportadora'
+import { listTransportadoras } from './routes/transportadora/list-transportadoras'
+import { updateTransportadora } from './routes/transportadora/update-transportadora'
 import { createOrganizationalUser } from './routes/user/create-organizational-user'
 import { deleteUser } from './routes/user/delete-user'
 import { getAllUsers } from './routes/user/get-all-users'
@@ -244,6 +250,13 @@ app.register(getAllFornecedoras)
 app.register(getFornecedora)
 app.register(listFornecedoras)
 app.register(updateFornecedora)
+
+app.register(createTransportadora)
+app.register(deleteTransportadora)
+app.register(getAllTransportadoras)
+app.register(getTransportadora)
+app.register(listTransportadoras)
+app.register(updateTransportadora)
 
 const start = async () => {
   console.log('Starting server...')

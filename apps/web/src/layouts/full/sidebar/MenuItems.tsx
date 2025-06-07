@@ -11,6 +11,7 @@ import {
   IconPackages,
   IconReplaceUser,
   IconSettings,
+  IconTruck,
   IconUsers,
   IconUserUp,
 } from '@tabler/icons-react'
@@ -33,6 +34,12 @@ const Menuitems = [
     title: 'Fornecedoras',
     icon: IconBuildingFactory2,
     href: '/fornecedoras',
+  },
+  {
+    id: uuidv4(),
+    title: 'Transportadoras',
+    icon: IconTruck,
+    href: '/transportadoras',
   },
   {
     id: uuidv4(),
