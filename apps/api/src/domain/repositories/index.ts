@@ -2,6 +2,7 @@ import { ArmazemRepository } from './ArmazemRepository'
 import { CategoriaRepository } from './CategoriaRepository'
 import { EmprestimoRepository } from './EmprestimoRepository'
 import { EstoqueRepository } from './EstoqueRepository'
+import { FornecedoraRepository } from './FornecedoraRepository'
 import { InsumoRepository } from './InsumoRepository'
 import { MemberRepository } from './MemberRepository'
 import { MovimentoEstoqueRepository } from './MovimentoEstoqueRepository'
@@ -27,6 +28,7 @@ const parceiro = new ParceiroRepository()
 const organization = new OrganizationRepository()
 const member = new MemberRepository()
 const token = new TokenRepository()
+const fornecedora = new FornecedoraRepository()
 
 export const repository = {
   user,
@@ -43,4 +45,5 @@ export const repository = {
   organization,
   member,
   token,
+  fornecedora,
 }

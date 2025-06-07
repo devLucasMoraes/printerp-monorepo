@@ -44,6 +44,12 @@ import { listEmprestimos } from './routes/emprestimo/list-emprestimos'
 import { updateEmprestimo } from './routes/emprestimo/update-emprestimo'
 import { adjustEstoque } from './routes/estoque/adjust-estoque'
 import { listEstoques } from './routes/estoque/list-estoques'
+import { createFornecedora } from './routes/fornecedora/create-fornecedora'
+import { deleteFornecedora } from './routes/fornecedora/delete-fornecedora'
+import { getAllFornecedoras } from './routes/fornecedora/get-all-fornecedoras'
+import { getFornecedora } from './routes/fornecedora/get-fornecedora'
+import { listFornecedoras } from './routes/fornecedora/list-fornecedoras'
+import { updateFornecedora } from './routes/fornecedora/update-fornecedora'
 import { createInsumo } from './routes/insumo/create-insumo'
 import { deleteInsumo } from './routes/insumo/delete-insumo'
 import { getAllInsumos } from './routes/insumo/get-all-insumos'
@@ -231,6 +237,13 @@ app.register(getAllUsers)
 app.register(getUser)
 app.register(listUsers)
 app.register(updateUser)
+
+app.register(createFornecedora)
+app.register(deleteFornecedora)
+app.register(getAllFornecedoras)
+app.register(getFornecedora)
+app.register(listFornecedoras)
+app.register(updateFornecedora)
 
 const start = async () => {
   console.log('Starting server...')

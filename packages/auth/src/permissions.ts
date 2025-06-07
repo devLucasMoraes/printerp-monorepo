@@ -35,6 +35,7 @@ export const permissions: Record<Role, PermissionsByRole> = {
     can(['create', 'get', 'update'], 'Parceiro')
     can(['create', 'get', 'update'], 'RequisicaoEstoque')
     can(['create', 'get', 'update'], 'Emprestimo')
+    can(['create', 'get', 'update'], 'Fornecedora')
     can(['get'], 'Estoque')
   },
   BILLING: (_, { can }) => {

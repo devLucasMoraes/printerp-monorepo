@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
 import { BaseAuditEntity } from './BaseAuditEntity'
 
 @Entity('fornecedoras')
+@Unique(['cnpj', 'organizationId'])
 export class Fornecedora extends BaseAuditEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string

@@ -31,6 +31,9 @@ const Parceiros = Loadable(lazy(() => import('../page/parceiros/Parceiros')))
 const Organizations = Loadable(
   lazy(() => import('../page/organizations/Organizations')),
 )
+const Fornecedoras = Loadable(
+  lazy(() => import('../page/fornecedoras/Fornecedoras')),
+)
 
 /* ****Public Pages***** */
 const Register = Loadable(lazy(() => import('../page/authentication/Register')))
@@ -65,6 +68,7 @@ const Router = [
           { path: '/emprestimos', exact: true, element: <Emprestimos /> },
           { path: '/parceiros', exact: true, element: <Parceiros /> },
           { path: '/organizations', exact: true, element: <Organizations /> },
+          { path: '/fornecedoras', exact: true, element: <Fornecedoras /> },
         ],
       },
     ],
@@ -94,6 +98,7 @@ const Router = [
           { path: 'emprestimos', element: <Emprestimos /> },
           { path: 'parceiros', element: <Parceiros /> },
           { path: 'organizations', element: <Organizations /> },
+          { path: 'fornecedoras', element: <Fornecedoras /> },
         ],
       },
     ],

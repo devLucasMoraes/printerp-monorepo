@@ -14,11 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useSetorQueries } from '../../../hooks/queries/useSetorQueries'
-import { ListCategoriasResponse } from '../../../http/categoria/list-categorias'
 import {
   CreateSetorDTO,
   createSetorSchema,
 } from '../../../http/setor/create-setor'
+import { ListSetoresResponse } from '../../../http/setor/list-setores'
 import {
   UpdateSetorDTO,
   updateSetorSchema,
@@ -29,7 +29,7 @@ interface SetorModalProps {
   open: boolean
   onClose: () => void
   setor?: {
-    data: ListCategoriasResponse
+    data: ListSetoresResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }
 }

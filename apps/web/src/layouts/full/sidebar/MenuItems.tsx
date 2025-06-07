@@ -2,6 +2,7 @@ import {
   IconAffiliate,
   IconBinaryTree,
   IconBox,
+  IconBuildingFactory2,
   IconBuildingWarehouse,
   IconCategoryPlus,
   IconChecklist,
@@ -26,6 +27,12 @@ const Menuitems = [
     title: 'Dashboard',
     icon: IconLayoutDashboard,
     href: '/dashboard',
+  },
+  {
+    id: uuidv4(),
+    title: 'Fornecedoras',
+    icon: IconBuildingFactory2,
+    href: '/fornecedoras',
   },
   {
     id: uuidv4(),
