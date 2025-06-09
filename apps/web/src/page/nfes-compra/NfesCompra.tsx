@@ -99,7 +99,6 @@ const NfesCompra = () => {
       headerName: 'NFe',
       minWidth: 155,
       flex: 0.1,
-      type: 'string',
     },
     {
       field: 'valorTotalNfe',
@@ -107,6 +106,11 @@ const NfesCompra = () => {
       minWidth: 155,
       flex: 0.1,
       type: 'number',
+      valueFormatter: (value: number) =>
+        value.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }),
     },
     {
       field: 'fornecedora',

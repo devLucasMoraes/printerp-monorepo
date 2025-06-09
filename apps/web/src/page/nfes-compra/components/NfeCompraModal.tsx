@@ -73,6 +73,7 @@ export const NfeCompraModal = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    getValues,
   } = useForm<UpdateNfeCompraDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -106,17 +107,60 @@ export const NfeCompraModal = ({
     defaultValue: [],
   })
 
+  const valorSeguro = useWatch({
+    control,
+    name: 'valorSeguro',
+  })
+
+  const valorFrete = useWatch({
+    control,
+    name: 'valorFrete',
+  })
+
+  const valorOutros = useWatch({
+    control,
+    name: 'valorOutros',
+  })
+
+  const valorDesconto = useWatch({
+    control,
+    name: 'valorDesconto',
+  })
+
   useEffect(() => {
-    const total =
+    const totalProdutos =
       items?.reduce((total, item) => {
         const quantidade = Number(item.quantidade) || 0
         const valorUnitario = Number(item.valorUnitario) || 0
-        const valorIpi = Number(item.valorIpi) || 0
-        return total + quantidade * valorUnitario + valorIpi
+        return total + quantidade * valorUnitario
       }, 0) || 0
 
-    setValue('valorTotalProdutos', Number(total.toFixed(2)))
-  }, [items, setValue])
+    const totalIpi =
+      items?.reduce((total, item) => {
+        const valorIpi = Number(item.valorIpi) || 0
+        return total + valorIpi
+      }, 0) || 0
+
+    const totalNfe =
+      totalProdutos +
+      totalIpi +
+      valorSeguro +
+      valorOutros +
+      valorFrete -
+      valorDesconto
+
+    setValue('valorTotalNfe', Number(totalNfe.toFixed(2)))
+    setValue('valorTotalProdutos', Number(totalProdutos.toFixed(2)))
+    setValue('valorTotalIpi', Number(totalIpi.toFixed(2)))
+  }, [
+    getValues,
+    items,
+    setValue,
+    valorDesconto,
+    valorFrete,
+    valorOutros,
+    valorSeguro,
+  ])
 
   useEffect(() => {
     if (!form?.data) {
@@ -395,7 +439,7 @@ export const NfeCompraModal = ({
                     <TextField
                       {...field}
                       type="number"
-                      label="Valor Unitário"
+                      label="Valor IPI"
                       error={!!errors.itens?.[index]?.valorIpi}
                       helperText={errors.itens?.[index]?.valorIpi?.message}
                       fullWidth
