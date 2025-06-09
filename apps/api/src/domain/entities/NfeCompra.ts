@@ -10,11 +10,11 @@ import {
 import { Armazem } from './Armazem'
 import { BaseAuditEntity } from './BaseAuditEntity'
 import { Fornecedora } from './Fornecedora'
-import { NfeDeCompraItem } from './NfeDeCompraItem'
+import { NfeCompraItem } from './NfeCompraItem'
 import { Transportadora } from './Transportadora'
 
-@Entity('nfes_de_compra')
-export class NfeDeCompra extends BaseAuditEntity {
+@Entity('nfes_compra')
+export class NfeCompra extends BaseAuditEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -24,10 +24,10 @@ export class NfeDeCompra extends BaseAuditEntity {
   @Column({ type: 'varchar', length: 255, name: 'chave_nfe' })
   chaveNfe: string
 
-  @Column({ type: 'varchar', length: 255, name: 'data_emissao' })
+  @Column({ type: 'timestamp', name: 'data_emissao' })
   dataEmissao: Date
 
-  @Column({ type: 'varchar', length: 255, name: 'data_recebimento' })
+  @Column({ type: 'timestamp', name: 'data_recebimento' })
   dataRecebimento: Date
 
   @Column({
@@ -93,8 +93,8 @@ export class NfeDeCompra extends BaseAuditEntity {
   })
   valorOutros: number
 
-  @Column({ type: 'varchar', length: 255, name: 'observacao' })
-  observacao: string
+  @Column({ type: 'varchar', length: 255, name: 'observacao', nullable: true })
+  observacao: string | null
 
   @ManyToOne(() => Armazem)
   @JoinColumn({ name: 'armazem' })
@@ -108,10 +108,8 @@ export class NfeDeCompra extends BaseAuditEntity {
   @JoinColumn({ name: 'transportadora' })
   transportadora: Transportadora
 
-  @OneToMany(
-    () => NfeDeCompraItem,
-    (nfeDeCompraItem) => nfeDeCompraItem.nfeDeCompra,
-    { cascade: true },
-  )
-  itens: NfeDeCompraItem[]
+  @OneToMany(() => NfeCompraItem, (nfeCompraItem) => nfeCompraItem.nfeCompra, {
+    cascade: true,
+  })
+  itens: NfeCompraItem[]
 }

@@ -6,6 +6,7 @@ import { FornecedoraRepository } from './FornecedoraRepository'
 import { InsumoRepository } from './InsumoRepository'
 import { MemberRepository } from './MemberRepository'
 import { MovimentoEstoqueRepository } from './MovimentoEstoqueRepository'
+import { NfeCompraRepository } from './NfeCompraRepository'
 import { OrganizationRepository } from './OrganizationRepository'
 import { ParceiroRepository } from './ParceiroRepository'
 import { RequisicaoEstoqueRepository } from './RequisicaoEstoqueRepository'
@@ -31,6 +32,7 @@ const member = new MemberRepository()
 const token = new TokenRepository()
 const fornecedora = new FornecedoraRepository()
 const transportadora = new TransportadoraRepository()
+const nfeCompra = new NfeCompraRepository()
 
 export const repository = {
   user,
@@ -49,4 +51,5 @@ export const repository = {
   token,
   fornecedora,
   transportadora,
+  nfeCompra,
 }

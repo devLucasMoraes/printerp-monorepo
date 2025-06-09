@@ -57,6 +57,12 @@ import { getInsumo } from './routes/insumo/get-insumo'
 import { listInsumos } from './routes/insumo/list-insumos'
 import { updateInsumo } from './routes/insumo/update-insumo'
 import { listMovimentacoesEstoque } from './routes/movimentacao-estoque/list-movimentacoes-estoque'
+import { createNfeCompra } from './routes/nfe-compra/create-nfe-compra'
+import { deleteNfeCompra } from './routes/nfe-compra/delete-nfe-compra'
+import { getAllNfesCompra } from './routes/nfe-compra/get-all-nfes-compra'
+import { getNfeCompra } from './routes/nfe-compra/get-nfe-compra'
+import { listNfesCompra } from './routes/nfe-compra/list-nfes-compra'
+import { updateNfeCompra } from './routes/nfe-compra/update-nfe-compra'
 import { createOrganization } from './routes/orgs/create-organization'
 import { getMembership } from './routes/orgs/get-membership'
 import { getOrganization } from './routes/orgs/get-organization'
@@ -257,6 +263,13 @@ app.register(getAllTransportadoras)
 app.register(getTransportadora)
 app.register(listTransportadoras)
 app.register(updateTransportadora)
+
+app.register(createNfeCompra)
+app.register(deleteNfeCompra)
+app.register(getAllNfesCompra)
+app.register(getNfeCompra)
+app.register(listNfesCompra)
+app.register(updateNfeCompra)
 
 const start = async () => {
   console.log('Starting server...')

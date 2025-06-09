@@ -16,6 +16,7 @@ import { emprestimoSubject } from './subjects/emprestimo'
 import { estoqueSubject } from './subjects/estoque'
 import { fornecedoraSubject } from './subjects/fornecedora'
 import { insumoSubject } from './subjects/insumo'
+import { nfeCompraSubject } from './subjects/nfe-compra'
 import { organizationSubject } from './subjects/organization'
 import { parceiroSubject } from './subjects/parceiro'
 import { requisicaoEstoqueSubject } from './subjects/requisicao-estoque'
@@ -45,6 +46,7 @@ const appAbility = z.union([
   chartSubject,
   fornecedoraSubject,
   transportadoraSubject,
+  nfeCompraSubject,
   z.tuple([z.literal('manage'), z.literal('all')]),
 ])
 

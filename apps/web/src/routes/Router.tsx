@@ -37,6 +37,9 @@ const Fornecedoras = Loadable(
 const Transportadoras = Loadable(
   lazy(() => import('../page/transportadoras/Transportadoras')),
 )
+const NfesCompra = Loadable(
+  lazy(() => import('../page/nfes-compra/NfesCompra')),
+)
 
 /* ****Public Pages***** */
 const Register = Loadable(lazy(() => import('../page/authentication/Register')))
@@ -77,6 +80,11 @@ const Router = [
             exact: true,
             element: <Transportadoras />,
           },
+          {
+            path: '/nfes-compra',
+            exact: true,
+            element: <NfesCompra />,
+          },
         ],
       },
     ],
@@ -108,6 +116,7 @@ const Router = [
           { path: 'organizations', element: <Organizations /> },
           { path: 'fornecedoras', element: <Fornecedoras /> },
           { path: 'transportadoras', element: <Transportadoras /> },
+          { path: 'nfes-compra', element: <NfesCompra /> },
         ],
       },
     ],

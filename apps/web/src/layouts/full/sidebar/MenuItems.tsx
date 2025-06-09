@@ -8,6 +8,7 @@ import {
   IconChecklist,
   IconHeartHandshake,
   IconLayoutDashboard,
+  IconNotes,
   IconPackages,
   IconReplaceUser,
   IconSettings,
@@ -40,6 +41,12 @@ const Menuitems = [
     title: 'Transportadoras',
     icon: IconTruck,
     href: '/transportadoras',
+  },
+  {
+    id: uuidv4(),
+    title: 'NFes de Compra',
+    icon: IconNotes,
+    href: '/nfes-compra',
   },
   {
     id: uuidv4(),

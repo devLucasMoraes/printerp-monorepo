@@ -8,11 +8,11 @@ import {
 
 import { BaseAuditEntity } from './BaseAuditEntity'
 import { Insumo } from './Insumo'
-import { NfeDeCompra } from './NfeDeCompra'
+import { NfeCompra } from './NfeCompra'
 import { Unidade } from './Unidade'
 
-@Entity('nfes_de_compra_itens')
-export class NfeDeCompraItem extends BaseAuditEntity {
+@Entity('nfe_compra_itens')
+export class NfeCompraItem extends BaseAuditEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
@@ -42,9 +42,9 @@ export class NfeDeCompraItem extends BaseAuditEntity {
   @JoinColumn({ name: 'insumo' })
   insumo: Insumo
 
-  @ManyToOne(() => NfeDeCompra, (nfeDeCompra) => nfeDeCompra.itens, {
+  @ManyToOne(() => NfeCompra, (nfeCompra) => nfeCompra.itens, {
     orphanedRowAction: 'soft-delete',
   })
-  @JoinColumn({ name: 'nfe_de_compra' })
-  nfeDeCompra: NfeDeCompra
+  @JoinColumn({ name: 'nfe_compra' })
+  nfeCompra: NfeCompra
 }
