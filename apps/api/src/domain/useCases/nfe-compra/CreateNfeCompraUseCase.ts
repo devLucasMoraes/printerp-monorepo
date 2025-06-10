@@ -8,6 +8,7 @@ import { CreateNfeCompraDTO } from '@/http/routes/nfe-compra/create-nfe-compra'
 import { Insumo } from '../../entities/Insumo'
 import { NfeCompra } from '../../entities/NfeCompra'
 import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
+import { updateValorUntMedUseCase } from '../insumo/UpdateValorUntMed'
 
 export const createNfeCompraUseCase = {
   async execute(
@@ -103,6 +104,14 @@ export const createNfeCompraUseCase = {
 
       // Processamento das movimentações
       for (const item of nfeCompra.itens) {
+        await updateValorUntMedUseCase.execute(
+          {
+            insumo: item.insumo,
+            valorUnitarioEntrada: item.valorUnitario,
+            quantidadeEntrada: item.quantidade,
+          },
+          manager,
+        )
         await registrarEntradaEstoqueUseCase.execute(
           {
             insumo: item.insumo,

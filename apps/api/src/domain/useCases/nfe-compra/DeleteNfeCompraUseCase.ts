@@ -17,15 +17,10 @@ export const deleteNfeCompraUseCase = {
           itens: { insumo: true },
           armazem: true,
         },
-        withDeleted: true,
       })
 
       if (!requisicao) {
         throw new BadRequestError('Nfe de Compra não encontrada')
-      }
-
-      if (requisicao.deletedAt) {
-        throw new BadRequestError('Nfe de Compra já está desativada')
       }
 
       // Reverter movimentações para cada item
@@ -52,7 +47,7 @@ export const deleteNfeCompraUseCase = {
         deletedBy: membership.user.id,
       })
 
-      await manager.softDelete(NfeCompra, id)
+      await manager.softRemove(NfeCompra, requisicao)
     })
   },
 }

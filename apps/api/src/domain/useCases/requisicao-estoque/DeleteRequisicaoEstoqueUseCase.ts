@@ -17,15 +17,10 @@ export const deleteRequisicaoEstoqueUseCase = {
           itens: { insumo: true },
           armazem: true,
         },
-        withDeleted: true,
       })
 
       if (!requisicao) {
         throw new BadRequestError('Requisição de estoque não encontrada')
-      }
-
-      if (requisicao.deletedAt) {
-        throw new BadRequestError('Requisição de estoque já está desativada')
       }
 
       // Reverter movimentações para cada item
@@ -52,7 +47,7 @@ export const deleteRequisicaoEstoqueUseCase = {
         deletedBy: membership.user.id,
       })
 
-      await manager.softDelete(RequisicaoEstoque, id)
+      await manager.softRemove(RequisicaoEstoque, requisicao)
     })
   },
 }
