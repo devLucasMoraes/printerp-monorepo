@@ -28,7 +28,6 @@ export const updateValorUntMedUseCase = {
     }
 
     if (!insumoWithEstoque.valorUntMedAuto) {
-      console.log({ insumo, quantidadeEntrada, valorUnitarioEntrada })
       return
     }
 

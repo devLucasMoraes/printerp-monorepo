@@ -12,6 +12,7 @@ import { Insumo } from '../../entities/Insumo'
 import { NfeCompra } from '../../entities/NfeCompra'
 import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
 import { registrarSaidaEstoqueUseCase } from '../estoque/RegistrarSaidaEstoqueUseCase'
+import { updateValorUntMedUseCase } from '../insumo/UpdateValorUntMed'
 
 export const updateNfeCompraUseCase = {
   async execute(
@@ -168,6 +169,14 @@ export const updateNfeCompraUseCase = {
 
         // Processar novas movimentações
         for (const item of savedNfe.itens) {
+          await updateValorUntMedUseCase.execute(
+            {
+              insumo: item.insumo,
+              valorUnitarioEntrada: item.valorUnitario,
+              quantidadeEntrada: item.quantidade,
+            },
+            manager,
+          )
           await registrarEntradaEstoqueUseCase.execute(
             {
               insumo: item.insumo,

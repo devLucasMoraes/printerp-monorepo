@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@mui/material'
+import { Button, IconButton, Stack } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -207,19 +207,33 @@ const NfesCompra = () => {
         <DashboardCard
           title="Nfes de compra"
           action={
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setFormOpen(true)
-                setSelectedNfeCompra({
-                  data: undefined,
-                  type: 'CREATE',
-                })
-              }}
-            >
-              nova nota fiscal
-            </Button>
+            <Stack direction="row" gap={1}>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setFormOpen(true)
+                  setSelectedNfeCompra({
+                    data: undefined,
+                    type: 'CREATE',
+                  })
+                }}
+              >
+                importar xml
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setFormOpen(true)
+                  setSelectedNfeCompra({
+                    data: undefined,
+                    type: 'CREATE',
+                  })
+                }}
+              >
+                nova nota fiscal
+              </Button>
+            </Stack>
           }
         >
           <ServerDataTable
