@@ -1,4 +1,4 @@
-import { Button, IconButton, Stack } from '@mui/material'
+import { Button, IconButton, Input, Stack } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -11,6 +11,7 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useNfeCompraQueries } from '../../hooks/queries/useNfeCompraQueries'
+import { useXmlImport } from '../../hooks/useXmlImport'
 import { ListNfesCompraResponse } from '../../http/nfe-compra/list-nfes-compra'
 import { useAlertStore } from '../../stores/alert-store'
 import { NfeCompraModal } from './components/NfeCompraModal'
@@ -23,7 +24,7 @@ const NfesCompra = () => {
 
   const [selectedNfeCompra, setSelectedNfeCompra] = useState<{
     data?: ListNfesCompraResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' | 'IMPORT_XML'
   }>()
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -31,6 +32,24 @@ const NfesCompra = () => {
   })
 
   const queryClient = useQueryClient()
+
+  const { parseXmlFile } = useXmlImport({
+    onSuccess: (nfeData) => {
+      console.log({ nfeData })
+      setSelectedNfeCompra({
+        data: undefined,
+        type: 'IMPORT_XML',
+      })
+      setFormOpen(true)
+      enqueueSnackbar('XML importado com sucesso!', { variant: 'success' })
+    },
+    onError: (error) => {
+      enqueueSnackbar(error, { variant: 'error' })
+    },
+    onValidationError: (error) => {
+      enqueueSnackbar(error, { variant: 'error' })
+    },
+  })
 
   const {
     useListPaginated: useGetNfesCompraPaginated,
@@ -83,6 +102,20 @@ const NfesCompra = () => {
   const handleCopy = (requisicaoEstoque: ListNfesCompraResponse): void => {
     setSelectedNfeCompra({ data: requisicaoEstoque, type: 'COPY' })
     setFormOpen(true)
+  }
+
+  const handleImportXml = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    await parseXmlFile(file)
+
+    event.target.value = ''
   }
 
   const columns: GridColDef<ListNfesCompraResponse>[] = [
@@ -208,17 +241,14 @@ const NfesCompra = () => {
           title="Nfes de compra"
           action={
             <Stack direction="row" gap={1}>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  setFormOpen(true)
-                  setSelectedNfeCompra({
-                    data: undefined,
-                    type: 'CREATE',
-                  })
-                }}
-              >
+              <Button variant="outlined" component="label">
                 importar xml
+                <Input
+                  inputProps={{ accept: '.xml' }}
+                  type="file"
+                  sx={{ display: 'none' }}
+                  onChange={handleImportXml}
+                />
               </Button>
               <Button
                 variant="contained"

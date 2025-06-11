@@ -49,7 +49,7 @@ export const NfeCompraModal = ({
   onClose: () => void
   form?: {
     data?: ListNfesCompraResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' | 'IMPORT_XML'
   }
 }) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
