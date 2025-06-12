@@ -90,6 +90,8 @@ export const useXmlImport = (
           valorFrete: Number(total.vFrete),
           valorSeguro: Number(total.vSeg),
           valorDesconto: Number(total.vDesc),
+          valorOutros: Number(total.vOutro),
+          valorTotalIpi: Number(total.vIPI),
         },
 
         // Dados da transportadora
@@ -110,6 +112,7 @@ export const useXmlImport = (
             quantidade: Number(item.prod.qCom),
             valorUnitario: Number(item.prod.vUnCom),
             valorTotal: Number(item.prod.vProd),
+            valorIpi: Number(item.imposto.IPI || 0),
             unidade: item.prod.uCom,
             ncm: item.prod.NCM,
             cfop: item.prod.CFOP,

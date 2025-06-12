@@ -30,6 +30,7 @@ import { InsumoAutoComplete } from '../../../components/shared/autocompletes/Ins
 import { TransportadoraAutoComplete } from '../../../components/shared/autocompletes/TransportadorasAutoComplete'
 import { unidades } from '../../../constants'
 import { Unidade } from '../../../constants/Unidade'
+import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useNfeCompraQueries } from '../../../hooks/queries/useNfeCompraQueries'
 import { createNfeCompraSchema } from '../../../http/nfe-compra/create-nfe-compra'
@@ -39,6 +40,7 @@ import {
   updateNfeCompraSchema,
 } from '../../../http/nfe-compra/update-nfe-compra'
 import { useAlertStore } from '../../../stores/alert-store'
+import { NfeData } from '../../../types'
 
 export const NfeCompraModal = ({
   open,
@@ -49,6 +51,7 @@ export const NfeCompraModal = ({
   onClose: () => void
   form?: {
     data?: ListNfesCompraResponse
+    nfeData?: NfeData
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' | 'IMPORT_XML'
   }
 }) => {
@@ -62,6 +65,14 @@ export const NfeCompraModal = ({
 
   const { useGetAll: useGetAllInsumos } = useInsumoQueries()
   const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
+
+  const nfeData = form?.nfeData
+
+  const { useGetByCnpj } = useFornecedoraQueries()
+  const { data: fornecedora } = useGetByCnpj(
+    nfeData?.fornecedor.cnpj || '',
+    orgSlug!,
+  )
 
   const isUpdate = form?.type === 'UPDATE'
 
@@ -163,56 +174,86 @@ export const NfeCompraModal = ({
   ])
 
   useEffect(() => {
-    if (!form?.data) {
+    if (form?.nfeData && form.type === 'IMPORT_XML') {
+      const data = form.nfeData
       reset({
-        nfe: '',
-        chaveNfe: '',
-        dataEmissao: null as unknown as Date,
+        nfe: data.numeroNfe,
+        chaveNfe: data.chaveAcesso,
+        dataEmissao: new Date(data.dataEmissao),
         dataRecebimento: null as unknown as Date,
-        valorTotalProdutos: 0,
-        valorFrete: 0,
-        valorSeguro: 0,
-        valorTotalIpi: 0,
-        valorDesconto: 0,
-        valorTotalNfe: 0,
-        valorOutros: 0,
+        valorTotalProdutos: data.valores.valorTotalProdutos,
+        valorFrete: data.valores.valorFrete,
+        valorSeguro: data.valores.valorSeguro,
+        valorDesconto: data.valores.valorDesconto,
+        valorTotalIpi: data.valores.valorTotalIpi,
+        valorTotalNfe: data.valores.valorTotalNfe,
+        valorOutros: data.valores.valorOutros,
         observacao: null,
-        fornecedoraId: '',
-        transportadoraId: '',
+        fornecedoraId: fornecedora?.id,
+        transportadoraId: null,
         armazemId: '',
-        itens: [],
+        itens: data.produtos.map((item) => ({
+          insumoId: null,
+          quantidade: item.quantidade,
+          valorUnitario: item.valorUnitario,
+          valorIpi: item.valorIpi,
+          unidade: item.unidade,
+          descricaoFornecedora: item.descricao,
+          referenciaFornecedora: item.codigo,
+        })),
       })
       return
     }
 
-    const { data } = form
+    if (form?.data && form.type === 'UPDATE') {
+      const { data } = form
+      reset({
+        nfe: data.nfe,
+        chaveNfe: data.chaveNfe,
+        dataEmissao: new Date(data.dataEmissao),
+        dataRecebimento: new Date(data.dataRecebimento),
+        valorTotalProdutos: Number(data.valorTotalProdutos),
+        valorFrete: Number(data.valorFrete),
+        valorSeguro: Number(data.valorSeguro),
+        valorDesconto: Number(data.valorDesconto),
+        valorTotalIpi: Number(data.valorTotalIpi),
+        valorTotalNfe: Number(data.valorTotalNfe),
+        valorOutros: Number(data.valorOutros),
+        observacao: data.observacao,
+        fornecedoraId: data.fornecedora.id,
+        transportadoraId: data.transportadora.id,
+        armazemId: data.armazem.id,
+        itens: data.itens.map((item) => ({
+          id: item.id,
+          insumoId: item.insumo.id,
+          quantidade: Number(item.quantidade),
+          valorUnitario: Number(item.valorUnitario),
+          valorIpi: Number(item.valorIpi),
+          unidade: item.unidade,
+          descricaoFornecedora: item.descricaoFornecedora,
+          referenciaFornecedora: item.referenciaFornecedora,
+        })),
+      })
+      return
+    }
 
     reset({
-      nfe: data.nfe,
-      chaveNfe: data.chaveNfe,
-      dataEmissao: new Date(data.dataEmissao),
-      dataRecebimento: new Date(data.dataRecebimento),
-      valorTotalProdutos: Number(data.valorTotalProdutos),
-      valorFrete: Number(data.valorFrete),
-      valorSeguro: Number(data.valorSeguro),
-      valorDesconto: Number(data.valorDesconto),
-      valorTotalIpi: Number(data.valorTotalIpi),
-      valorTotalNfe: Number(data.valorTotalNfe),
-      valorOutros: Number(data.valorOutros),
-      observacao: data.observacao,
-      fornecedoraId: data.fornecedora.id,
-      transportadoraId: data.transportadora.id,
-      armazemId: data.armazem.id,
-      itens: data.itens.map((item) => ({
-        id: item.id,
-        insumoId: item.insumo.id,
-        quantidade: Number(item.quantidade),
-        valorUnitario: Number(item.valorUnitario),
-        valorIpi: Number(item.valorIpi),
-        unidade: item.unidade,
-        descricaoFornecedora: item.descricaoFornecedora,
-        referenciaFornecedora: item.referenciaFornecedora,
-      })),
+      nfe: '',
+      chaveNfe: '',
+      dataEmissao: null as unknown as Date,
+      dataRecebimento: null as unknown as Date,
+      valorTotalProdutos: 0,
+      valorFrete: 0,
+      valorSeguro: 0,
+      valorTotalIpi: 0,
+      valorDesconto: 0,
+      valorTotalNfe: 0,
+      valorOutros: 0,
+      observacao: null,
+      fornecedoraId: '',
+      transportadoraId: '',
+      armazemId: '',
+      itens: [],
     })
   }, [form, reset])
 

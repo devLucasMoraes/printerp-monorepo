@@ -48,6 +48,7 @@ import { createFornecedora } from './routes/fornecedora/create-fornecedora'
 import { deleteFornecedora } from './routes/fornecedora/delete-fornecedora'
 import { getAllFornecedoras } from './routes/fornecedora/get-all-fornecedoras'
 import { getFornecedora } from './routes/fornecedora/get-fornecedora'
+import { getFornecedoraByCnpj } from './routes/fornecedora/get-fornecedora-by-cnpj'
 import { listFornecedoras } from './routes/fornecedora/list-fornecedoras'
 import { updateFornecedora } from './routes/fornecedora/update-fornecedora'
 import { createInsumo } from './routes/insumo/create-insumo'
@@ -256,6 +257,7 @@ app.register(getAllFornecedoras)
 app.register(getFornecedora)
 app.register(listFornecedoras)
 app.register(updateFornecedora)
+app.register(getFornecedoraByCnpj)
 
 app.register(createTransportadora)
 app.register(deleteTransportadora)

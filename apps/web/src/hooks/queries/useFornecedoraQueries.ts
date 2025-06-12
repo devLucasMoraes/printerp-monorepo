@@ -22,6 +22,10 @@ import {
   GetFornecedoraResponse,
 } from '../../http/fornecedora/get-fornecedora'
 import {
+  getFornecedoraByCnpj,
+  GetFornecedoraByCnpjResponse,
+} from '../../http/fornecedora/get-fornecedora-by-cnpj'
+import {
   listFornecedoras,
   ListFornecedorasResponse,
 } from '../../http/fornecedora/list-fornecedoras'
@@ -46,6 +50,21 @@ export function useFornecedoraQueries() {
       ...queryOptions,
       queryKey: [resourceKey, orgSlug, id],
       queryFn: () => getFornecedora(orgSlug, id),
+    })
+  }
+
+  const useGetByCnpj = (
+    cnpj: string,
+    orgSlug: string,
+    queryOptions?: Omit<
+      UseQueryOptions<GetFornecedoraByCnpjResponse, AxiosError<ErrorResponse>>,
+      'queryKey' | 'queryFn'
+    >,
+  ) => {
+    return useQuery({
+      ...queryOptions,
+      queryKey: [resourceKey, orgSlug, cnpj],
+      queryFn: () => getFornecedoraByCnpj(orgSlug, cnpj),
     })
   }
 
@@ -155,6 +174,7 @@ export function useFornecedoraQueries() {
 
   return {
     useGetById,
+    useGetByCnpj,
     useListPaginated,
     useGetAll,
     useCreate,

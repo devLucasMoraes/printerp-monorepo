@@ -14,6 +14,7 @@ import { useNfeCompraQueries } from '../../hooks/queries/useNfeCompraQueries'
 import { useXmlImport } from '../../hooks/useXmlImport'
 import { ListNfesCompraResponse } from '../../http/nfe-compra/list-nfes-compra'
 import { useAlertStore } from '../../stores/alert-store'
+import { NfeData } from '../../types'
 import { NfeCompraModal } from './components/NfeCompraModal'
 
 const NfesCompra = () => {
@@ -24,6 +25,7 @@ const NfesCompra = () => {
 
   const [selectedNfeCompra, setSelectedNfeCompra] = useState<{
     data?: ListNfesCompraResponse
+    nfeData?: NfeData
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' | 'IMPORT_XML'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -38,6 +40,7 @@ const NfesCompra = () => {
       console.log({ nfeData })
       setSelectedNfeCompra({
         data: undefined,
+        nfeData,
         type: 'IMPORT_XML',
       })
       setFormOpen(true)

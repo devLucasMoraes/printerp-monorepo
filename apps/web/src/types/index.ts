@@ -56,6 +56,8 @@ export interface NfeData {
     valorFrete: number
     valorSeguro: number
     valorDesconto: number
+    valorOutros: number
+    valorTotalIpi: number
   }
   transportadora: {
     cnpj: string
@@ -74,5 +76,6 @@ export interface NfeData {
     unidade: string
     ncm: string
     cfop: string
+    valorIpi: number
   }>
 }
