@@ -27,41 +27,6 @@ export const useXmlImport = (
 ): UseXmlImportReturn => {
   const { onSuccess, onError, onValidationError } = options
 
-  // Configurações otimizadas do parser para NFe brasileiras
-  const getParserOptions = useCallback(
-    () => ({
-      ignoreAttributes: false, // Preserva atributos XML
-      attributeNamePrefix: '@_', // Prefixo para distinguir atributos
-      textNodeName: '#text', // Nome para nós de texto
-      parseAttributeValue: true, // Converte valores dos atributos
-      parseNodeValue: true, // Converte valores dos nós
-      parseTrueNumberOnly: false, // Não converte strings numéricas automaticamente
-      trimValues: true, // Remove espaços em branco desnecessários
-      removeNSPrefix: false, // Mantém prefixos de namespace
-      alwaysCreateTextNode: false, // Otimização de memória
-      isArray: (name: string) => {
-        // Define elementos que devem ser sempre tratados como arrays
-        // Importante para NFe onde alguns elementos podem aparecer múltiplas vezes
-        const arrayElements = [
-          'det',
-          'prod',
-          'imposto',
-          'ICMS',
-          'PIS',
-          'COFINS',
-          'IPI',
-          'PISST',
-          'COFINSST',
-          'vol',
-          'lacres',
-        ]
-        return arrayElements.includes(name)
-      },
-      stopNodes: ['*.CDATA'], // Para elementos CDATA se necessário
-    }),
-    [],
-  )
-
   const isValidXmlFile = useCallback((file: File): boolean => {
     if (!file) return false
 
@@ -75,23 +40,23 @@ export const useXmlImport = (
   const extractNfeData = useCallback((nfeInfo: InfNFe): NfeData | null => {
     try {
       // Extrai seções principais
-      const ide = nfeInfo.ide || {}
-      const emit = nfeInfo.emit || {}
-      const dest = nfeInfo.dest || {}
-      const total = nfeInfo.total?.ICMSTot || {}
-      const transp = nfeInfo.transp || {}
+      const ide = nfeInfo.ide
+      const emit = nfeInfo.emit
+      const dest = nfeInfo.dest
+      const total = nfeInfo.total.ICMSTot
+      const transp = nfeInfo.transp
 
       return {
         // Identificação da nota
-        numeroNfe: ide.nNF || '',
+        numeroNfe: ide.nNF,
         serie: ide.serie,
         chaveAcesso: (nfeInfo['@_Id'] || '').replace('NFe', ''),
-        dataEmissao: ide.dhEmi || '',
+        dataEmissao: ide.dhEmi,
 
         // Dados do emitente (fornecedor)
         fornecedor: {
-          cnpj: emit.CNPJ || '',
-          razaoSocial: emit.xNome || '',
+          cnpj: emit.CNPJ,
+          razaoSocial: emit.xNome,
           nomeFantasia: emit.xFant || '',
           endereco: {
             logradouro: emit.enderEmit?.xLgr || '',
@@ -107,7 +72,7 @@ export const useXmlImport = (
         destinatario: {
           cnpj: dest.CNPJ || '',
           cpf: dest.CPF || '',
-          razaoSocial: dest.xNome || '',
+          razaoSocial: dest.xNome,
           endereco: {
             logradouro: dest.enderDest?.xLgr || '',
             numero: dest.enderDest?.nro || '',
@@ -139,21 +104,15 @@ export const useXmlImport = (
 
         // Lista de produtos
         produtos: (() => {
-          const detalhes = nfeInfo.det
-          if (!detalhes) return []
-
-          // Normaliza para array
-          const detArray = Array.isArray(detalhes) ? detalhes : [detalhes]
-
-          return detArray.map((item) => ({
-            codigo: item.prod?.cProd || '',
-            descricao: item.prod?.xProd || '',
-            quantidade: Number(item.prod?.qCom),
-            valorUnitario: Number(item.prod?.vUnCom),
-            valorTotal: Number(item.prod?.vProd),
-            unidade: item.prod?.uCom || '',
-            ncm: item.prod?.NCM || '',
-            cfop: item.prod?.CFOP || '',
+          return nfeInfo.det.map((item) => ({
+            codigo: item.prod.cProd,
+            descricao: item.prod.xProd,
+            quantidade: Number(item.prod.qCom),
+            valorUnitario: Number(item.prod.vUnCom),
+            valorTotal: Number(item.prod.vProd),
+            unidade: item.prod.uCom,
+            ncm: item.prod.NCM,
+            cfop: item.prod.CFOP,
           }))
         })(),
       }
@@ -196,12 +155,33 @@ export const useXmlImport = (
         }
 
         // Parse do XML
-        const parser = new XMLParser(getParserOptions())
+        const parser = new XMLParser({
+          ignoreAttributes: false, // Preserva atributos XML
+          attributeNamePrefix: '@_', // Prefixo para distinguir atributos
+          textNodeName: '#text', // Nome para nós de texto
+          parseAttributeValue: false, // Converte valores dos atributos
+          trimValues: true, // Remove espaços em branco desnecessários
+          removeNSPrefix: false, // Mantém prefixos de namespace
+          alwaysCreateTextNode: false, // Otimização de memória
+          numberParseOptions: {
+            hex: false, // Ignora números hexadecimais
+            leadingZeros: true, // Mantém zeros iniciais (ex: "001")
+            skipLike: /.*/, // Expressão regular que ignora TODOS os números
+          },
+          tagValueProcessor: (tagName, tagValue) => String(tagValue),
+          isArray: (name: string) => {
+            // Define elementos que devem ser sempre tratados como arrays
+            // Importante para NFe onde alguns elementos podem aparecer múltiplas vezes
+            const arrayElements = ['det', 'dup', 'detPag']
+            return arrayElements.includes(name)
+          },
+          stopNodes: ['*.CDATA'], // Para elementos CDATA se necessário
+        })
+
         const parsedData = parser.parse(xmlContent)
         console.log('Dados parseados:', parsedData)
 
         const validatedInfNFe = validateAndParseNFe(parsedData)
-
         console.log('Dados validados:', validatedInfNFe)
 
         // Extração dos dados da NFe
@@ -226,14 +206,7 @@ export const useXmlImport = (
         return null
       }
     },
-    [
-      isValidXmlFile,
-      getParserOptions,
-      extractNfeData,
-      onSuccess,
-      onError,
-      onValidationError,
-    ],
+    [isValidXmlFile, extractNfeData, onSuccess, onError, onValidationError],
   )
 
   return {
@@ -264,6 +237,7 @@ export function validateAndParseNFe(parsedXml: unknown): InfNFe {
       const errorMessages = error.errors
         .map((err) => `${err.path.join('.')}: ${err.message}`)
         .join('; ')
+      console.error(error)
       throw new Error(`Erro de validação do XML da NFe: ${errorMessages}`)
     }
     throw error

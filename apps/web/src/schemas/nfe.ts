@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Schema para endereço
 const EnderecoSchema = z.object({
   xLgr: z.string().optional(),
   nro: z.string().optional(),
@@ -15,7 +14,6 @@ const EnderecoSchema = z.object({
   fone: z.string().optional(),
 })
 
-// Schema para identificação da NFe
 const IdeSchema = z.object({
   cUF: z.string(),
   cNF: z.string(),
@@ -39,7 +37,6 @@ const IdeSchema = z.object({
   verProc: z.string(),
 })
 
-// Schema para emitente
 const EmitSchema = z.object({
   CNPJ: z.string(),
   xNome: z.string(),
@@ -49,7 +46,6 @@ const EmitSchema = z.object({
   CRT: z.string(),
 })
 
-// Schema para destinatário
 const DestSchema = z.object({
   CNPJ: z.string().optional(),
   CPF: z.string().optional(),
@@ -60,7 +56,6 @@ const DestSchema = z.object({
   email: z.string().optional(),
 })
 
-// Schema para entrega
 const EntregaSchema = z
   .object({
     CNPJ: z.string().optional(),
@@ -75,18 +70,16 @@ const EntregaSchema = z
   })
   .optional()
 
-// Schema para rastreamento
 const RastroSchema = z
   .object({
     nLote: z.string(),
     qLote: z.string(),
     dFab: z.string(),
     dVal: z.string(),
-    cAgreg: z.string(),
+    cAgreg: z.string().optional(),
   })
   .optional()
 
-// Schema para produto
 const ProdSchema = z.object({
   cProd: z.string(),
   cEAN: z.string(),
@@ -110,7 +103,6 @@ const ProdSchema = z.object({
   rastro: RastroSchema,
 })
 
-// Schemas para impostos
 const ICMS00Schema = z.object({
   orig: z.string(),
   CST: z.string(),
@@ -122,7 +114,6 @@ const ICMS00Schema = z.object({
 
 const ICMSSchema = z.object({
   ICMS00: ICMS00Schema.optional(),
-  // Outros regimes de ICMS podem ser adicionados aqui
 })
 
 const IPITribSchema = z.object({
@@ -133,8 +124,8 @@ const IPITribSchema = z.object({
 })
 
 const IPISchema = z.object({
-  cEnq: z.string(),
-  IPITrib: IPITribSchema,
+  cEnq: z.string().optional(),
+  IPITrib: IPITribSchema.optional(),
 })
 
 const PISAliqSchema = z.object({
@@ -161,12 +152,11 @@ const COFINSSchema = z.object({
 
 const ImpostoSchema = z.object({
   ICMS: ICMSSchema,
-  IPI: IPISchema,
-  PIS: PISSchema,
-  COFINS: COFINSSchema,
+  IPI: IPISchema.optional(),
+  PIS: PISSchema.optional(),
+  COFINS: COFINSSchema.optional(),
 })
 
-// Schema para detalhes do produto
 const DetSchema = z.object({
   '@_nItem': z.string(),
   prod: ProdSchema,
@@ -174,7 +164,6 @@ const DetSchema = z.object({
   infAdProd: z.string().optional(),
 })
 
-// Schema para totais
 const ICMSTotSchema = z.object({
   vBC: z.string(),
   vICMS: z.string(),
@@ -201,9 +190,8 @@ const TotalSchema = z.object({
   ICMSTot: ICMSTotSchema,
 })
 
-// Schema para transportadora
 const TransportaSchema = z.object({
-  CNPJ: z.string(),
+  CNPJ: z.string().optional(),
   xNome: z.string(),
   IE: z.string().optional(),
   xEnder: z.string().optional(),
@@ -212,10 +200,10 @@ const TransportaSchema = z.object({
 })
 
 const VolSchema = z.object({
-  qVol: z.string(),
-  esp: z.string(),
-  pesoL: z.string(),
-  pesoB: z.string(),
+  qVol: z.string().optional(),
+  esp: z.string().optional(),
+  pesoL: z.string().optional(),
+  pesoB: z.string().optional(),
 })
 
 const TranspSchema = z.object({
@@ -224,7 +212,6 @@ const TranspSchema = z.object({
   vol: VolSchema.optional(),
 })
 
-// Schema para cobrança
 const FatSchema = z.object({
   nFat: z.string(),
   vOrig: z.string(),
@@ -245,25 +232,22 @@ const CobrSchema = z
   })
   .optional()
 
-// Schema para pagamento
 const DetPagSchema = z.object({
-  indPag: z.string(),
+  indPag: z.string().optional(),
   tPag: z.string(),
   vPag: z.string(),
 })
 
 const PagSchema = z.object({
-  detPag: DetPagSchema,
+  detPag: z.array(DetPagSchema),
 })
 
-// Schema para informações adicionais
 const InfAdicSchema = z
   .object({
     infCpl: z.string().optional(),
   })
   .optional()
 
-// Schema para informações da NFe
 const InfNFeSchema = z.object({
   '@_Id': z.string(),
   '@_versao': z.string(),
@@ -271,7 +255,7 @@ const InfNFeSchema = z.object({
   emit: EmitSchema,
   dest: DestSchema,
   entrega: EntregaSchema,
-  det: z.union([DetSchema, z.array(DetSchema)]), // Pode ser um único item ou array
+  det: z.array(DetSchema),
   total: TotalSchema,
   transp: TranspSchema,
   cobr: CobrSchema,
@@ -279,7 +263,6 @@ const InfNFeSchema = z.object({
   infAdic: InfAdicSchema,
 })
 
-// Schema para assinatura digital
 const SignatureSchema = z
   .object({
     SignedInfo: z.any(),
@@ -288,13 +271,11 @@ const SignatureSchema = z
   })
   .optional()
 
-// Schema para NFe
 const NFeSchema = z.object({
   infNFe: InfNFeSchema,
   Signature: SignatureSchema,
 })
 
-// Schema para protocolo
 const InfProtSchema = z.object({
   '@_Id': z.string(),
   tpAmb: z.string(),
@@ -312,7 +293,6 @@ const ProtNFeSchema = z.object({
   infProt: InfProtSchema,
 })
 
-// Schema principal para NFe processada
 const NfeProcSchema = z.object({
   '@_versao': z.string(),
   '@_xmlns': z.string().optional(),
@@ -320,20 +300,12 @@ const NfeProcSchema = z.object({
   protNFe: ProtNFeSchema,
 })
 
-// Schema principal que pode ser tanto nfeProc quanto NFe diretamente
 export const XmlNFeSchema = z.union([
-  z.object({
-    nfeProc: NfeProcSchema,
-  }),
-  z.object({
-    NFe: NFeSchema,
-  }),
-  z.object({
-    infNFe: InfNFeSchema,
-  }),
+  z.object({ nfeProc: NfeProcSchema }),
+  z.object({ NFe: NFeSchema }),
+  z.object({ infNFe: InfNFeSchema }),
 ])
 
-// Tipos TypeScript derivados dos schemas
 export type XmlNFe = z.infer<typeof XmlNFeSchema>
 export type InfNFe = z.infer<typeof InfNFeSchema>
 export type NFe = z.infer<typeof NFeSchema>
