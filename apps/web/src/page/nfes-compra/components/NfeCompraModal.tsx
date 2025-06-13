@@ -33,6 +33,7 @@ import { Unidade } from '../../../constants/Unidade'
 import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useNfeCompraQueries } from '../../../hooks/queries/useNfeCompraQueries'
+import { useTransportadoraQueries } from '../../../hooks/queries/useTransportadoraQueries'
 import { createNfeCompraSchema } from '../../../http/nfe-compra/create-nfe-compra'
 import { ListNfesCompraResponse } from '../../../http/nfe-compra/list-nfes-compra'
 import {
@@ -68,10 +69,22 @@ export const NfeCompraModal = ({
 
   const nfeData = form?.nfeData
 
-  const { useGetByCnpj } = useFornecedoraQueries()
-  const { data: fornecedora } = useGetByCnpj(
+  const { useGetByCnpj: useGetFornecedoraByCnpj } = useFornecedoraQueries()
+  const { data: fornecedora } = useGetFornecedoraByCnpj(
     nfeData?.fornecedor.cnpj || '',
     orgSlug!,
+    {
+      enabled: !!nfeData?.fornecedor.cnpj,
+    },
+  )
+
+  const { useGetByCnpj: useGetTranspotadoraByCnpj } = useTransportadoraQueries()
+  const { data: transportadora } = useGetTranspotadoraByCnpj(
+    nfeData?.transportadora.cnpj || '',
+    orgSlug!,
+    {
+      enabled: !!nfeData?.transportadora.cnpj,
+    },
   )
 
   const isUpdate = form?.type === 'UPDATE'
@@ -190,14 +203,14 @@ export const NfeCompraModal = ({
         valorOutros: data.valores.valorOutros,
         observacao: null,
         fornecedoraId: fornecedora?.id,
-        transportadoraId: null,
+        transportadoraId: transportadora?.id,
         armazemId: '',
         itens: data.produtos.map((item) => ({
           insumoId: null,
           quantidade: item.quantidade,
           valorUnitario: item.valorUnitario,
           valorIpi: item.valorIpi,
-          unidade: item.unidade,
+          unidade: item.unidade as unknown as Unidade,
           descricaoFornecedora: item.descricao,
           referenciaFornecedora: item.codigo,
         })),
@@ -205,7 +218,7 @@ export const NfeCompraModal = ({
       return
     }
 
-    if (form?.data && form.type === 'UPDATE') {
+    if (form?.data && (form.type === 'UPDATE' || form.type === 'COPY')) {
       const { data } = form
       reset({
         nfe: data.nfe,
@@ -255,7 +268,7 @@ export const NfeCompraModal = ({
       armazemId: '',
       itens: [],
     })
-  }, [form, reset])
+  }, [form, fornecedora?.id, reset, transportadora?.id])
 
   const { mutate: createNfeCompra } = useCreate()
   const { mutate: updateNfeCompra } = useUpdate()

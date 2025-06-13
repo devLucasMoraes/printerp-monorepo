@@ -21,6 +21,7 @@ import {
   getTransportadora,
   GetTransportadoraResponse,
 } from '../../http/transportadora/get-transportadora'
+import { GetTransportadoraByCnpjResponse } from '../../http/transportadora/get-transportadora-by-cnpj'
 import {
   listTransportadoras,
   ListTransportadorasResponse,
@@ -46,6 +47,24 @@ export function useTransportadoraQueries() {
       ...queryOptions,
       queryKey: [resourceKey, orgSlug, id],
       queryFn: () => getTransportadora(orgSlug, id),
+    })
+  }
+
+  const useGetByCnpj = (
+    cnpj: string,
+    orgSlug: string,
+    queryOptions?: Omit<
+      UseQueryOptions<
+        GetTransportadoraByCnpjResponse,
+        AxiosError<ErrorResponse>
+      >,
+      'queryKey' | 'queryFn'
+    >,
+  ) => {
+    return useQuery({
+      ...queryOptions,
+      queryKey: [resourceKey, orgSlug, cnpj],
+      queryFn: () => getTransportadora(orgSlug, cnpj),
     })
   }
 
@@ -158,6 +177,7 @@ export function useTransportadoraQueries() {
 
   return {
     useGetById,
+    useGetByCnpj,
     useListPaginated,
     useGetAll,
     useCreate,

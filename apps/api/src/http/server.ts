@@ -99,6 +99,7 @@ import { createTransportadora } from './routes/transportadora/create-transportad
 import { deleteTransportadora } from './routes/transportadora/delete-transportadora'
 import { getAllTransportadoras } from './routes/transportadora/get-all-transportadoras'
 import { getTransportadora } from './routes/transportadora/get-transportadora'
+import { getTransportadoraByCnpj } from './routes/transportadora/get-transportadora-by-cnpj'
 import { listTransportadoras } from './routes/transportadora/list-transportadoras'
 import { updateTransportadora } from './routes/transportadora/update-transportadora'
 import { createOrganizationalUser } from './routes/user/create-organizational-user'
@@ -265,6 +266,7 @@ app.register(getAllTransportadoras)
 app.register(getTransportadora)
 app.register(listTransportadoras)
 app.register(updateTransportadora)
+app.register(getTransportadoraByCnpj)
 
 app.register(createNfeCompra)
 app.register(deleteNfeCompra)
