@@ -1,11 +1,12 @@
+import { Armazem } from '@/domain/entities/Armazem'
 import { Fornecedora } from '@/domain/entities/Fornecedora'
 import { Member } from '@/domain/entities/Member'
 import { Transportadora } from '@/domain/entities/Transportadora'
+import { Vinculo } from '@/domain/entities/Vinculo'
 import { repository } from '@/domain/repositories'
 import { BadRequestError } from '@/http/_errors/bad-request-error'
 import { CreateNfeCompraDTO } from '@/http/routes/nfe-compra/create-nfe-compra'
 
-import { Insumo } from '../../entities/Insumo'
 import { NfeCompra } from '../../entities/NfeCompra'
 import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
 import { updateValorUntMedUseCase } from '../insumo/UpdateValorUntMed'
@@ -43,25 +44,58 @@ export const createNfeCompraUseCase = {
         throw new BadRequestError('Transportadora não encontrada')
       }
 
+      const armazem = await manager.findOneBy(Armazem, {
+        id: dto.armazemId,
+        organizationId: membership.organization.id,
+      })
+      if (!armazem) {
+        throw new BadRequestError('Armazém não encontrado')
+      }
+
       // Validação de itens
       for (const item of dto.itens) {
-        if (item.quantidade <= 0) {
+        const vinculo = await manager.findOne(Vinculo, {
+          where: {
+            id: item.vinculoId,
+            organizationId: membership.organization.id,
+          },
+          relations: {
+            insumo: true,
+          },
+        })
+
+        if (!vinculo) {
+          throw new BadRequestError('Vinculo não encontrado')
+        }
+
+        if (item.qtdeNf <= 0) {
           throw new BadRequestError('Quantidade deve ser maior que zero')
         }
 
-        const insumo = await manager.findOne(Insumo, {
-          where: {
-            id: item.insumoId,
-            organizationId: membership.organization.id,
-          },
-        })
-        if (!insumo) {
-          throw new BadRequestError(`Insumo ${item.insumoId} não encontrado`)
+        if (vinculo.fornecedoraId !== fornecedora.id) {
+          throw new BadRequestError(
+            'Vinculo não pertence à Fornecedora informada',
+          )
         }
 
-        if (item.unidade !== insumo.undEstoque) {
+        if (item.unidadeNf !== vinculo.undCompra) {
           throw new BadRequestError(
-            `Unidade do insumo ${insumo.descricao} deve ser ${insumo.undEstoque}`,
+            `Unidade da NF (${item.unidadeNf}) diferente da unidade de compra (${vinculo.undCompra})`,
+          )
+        }
+
+        if (vinculo.possuiConversao && !vinculo.qtdeEmbalagem) {
+          throw new BadRequestError(
+            'Vinculo possui conversão e não possui qtde de embalagem',
+          )
+        }
+
+        if (
+          vinculo.insumo.undEstoque !== item.unidadeNf &&
+          !vinculo.possuiConversao
+        ) {
+          throw new BadRequestError(
+            `Vinculo precisa de ter conversão para ${vinculo.insumo.undEstoque}`,
           )
         }
       }
@@ -84,13 +118,13 @@ export const createNfeCompraUseCase = {
         transportadora: { id: dto.transportadoraId },
         armazem: { id: dto.armazemId },
         itens: dto.itens.map((itemDTO) => ({
-          insumo: { id: itemDTO.insumoId },
-          quantidade: itemDTO.quantidade,
-          unidade: itemDTO.unidade,
+          qtdeNf: itemDTO.qtdeNf,
+          unidade: itemDTO.unidadeNf,
           valorUnitario: itemDTO.valorUnitario,
           valorIpi: itemDTO.valorIpi,
           descricaoFornecedora: itemDTO.descricaoFornecedora,
-          referenciaFornecedora: itemDTO.referenciaFornecedora,
+          codFornecedora: itemDTO.codFornecedora,
+          vinculo: { id: itemDTO.vinculoId },
           createdBy: membership.user.id,
           updatedBy: membership.user.id,
           organizationId: membership.organization.id,
@@ -104,21 +138,27 @@ export const createNfeCompraUseCase = {
 
       // Processamento das movimentações
       for (const item of nfeCompra.itens) {
+        const possuiConversao = item.vinculo.possuiConversao
+
+        const quantidade = possuiConversao
+          ? item.vinculo.qtdeEmbalagem! * item.qtdeNf
+          : item.qtdeNf
+
         await updateValorUntMedUseCase.execute(
           {
-            insumo: item.insumo,
+            insumo: item.vinculo.insumo,
             valorUnitarioEntrada: item.valorUnitario,
-            quantidadeEntrada: item.quantidade,
+            quantidadeEntrada: quantidade,
           },
           manager,
         )
         await registrarEntradaEstoqueUseCase.execute(
           {
-            insumo: item.insumo,
+            insumo: item.vinculo.insumo,
             armazem: nfeCompra.armazem,
-            quantidade: item.quantidade,
+            quantidade,
             valorUnitario: item.valorUnitario,
-            undEstoque: item.unidade,
+            undEstoque: item.vinculo.insumo.undEstoque,
             documentoOrigemId: nfeCompra.id,
             tipoDocumento: 'NFE-COMPRA',
             data: nfeCompra.dataRecebimento,

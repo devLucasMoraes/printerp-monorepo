@@ -9,7 +9,9 @@ export const getAllNfesCompraUseCase = {
       where: { organizationId: membership.organization.id },
       relations: {
         itens: {
-          insumo: true,
+          vinculo: {
+            insumo: true,
+          },
         },
         fornecedora: true,
         transportadora: true,

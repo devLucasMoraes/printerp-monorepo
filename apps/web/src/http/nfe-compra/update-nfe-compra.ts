@@ -22,13 +22,13 @@ export const updateNfeCompraSchema = z.object({
   itens: z.array(
     z.object({
       id: z.string().uuid().nullable(),
-      quantidade: z.number().nonnegative(),
-      unidade: z.nativeEnum(Unidade),
+      qtdeNf: z.number().nonnegative(),
+      unidadeNf: z.nativeEnum(Unidade),
       valorUnitario: z.number().nonnegative(),
       valorIpi: z.number().nonnegative(),
       descricaoFornecedora: z.string(),
-      referenciaFornecedora: z.string(),
-      insumoId: z.string().uuid(),
+      codFornecedora: z.string(),
+      vinculoId: z.string().uuid(),
     }),
   ),
 })

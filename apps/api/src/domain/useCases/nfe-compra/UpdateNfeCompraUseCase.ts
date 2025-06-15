@@ -3,12 +3,12 @@ import { EntityManager } from 'typeorm'
 import { Fornecedora } from '@/domain/entities/Fornecedora'
 import { Member } from '@/domain/entities/Member'
 import { Transportadora } from '@/domain/entities/Transportadora'
+import { Vinculo } from '@/domain/entities/Vinculo'
 import { repository } from '@/domain/repositories'
 import { BadRequestError } from '@/http/_errors/bad-request-error'
 import { UpdateNfeCompraDTO } from '@/http/routes/nfe-compra/update-nfe-compra'
 
 import { Armazem } from '../../entities/Armazem'
-import { Insumo } from '../../entities/Insumo'
 import { NfeCompra } from '../../entities/NfeCompra'
 import { registrarEntradaEstoqueUseCase } from '../estoque/RegistrarEntradaEstoqueUseCase'
 import { registrarSaidaEstoqueUseCase } from '../estoque/RegistrarSaidaEstoqueUseCase'
@@ -32,7 +32,7 @@ export const updateNfeCompraUseCase = {
             fornecedora: true,
             transportadora: true,
             armazem: true,
-            itens: { insumo: true },
+            itens: { vinculo: { insumo: true } },
           },
         })
 
@@ -77,23 +77,42 @@ export const updateNfeCompraUseCase = {
 
         // Validação de itens
         for (const itemDTO of dto.itens) {
-          const insumo = await manager.findOne(Insumo, {
+          const vinculo = await manager.findOne(Vinculo, {
             where: {
-              id: itemDTO.insumoId,
+              id: itemDTO.vinculoId,
               organizationId: membership.organization.id,
             },
+            relations: {
+              insumo: true,
+            },
           })
-          if (!insumo) {
-            throw new BadRequestError(`Insumo não encontrado`)
+
+          if (!vinculo) {
+            throw new BadRequestError('Vinculo não encontrado')
           }
 
-          if (itemDTO.quantidade <= 0) {
+          if (itemDTO.qtdeNf <= 0) {
             throw new BadRequestError('Quantidade deve ser maior que zero')
           }
 
-          if (itemDTO.unidade !== insumo.undEstoque) {
+          if (itemDTO.unidadeNf !== vinculo.undCompra) {
             throw new BadRequestError(
-              `Unidade do insumo ${insumo.descricao} deve ser ${insumo.undEstoque}`,
+              `Unidade da NF (${itemDTO.unidadeNf}) diferente da unidade de compra (${vinculo.undCompra})`,
+            )
+          }
+
+          if (vinculo.possuiConversao && !vinculo.qtdeEmbalagem) {
+            throw new BadRequestError(
+              'Vinculo possui conversão e não possui qtde de embalagem',
+            )
+          }
+
+          if (
+            vinculo.insumo.undEstoque !== itemDTO.unidadeNf &&
+            !vinculo.possuiConversao
+          ) {
+            throw new BadRequestError(
+              `Vinculo precisa de ter conversão para ${vinculo.insumo.undEstoque}`,
             )
           }
 
@@ -112,13 +131,19 @@ export const updateNfeCompraUseCase = {
 
         // Reverter movimentações antigas
         for (const item of nfeCompra.itens) {
+          const possuiConversao = item.vinculo.possuiConversao
+
+          const quantidade = possuiConversao
+            ? item.vinculo.qtdeEmbalagem! * item.qtdeNf
+            : item.qtdeNf
+
           await registrarSaidaEstoqueUseCase.execute(
             {
-              insumo: item.insumo,
+              insumo: item.vinculo.insumo,
               armazem: nfeCompra.armazem,
-              quantidade: item.quantidade,
+              quantidade,
               valorUnitario: item.valorUnitario,
-              undEstoque: item.unidade,
+              undEstoque: item.vinculo.insumo.undEstoque,
               documentoOrigemId: nfeCompra.id,
               observacao: `Nfe de compra ${nfeCompra.id} foi alterada, estorno referente ao item ${item.id}`,
               tipoDocumento: 'NFE-COMPRA',
@@ -151,13 +176,13 @@ export const updateNfeCompraUseCase = {
             armazem: { id: dto.armazemId },
             itens: dto.itens.map((itemDTO) => ({
               id: itemDTO.id || undefined,
-              insumo: { id: itemDTO.insumoId },
-              quantidade: itemDTO.quantidade,
-              unidade: itemDTO.unidade,
+              vinculo: { id: itemDTO.vinculoId },
+              qtdeNf: itemDTO.qtdeNf,
+              unidadeNf: itemDTO.unidadeNf,
               valorUnitario: itemDTO.valorUnitario,
               valorIpi: itemDTO.valorIpi,
               descricaoFornecedora: itemDTO.descricaoFornecedora,
-              referenciaFornecedora: itemDTO.referenciaFornecedora,
+              codFornecedora: itemDTO.codFornecedora,
               createdBy: itemDTO.id ? undefined : membership.user.id,
               updatedBy: membership.user.id,
               organizationId: membership.organization.id,
@@ -169,21 +194,26 @@ export const updateNfeCompraUseCase = {
 
         // Processar novas movimentações
         for (const item of savedNfe.itens) {
+          const possuiConversao = item.vinculo.possuiConversao
+
+          const quantidade = possuiConversao
+            ? item.vinculo.qtdeEmbalagem! * item.qtdeNf
+            : item.qtdeNf
           await updateValorUntMedUseCase.execute(
             {
-              insumo: item.insumo,
+              insumo: item.vinculo.insumo,
               valorUnitarioEntrada: item.valorUnitario,
-              quantidadeEntrada: item.quantidade,
+              quantidadeEntrada: quantidade,
             },
             manager,
           )
           await registrarEntradaEstoqueUseCase.execute(
             {
-              insumo: item.insumo,
+              insumo: item.vinculo.insumo,
               armazem: savedNfe.armazem,
-              quantidade: item.quantidade,
+              quantidade,
               valorUnitario: item.valorUnitario,
-              undEstoque: item.unidade,
+              undEstoque: item.vinculo.insumo.undEstoque,
               documentoOrigemId: savedNfe.id,
               tipoDocumento: 'NFE-COMPRA',
               observacao: `Nfe de compra ${savedNfe.id} foi alterada, entrada referente ao item ${item.id}`,

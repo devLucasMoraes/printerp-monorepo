@@ -108,6 +108,8 @@ import { getAllUsers } from './routes/user/get-all-users'
 import { getUser } from './routes/user/get-user'
 import { listUsers } from './routes/user/list-users'
 import { updateUser } from './routes/user/update-user'
+import { createOrUpdateVinculo } from './routes/vinculo/create-or-update-vinculo'
+import { getVinculoByCod } from './routes/vinculo/get-vinculo-by-cod'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -274,6 +276,9 @@ app.register(getAllNfesCompra)
 app.register(getNfeCompra)
 app.register(listNfesCompra)
 app.register(updateNfeCompra)
+
+app.register(getVinculoByCod)
+app.register(createOrUpdateVinculo)
 
 const start = async () => {
   console.log('Starting server...')

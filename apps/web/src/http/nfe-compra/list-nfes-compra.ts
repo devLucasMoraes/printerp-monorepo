@@ -30,17 +30,26 @@ export interface ListNfesCompraResponse {
   }
   itens: {
     id: string
-    quantidade: number
-    unidade: Unidade
+    qtdeNf: number
+    unidadeNf: Unidade
     valorUnitario: number
     valorIpi: number
     descricaoFornecedora: string
-    referenciaFornecedora: string
-    insumo: {
+    codFornecedora: string
+    vinculo: {
       id: string
-      descricao: string
-      valorUntMed: number
-      undEstoque: Unidade
+      cod: string
+      undCompra: Unidade
+      possuiConversao: boolean
+      qtdeEmbalagem: number | null
+      insumoId: string
+      fornecedoraId: string
+      insumo: {
+        id: string
+        descricao: string
+        valorUntMed: number
+        undEstoque: Unidade
+      }
     }
   }[]
   createdAt: string

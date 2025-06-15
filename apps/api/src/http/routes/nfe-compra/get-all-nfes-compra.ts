@@ -54,17 +54,26 @@ export async function getAllNfesCompra(app: FastifyInstance) {
                 itens: z.array(
                   z.object({
                     id: z.string().uuid(),
-                    quantidade: z.coerce.number(),
-                    unidade: z.nativeEnum(Unidade),
+                    qtdeNf: z.coerce.number(),
+                    unidadeNf: z.nativeEnum(Unidade),
                     valorUnitario: z.coerce.number(),
                     valorIpi: z.coerce.number(),
                     descricaoFornecedora: z.string(),
-                    referenciaFornecedora: z.string(),
-                    insumo: z.object({
+                    codFornecedora: z.string(),
+                    vinculo: z.object({
                       id: z.string().uuid(),
-                      descricao: z.string(),
-                      valorUntMed: z.coerce.number(),
-                      undEstoque: z.nativeEnum(Unidade),
+                      cod: z.string(),
+                      undCompra: z.nativeEnum(Unidade),
+                      possuiConversao: z.boolean(),
+                      qtdeEmbalagem: z.coerce.number().nullable(),
+                      insumoId: z.string().uuid(),
+                      insumo: z.object({
+                        id: z.string().uuid(),
+                        descricao: z.string(),
+                        valorUntMed: z.coerce.number(),
+                        undEstoque: z.nativeEnum(Unidade),
+                      }),
+                      fornecedoraId: z.string().uuid(),
                     }),
                   }),
                 ),

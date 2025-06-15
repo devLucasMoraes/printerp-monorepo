@@ -18,7 +18,9 @@ export class NfeCompraRepository extends BaseRepository<NfeCompra> {
         fornecedora: true,
         transportadora: true,
         itens: {
-          insumo: true,
+          vinculo: {
+            insumo: true,
+          },
         },
       },
     )
@@ -36,7 +38,9 @@ export class NfeCompraRepository extends BaseRepository<NfeCompra> {
         fornecedora: true,
         transportadora: true,
         itens: {
-          insumo: true,
+          vinculo: {
+            insumo: true,
+          },
         },
       },
     )
@@ -50,7 +54,9 @@ export class NfeCompraRepository extends BaseRepository<NfeCompra> {
         fornecedora: true,
         transportadora: true,
         itens: {
-          insumo: true,
+          vinculo: {
+            insumo: true,
+          },
         },
       },
     })

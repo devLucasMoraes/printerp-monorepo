@@ -14,7 +14,11 @@ export const deleteNfeCompraUseCase = {
           organizationId: membership.organization.id,
         },
         relations: {
-          itens: { insumo: true },
+          itens: {
+            vinculo: {
+              insumo: true,
+            },
+          },
           armazem: true,
         },
       })
@@ -25,13 +29,19 @@ export const deleteNfeCompraUseCase = {
 
       // Reverter movimentações para cada item
       for (const item of requisicao.itens) {
+        const possuiConversao = item.vinculo.possuiConversao
+
+        const quantidade = possuiConversao
+          ? item.vinculo.qtdeEmbalagem! * item.qtdeNf
+          : item.qtdeNf
+
         await registrarSaidaEstoqueUseCase.execute(
           {
-            insumo: item.insumo,
+            insumo: item.vinculo.insumo,
             armazem: requisicao.armazem,
-            quantidade: item.quantidade,
+            quantidade,
             valorUnitario: item.valorUnitario,
-            undEstoque: item.unidade,
+            undEstoque: item.vinculo.insumo.undEstoque,
             documentoOrigemId: requisicao.id,
             tipoDocumento: 'NFE-COMPRA',
             observacao: `Nfe de compra ${requisicao.id} foi desativada/cancelada `,

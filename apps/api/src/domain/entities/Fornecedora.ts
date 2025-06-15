@@ -1,6 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm'
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm'
 
 import { BaseAuditEntity } from './BaseAuditEntity'
+import { Vinculo } from './Vinculo'
 
 @Entity('fornecedoras')
 @Unique(['cnpj', 'organizationId'])
@@ -19,4 +26,7 @@ export class Fornecedora extends BaseAuditEntity {
 
   @Column({ type: 'varchar', length: 255 })
   fone: string
+
+  @OneToMany(() => Vinculo, (vinculo) => vinculo.fornecedora)
+  vinculos: Vinculo[]
 }

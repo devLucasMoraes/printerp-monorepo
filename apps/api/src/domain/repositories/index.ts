@@ -15,6 +15,7 @@ import { SetorRepository } from './SetorRepository'
 import { TokenRepository } from './TokenRepository'
 import { TransportadoraRepository } from './TransportadoraRepository'
 import { UserRepository } from './UserRepository'
+import { VinculoRepository } from './VinculoRepository'
 
 const user = new UserRepository()
 const categoria = new CategoriaRepository()
@@ -33,6 +34,7 @@ const token = new TokenRepository()
 const fornecedora = new FornecedoraRepository()
 const transportadora = new TransportadoraRepository()
 const nfeCompra = new NfeCompraRepository()
+const vinculo = new VinculoRepository()
 
 export const repository = {
   user,
@@ -52,4 +54,5 @@ export const repository = {
   fornecedora,
   transportadora,
   nfeCompra,
+  vinculo,
 }

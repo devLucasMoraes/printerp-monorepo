@@ -24,6 +24,7 @@ import { requisitanteSubject } from './subjects/requisitante'
 import { setorSubject } from './subjects/setor'
 import { transportadoraSubject } from './subjects/transportadora'
 import { userSubject } from './subjects/user'
+import { vinculoSubject } from './subjects/vinculo'
 
 export * from './models/categoria'
 export * from './models/organization'
@@ -47,6 +48,7 @@ const appAbility = z.union([
   fornecedoraSubject,
   transportadoraSubject,
   nfeCompraSubject,
+  vinculoSubject,
   z.tuple([z.literal('manage'), z.literal('all')]),
 ])
 

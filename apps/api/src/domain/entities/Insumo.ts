@@ -14,6 +14,7 @@ import { Categoria } from './Categoria'
 import { Estoque } from './Estoque'
 import { MovimentoEstoque } from './MovimentoEstoque'
 import { Unidade } from './Unidade'
+import { Vinculo } from './Vinculo'
 
 @Entity('insumos')
 @Unique(['descricao', 'organizationId'])
@@ -71,6 +72,9 @@ export class Insumo extends BaseAuditEntity {
 
   @OneToMany(() => MovimentoEstoque, (movimento) => movimento.insumo)
   movimentos: MovimentoEstoque[]
+
+  @OneToMany(() => Vinculo, (vinculo) => vinculo.insumo)
+  vinculos: Vinculo[]
 
   @AfterLoad()
   recalcularEstaAbaixoMinimo() {

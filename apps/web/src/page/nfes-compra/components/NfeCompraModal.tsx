@@ -20,18 +20,17 @@ import {
 import { DatePicker } from '@mui/x-date-pickers'
 import { IconCircleMinus, IconPlus } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useParams } from 'react-router'
+import { v4 as uuidv4 } from 'uuid'
 
 import { ArmazemAutoComplete } from '../../../components/shared/autocompletes/ArmazemAutoComplete'
 import { FornecedoraAutoComplete } from '../../../components/shared/autocompletes/FornecedoraAutoComplete'
-import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { TransportadoraAutoComplete } from '../../../components/shared/autocompletes/TransportadorasAutoComplete'
 import { unidades } from '../../../constants'
 import { Unidade } from '../../../constants/Unidade'
 import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
-import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useNfeCompraQueries } from '../../../hooks/queries/useNfeCompraQueries'
 import { useTransportadoraQueries } from '../../../hooks/queries/useTransportadoraQueries'
 import { createNfeCompraSchema } from '../../../http/nfe-compra/create-nfe-compra'
@@ -40,8 +39,15 @@ import {
   UpdateNfeCompraDTO,
   updateNfeCompraSchema,
 } from '../../../http/nfe-compra/update-nfe-compra'
+import { CreateOrUpdateVinculoResponse } from '../../../http/vinculo/create-or-update-vinculo'
+import {
+  getVinculoByCod,
+  GetVinculoByCodResponse,
+} from '../../../http/vinculo/get-vinculo-by-cod'
 import { useAlertStore } from '../../../stores/alert-store'
 import { NfeData } from '../../../types'
+import { VinculoButton } from './VinculoButton'
+import { VinculoModal } from './VinculoModal'
 
 export const NfeCompraModal = ({
   open,
@@ -62,14 +68,21 @@ export const NfeCompraModal = ({
 
   const queryClient = useQueryClient()
 
-  const { useCreate, useUpdate } = useNfeCompraQueries()
+  const [vinculoModalOpen, setVinculoModalOpen] = useState(false)
+  const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(
+    null,
+  )
+  const [initialData, setInitialData] = useState({ cod: '', fornecedoraId: '' })
+  const [selectedVinculo, setSelectedVinculo] = useState<
+    GetVinculoByCodResponse | undefined
+  >()
 
-  const { useGetAll: useGetAllInsumos } = useInsumoQueries()
-  const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
+  const { useCreate, useUpdate } = useNfeCompraQueries()
+  const { useGetByCnpj: useGetFornecedoraByCnpj } = useFornecedoraQueries()
+  const { useGetByCnpj: useGetTranspotadoraByCnpj } = useTransportadoraQueries()
 
   const nfeData = form?.nfeData
 
-  const { useGetByCnpj: useGetFornecedoraByCnpj } = useFornecedoraQueries()
   const { data: fornecedora } = useGetFornecedoraByCnpj(
     nfeData?.fornecedor.cnpj || '',
     orgSlug!,
@@ -78,7 +91,6 @@ export const NfeCompraModal = ({
     },
   )
 
-  const { useGetByCnpj: useGetTranspotadoraByCnpj } = useTransportadoraQueries()
   const { data: transportadora } = useGetTranspotadoraByCnpj(
     nfeData?.transportadora.cnpj || '',
     orgSlug!,
@@ -154,7 +166,7 @@ export const NfeCompraModal = ({
   useEffect(() => {
     const totalProdutos =
       items?.reduce((total, item) => {
-        const quantidade = Number(item.quantidade) || 0
+        const quantidade = Number(item.qtdeNf) || 0
         const valorUnitario = Number(item.valorUnitario) || 0
         return total + quantidade * valorUnitario
       }, 0) || 0
@@ -186,38 +198,88 @@ export const NfeCompraModal = ({
     valorSeguro,
   ])
 
-  useEffect(() => {
-    if (form?.nfeData && form.type === 'IMPORT_XML') {
-      const data = form.nfeData
-      reset({
-        nfe: data.numeroNfe,
-        chaveNfe: data.chaveAcesso,
-        dataEmissao: new Date(data.dataEmissao),
-        dataRecebimento: null as unknown as Date,
-        valorTotalProdutos: data.valores.valorTotalProdutos,
-        valorFrete: data.valores.valorFrete,
-        valorSeguro: data.valores.valorSeguro,
-        valorDesconto: data.valores.valorDesconto,
-        valorTotalIpi: data.valores.valorTotalIpi,
-        valorTotalNfe: data.valores.valorTotalNfe,
-        valorOutros: data.valores.valorOutros,
-        observacao: null,
-        fornecedoraId: fornecedora?.id,
-        transportadoraId: transportadora?.id,
-        armazemId: '',
-        itens: data.produtos.map((item) => ({
-          insumoId: null,
-          quantidade: item.quantidade,
-          valorUnitario: item.valorUnitario,
-          valorIpi: item.valorIpi,
-          unidade: item.unidade as unknown as Unidade,
-          descricaoFornecedora: item.descricao,
-          referenciaFornecedora: item.codigo,
-        })),
-      })
-      return
-    }
+  const getCachedVinculo = useCallback(
+    (cod: string): GetVinculoByCodResponse | undefined => {
+      return queryClient.getQueryData<GetVinculoByCodResponse>([
+        'vinculos',
+        orgSlug,
+        cod,
+      ])
+    },
+    [queryClient, orgSlug],
+  )
 
+  useEffect(() => {
+    if (form?.nfeData && form.type === 'IMPORT_XML' && orgSlug) {
+      const data = form.nfeData
+      const processXmlImport = async () => {
+        try {
+          // Pré-buscar todos os vínculos em paralelo
+          const prefetchPromises = data.produtos
+            .filter((produto) => produto.codigo)
+            .map((produto) =>
+              queryClient.prefetchQuery({
+                queryKey: ['vinculos', orgSlug, produto.codigo],
+                queryFn: () => getVinculoByCod(orgSlug, produto.codigo),
+              }),
+            )
+
+          await Promise.allSettled(prefetchPromises)
+
+          // Construir itens com dados do cache
+          const itensComVinculos = data.produtos.map((produto) => {
+            const vinculo = produto.codigo
+              ? getCachedVinculo(produto.codigo)
+              : null
+
+            return {
+              id: null,
+              qtdeNf: produto.quantidade,
+              valorUnitario: produto.valorUnitario,
+              valorIpi: produto.valorIpi,
+              unidadeNf: produto.unidade as Unidade,
+              descricaoFornecedora: produto.descricao,
+              codFornecedora: produto.codigo,
+              vinculoId: vinculo?.id || '',
+            }
+          })
+
+          reset({
+            nfe: data.numeroNfe,
+            chaveNfe: data.chaveAcesso,
+            dataEmissao: new Date(data.dataEmissao),
+            dataRecebimento: null as unknown as Date,
+            valorTotalProdutos: data.valores.valorTotalProdutos,
+            valorFrete: data.valores.valorFrete,
+            valorSeguro: data.valores.valorSeguro,
+            valorDesconto: data.valores.valorDesconto,
+            valorTotalIpi: data.valores.valorTotalIpi,
+            valorTotalNfe: data.valores.valorTotalNfe,
+            valorOutros: data.valores.valorOutros,
+            observacao: null,
+            fornecedoraId: fornecedora?.id || '',
+            transportadoraId: transportadora?.id || '',
+            armazemId: '',
+            itens: itensComVinculos,
+          })
+        } catch (error) {
+          console.error('Erro ao processar importação XML:', error)
+        }
+      }
+
+      processXmlImport()
+    }
+  }, [
+    form,
+    orgSlug,
+    fornecedora?.id,
+    transportadora?.id,
+    queryClient,
+    reset,
+    getCachedVinculo,
+  ])
+
+  useEffect(() => {
     if (form?.data && (form.type === 'UPDATE' || form.type === 'COPY')) {
       const { data } = form
       reset({
@@ -238,13 +300,13 @@ export const NfeCompraModal = ({
         armazemId: data.armazem.id,
         itens: data.itens.map((item) => ({
           id: item.id,
-          insumoId: item.insumo.id,
-          quantidade: Number(item.quantidade),
+          qtdeNf: Number(item.qtdeNf),
           valorUnitario: Number(item.valorUnitario),
           valorIpi: Number(item.valorIpi),
-          unidade: item.unidade,
+          unidadeNf: item.unidadeNf,
           descricaoFornecedora: item.descricaoFornecedora,
-          referenciaFornecedora: item.referenciaFornecedora,
+          codFornecedora: item.codFornecedora,
+          vinculoId: item.vinculo.id,
         })),
       })
       return
@@ -317,27 +379,16 @@ export const NfeCompraModal = ({
     }
   }
 
-  const handleInsumoChange = useCallback(
-    (index: number, insumoId?: string | null) => {
-      const insumo = insumos.find((insumo) => insumo.id === insumoId)
-      if (!insumo) return
-
-      setValue(`itens.${index}.unidade`, insumo.undEstoque)
-      setValue(`itens.${index}.valorUnitario`, Number(insumo.valorUntMed))
-    },
-    [insumos, setValue],
-  )
-
   const handleAddItem = () => {
     prepend({
       id: null,
-      quantidade: 0,
-      unidade: '' as unknown as Unidade,
+      qtdeNf: 0,
+      unidadeNf: '' as unknown as Unidade,
       valorUnitario: 0,
       valorIpi: 0,
       descricaoFornecedora: '',
-      referenciaFornecedora: '',
-      insumoId: '',
+      vinculoId: '',
+      codFornecedora: uuidv4(),
     })
   }
 
@@ -346,6 +397,44 @@ export const NfeCompraModal = ({
     onClose()
   }
 
+  const handleOpenVinculoModal = (index: number) => {
+    setSelectedItemIndex(index)
+
+    // Coletar dados para initialData
+    const cod = getValues(`itens.${index}.codFornecedora`)
+    const fornecedoraId = getValues('fornecedoraId')
+
+    // Coletar vinculo existente (se houver)
+    const vinculoId = getValues(`itens.${index}.vinculoId`)
+    const vinculo = vinculoId ? getCachedVinculo(cod) : undefined
+
+    setInitialData({ cod, fornecedoraId })
+    setSelectedVinculo(vinculo)
+    setVinculoModalOpen(true)
+  }
+
+  const handleVinculoSuccess = (vinculo: CreateOrUpdateVinculoResponse) => {
+    if (selectedItemIndex !== null) {
+      // Atualizar campo no formulário
+      setValue(`itens.${selectedItemIndex}.vinculoId`, vinculo.id)
+
+      // Atualizar cache do React Query
+      queryClient.setQueryData(['vinculos', orgSlug, vinculo.cod], vinculo)
+    }
+    setVinculoModalOpen(false)
+  }
+
+  const renderModals = () => (
+    <>
+      <VinculoModal
+        open={vinculoModalOpen}
+        onClose={() => setVinculoModalOpen(false)}
+        onSuccess={handleVinculoSuccess}
+        initialData={initialData}
+        vinculo={selectedVinculo}
+      />
+    </>
+  )
   // Renderização dos itens da requisição
   const renderItems = () => {
     if (fields.length === 0) {
@@ -397,35 +486,42 @@ export const NfeCompraModal = ({
             <Grid2 container spacing={2}>
               <Grid2 size={2}>
                 <Controller
-                  name={`itens.${index}.insumoId`}
+                  name={`itens.${index}.descricaoFornecedora`}
                   control={control}
                   render={({ field }) => (
-                    <InsumoAutoComplete
+                    <TextField
+                      {...field}
+                      label="Descrição Fornecedora"
+                      error={!!errors.itens?.[index]?.descricaoFornecedora}
+                      helperText={
+                        errors.itens?.[index]?.descricaoFornecedora?.message
+                      }
+                      fullWidth
                       size="small"
-                      field={{
-                        ...field,
-                        onChange: (value) => {
-                          field.onChange(value)
-                          handleInsumoChange(index, value)
-                        },
-                      }}
-                      error={errors.itens?.[index]?.insumoId}
                     />
                   )}
                 />
               </Grid2>
 
               <Grid2 size={2}>
+                <VinculoButton
+                  index={index}
+                  control={control}
+                  onOpenModal={handleOpenVinculoModal}
+                />
+              </Grid2>
+
+              <Grid2 size={2}>
                 <Controller
-                  name={`itens.${index}.quantidade`}
+                  name={`itens.${index}.qtdeNf`}
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       type="number"
                       label="Quantidade"
-                      error={!!errors.itens?.[index]?.quantidade}
-                      helperText={errors.itens?.[index]?.quantidade?.message}
+                      error={!!errors.itens?.[index]?.qtdeNf}
+                      helperText={errors.itens?.[index]?.qtdeNf?.message}
                       fullWidth
                       size="small"
                       onChange={(e) => field.onChange(Number(e.target.value))}
@@ -436,14 +532,14 @@ export const NfeCompraModal = ({
 
               <Grid2 size={2}>
                 <Controller
-                  name={`itens.${index}.unidade`}
+                  name={`itens.${index}.unidadeNf`}
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       label="Unidade"
-                      error={!!errors.itens?.[index]?.unidade}
-                      helperText={errors.itens?.[index]?.unidade?.message}
+                      error={!!errors.itens?.[index]?.unidadeNf}
+                      helperText={errors.itens?.[index]?.unidadeNf?.message}
                       value={field.value || ''}
                       fullWidth
                       select
@@ -534,375 +630,378 @@ export const NfeCompraModal = ({
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      fullWidth
-      maxWidth="xl"
-      disableRestoreFocus
-    >
-      <DialogTitle>{isUpdate ? 'Editar' : 'Nova'}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {isUpdate
-            ? 'Preencha os campos abaixo para editar a nota fiscal'
-            : 'Preencha os campos abaixo para criar uma nova nota fiscal'}
-        </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size="grow">
-            <Controller
-              name="valorTotalNfe"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Valor total"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorTotalNfe}
-                  helperText={errors.valorTotalNfe?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+    <>
+      {renderModals()}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        fullWidth
+        maxWidth="xl"
+        disableRestoreFocus
+      >
+        <DialogTitle>{isUpdate ? 'Editar' : 'Nova'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {isUpdate
+              ? 'Preencha os campos abaixo para editar a nota fiscal'
+              : 'Preencha os campos abaixo para criar uma nova nota fiscal'}
+          </DialogContentText>
+          <Grid2 container spacing={2} sx={{ mt: 2 }}>
+            <Grid2 size="grow">
+              <Controller
+                name="valorTotalNfe"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Valor total"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorTotalNfe}
+                    helperText={errors.valorTotalNfe?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="armazemId"
-              control={control}
-              render={({ field }) => (
-                <ArmazemAutoComplete field={field} error={errors.armazemId} />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="armazemId"
+                control={control}
+                render={({ field }) => (
+                  <ArmazemAutoComplete field={field} error={errors.armazemId} />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size="auto">
-            <Controller
-              name="dataEmissao"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="Data de emissão"
-                  slotProps={{
-                    textField: {
-                      error: !!errors.dataEmissao,
-                      helperText: errors.dataEmissao?.message,
-                    },
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size="auto">
+              <Controller
+                name="dataEmissao"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="Data de emissão"
+                    slotProps={{
+                      textField: {
+                        error: !!errors.dataEmissao,
+                        helperText: errors.dataEmissao?.message,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size="auto">
-            <Controller
-              name="dataRecebimento"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="Data de entrega"
-                  slotProps={{
-                    textField: {
-                      error: !!errors.dataRecebimento,
-                      helperText: errors.dataRecebimento?.message,
-                    },
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size="auto">
+              <Controller
+                name="dataRecebimento"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="Data de entrega"
+                    slotProps={{
+                      textField: {
+                        error: !!errors.dataRecebimento,
+                        helperText: errors.dataRecebimento?.message,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={6}>
-            <Controller
-              name="chaveNfe"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Chave NFE"
-                  error={!!errors.chaveNfe}
-                  helperText={errors.chaveNfe?.message}
-                  fullWidth
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={6}>
+              <Controller
+                name="chaveNfe"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Chave NFE"
+                    error={!!errors.chaveNfe}
+                    helperText={errors.chaveNfe?.message}
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={2}>
-            <Controller
-              name="nfe"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="NFE"
-                  error={!!errors.nfe}
-                  helperText={errors.nfe?.message}
-                  fullWidth
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={2}>
+              <Controller
+                name="nfe"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="NFE"
+                    error={!!errors.nfe}
+                    helperText={errors.nfe?.message}
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={4}>
-            <Controller
-              name="fornecedoraId"
-              control={control}
-              render={({ field }) => (
-                <FornecedoraAutoComplete
-                  field={field}
-                  error={errors.fornecedoraId}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={4}>
+              <Controller
+                name="fornecedoraId"
+                control={control}
+                render={({ field }) => (
+                  <FornecedoraAutoComplete
+                    field={field}
+                    error={errors.fornecedoraId}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="valorTotalIpi"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Valor total IPI"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorTotalIpi}
-                  helperText={errors.valorTotalIpi?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="valorTotalIpi"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Valor total IPI"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorTotalIpi}
+                    helperText={errors.valorTotalIpi?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="valorTotalProdutos"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Valor total de produtos"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorTotalProdutos}
-                  helperText={errors.valorTotalProdutos?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="valorTotalProdutos"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Valor total de produtos"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorTotalProdutos}
+                    helperText={errors.valorTotalProdutos?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="valorDesconto"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Valor total de desconto"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorDesconto}
-                  helperText={errors.valorDesconto?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="valorDesconto"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Valor total de desconto"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorDesconto}
+                    helperText={errors.valorDesconto?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="valorSeguro"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Valor total do seguro"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorSeguro}
-                  helperText={errors.valorSeguro?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="valorSeguro"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Valor total do seguro"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorSeguro}
+                    helperText={errors.valorSeguro?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="valorFrete"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Valor total do frete"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorFrete}
-                  helperText={errors.valorFrete?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="valorFrete"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Valor total do frete"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorFrete}
+                    helperText={errors.valorFrete?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={4}>
-            <Controller
-              name="transportadoraId"
-              control={control}
-              render={({ field }) => (
-                <TransportadoraAutoComplete
-                  field={field}
-                  error={errors.transportadoraId}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={4}>
+              <Controller
+                name="transportadoraId"
+                control={control}
+                render={({ field }) => (
+                  <TransportadoraAutoComplete
+                    field={field}
+                    error={errors.transportadoraId}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={3}>
-            <Controller
-              name="valorOutros"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="number"
-                  label="Outros valores"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                      ),
-                    },
-                  }}
-                  error={!!errors.valorOutros}
-                  helperText={errors.valorOutros?.message}
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value === '' ? null : Number(value))
-                  }}
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={3}>
+              <Controller
+                name="valorOutros"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Outros valores"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorOutros}
+                    helperText={errors.valorOutros?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
 
-          <Grid2 size={12}>
-            <Controller
-              name="observacao"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Observação"
-                  error={!!errors.observacao}
-                  helperText={errors.observacao?.message}
-                  fullWidth
-                />
-              )}
-            />
-          </Grid2>
+            <Grid2 size={12}>
+              <Controller
+                name="observacao"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Observação"
+                    error={!!errors.observacao}
+                    helperText={errors.observacao?.message}
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
 
-          {/* Items Section */}
-          <Grid2 size={12}>
-            <Box sx={{ mt: 2 }}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{ mb: 2 }}
-                gap={1}
-              >
-                <Divider textAlign="left" sx={{ flexGrow: 1 }}>
-                  <Chip label="Itens da Requisição" />
-                </Divider>
-                <Button
-                  startIcon={<IconPlus size={18} />}
-                  onClick={handleAddItem}
-                  variant="outlined"
-                  size="small"
+            {/* Items Section */}
+            <Grid2 size={12}>
+              <Box sx={{ mt: 2 }}>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 2 }}
+                  gap={1}
                 >
-                  adicionar item
-                </Button>
-              </Stack>
+                  <Divider textAlign="left" sx={{ flexGrow: 1 }}>
+                    <Chip label="Itens da Requisição" />
+                  </Divider>
+                  <Button
+                    startIcon={<IconPlus size={18} />}
+                    onClick={handleAddItem}
+                    variant="outlined"
+                    size="small"
+                  >
+                    adicionar item
+                  </Button>
+                </Stack>
 
-              {renderItems()}
-            </Box>
+                {renderItems()}
+              </Box>
+            </Grid2>
           </Grid2>
-        </Grid2>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit" variant="contained" loading={isSubmitting}>
-          {isSubmitting ? 'Salvando...' : 'Salvar'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancelar</Button>
+          <Button type="submit" variant="contained" loading={isSubmitting}>
+            {isSubmitting ? 'Salvando...' : 'Salvar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
