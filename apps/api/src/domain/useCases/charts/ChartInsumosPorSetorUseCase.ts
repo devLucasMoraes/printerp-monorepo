@@ -53,9 +53,9 @@ export const chartInsumosPorSetorUseCase = {
       SUM(rei.quantidade * rei.valor_unitario) AS valor_total
   FROM
       requisicoes_estoque re
-      INNER JOIN requisicoes_estoque_itens rei ON re.id = rei.requisicoes_estoque_id
-      INNER JOIN insumos i ON rei.insumos_id = i.id
-      INNER JOIN setores s ON re.setor_id = s.id
+      INNER JOIN requisicoes_estoque_itens rei ON re.id = rei.requisicao_estoque
+      INNER JOIN insumos i ON rei.insumo = i.id
+      INNER JOIN setores s ON re.setor = s.id
   WHERE
       re.deleted_at IS NULL
       AND rei.deleted_at IS NULL
