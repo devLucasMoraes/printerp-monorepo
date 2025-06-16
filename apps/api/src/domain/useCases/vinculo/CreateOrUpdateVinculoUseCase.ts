@@ -29,7 +29,7 @@ export const createOrUpdateVinculoUseCase = {
           id: dto.insumoId,
           organizationId: membership.organization.id,
         },
-        select: ['id', 'descricao'],
+        select: ['id', 'descricao', 'undEstoque'],
       })
 
       if (!existingInsumo) {
@@ -57,9 +57,7 @@ export const createOrUpdateVinculoUseCase = {
           fornecedora: {
             id: dto.fornecedoraId,
           },
-          insumo: {
-            id: dto.insumoId,
-          },
+          insumo: existingInsumo,
           possuiConversao: dto.possuiConversao,
           qtdeEmbalagem: dto.qtdeEmbalagem,
         })
@@ -75,9 +73,7 @@ export const createOrUpdateVinculoUseCase = {
         fornecedora: {
           id: dto.fornecedoraId,
         },
-        insumo: {
-          id: dto.insumoId,
-        },
+        insumo: existingInsumo,
         possuiConversao: dto.possuiConversao,
         qtdeEmbalagem: dto.qtdeEmbalagem,
         createdBy: membership.user.id,

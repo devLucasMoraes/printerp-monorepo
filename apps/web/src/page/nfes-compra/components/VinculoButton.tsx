@@ -35,21 +35,32 @@ export const VinculoButton = ({
   const descricao = vinculo?.insumo?.descricao || 'Selecionar insumo'
 
   return (
-    <Stack spacing={0.5}>
+    <Stack spacing={1} alignItems="flex-start">
+      {hasVinculo && !loading && (
+        <Typography
+          variant="body1" // Alterado para body1 (maior)
+          fontWeight={500} // Mais peso visual
+          sx={{
+            fontSize: '0.875rem', // Tamanho customizado se necessário
+            lineHeight: 1.5, // Melhor espaçamento
+          }}
+          title={descricao}
+        >
+          {descricao}
+        </Typography>
+      )}
+
       <Button
         variant={hasVinculo ? 'outlined' : 'contained'}
         color="primary"
         onClick={() => onOpenModal(index)}
-        loading={loading}
         size="small"
+        sx={{
+          fontSize: '0.75rem', // Tamanho adequado para botão small
+        }}
       >
         {hasVinculo ? 'Trocar' : 'Selecionar insumo'}
       </Button>
-      {hasVinculo && !loading && (
-        <Typography variant="caption" noWrap sx={{ maxWidth: 120 }}>
-          {descricao}
-        </Typography>
-      )}
     </Stack>
   )
 }

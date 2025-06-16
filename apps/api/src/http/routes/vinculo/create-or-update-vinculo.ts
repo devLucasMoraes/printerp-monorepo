@@ -6,11 +6,12 @@ import { Unidade } from '@/domain/entities/Unidade'
 import { createOrUpdateVinculoUseCase } from '@/domain/useCases/vinculo/CreateOrUpdateVinculoUseCase'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
+import { normalizeText } from '@/utils/normalizeText'
 
 import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
-  cod: z.string(),
+  cod: z.string().transform((value) => normalizeText(value)),
   undCompra: z.nativeEnum(Unidade),
   possuiConversao: z.boolean(),
   qtdeEmbalagem: z.number().nullable(),
@@ -81,6 +82,8 @@ export async function createOrUpdateVinculo(app: FastifyInstance) {
           dto,
           membership,
         )
+
+        console.log({ vinculo })
 
         return res.status(200).send(vinculo)
       },

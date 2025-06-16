@@ -46,6 +46,7 @@ import {
 } from '../../../http/vinculo/get-vinculo-by-cod'
 import { useAlertStore } from '../../../stores/alert-store'
 import { NfeData } from '../../../types'
+import { normalizeText } from '../../../util/normalizeText'
 import { VinculoButton } from './VinculoButton'
 import { VinculoModal } from './VinculoModal'
 
@@ -216,11 +217,12 @@ export const NfeCompraModal = ({
         try {
           // Pré-buscar todos os vínculos em paralelo
           const prefetchPromises = data.produtos
-            .filter((produto) => produto.codigo)
+            .filter((produto) => normalizeText(produto.codigo))
             .map((produto) =>
               queryClient.prefetchQuery({
-                queryKey: ['vinculos', orgSlug, produto.codigo],
-                queryFn: () => getVinculoByCod(orgSlug, produto.codigo),
+                queryKey: ['vinculos', orgSlug, normalizeText(produto.codigo)],
+                queryFn: () =>
+                  getVinculoByCod(orgSlug, normalizeText(produto.codigo)),
               }),
             )
 
@@ -228,8 +230,8 @@ export const NfeCompraModal = ({
 
           // Construir itens com dados do cache
           const itensComVinculos = data.produtos.map((produto) => {
-            const vinculo = produto.codigo
-              ? getCachedVinculo(produto.codigo)
+            const vinculo = normalizeText(produto.codigo)
+              ? getCachedVinculo(normalizeText(produto.codigo))
               : null
 
             return {
@@ -239,7 +241,7 @@ export const NfeCompraModal = ({
               valorIpi: produto.valorIpi,
               unidadeNf: produto.unidade as Unidade,
               descricaoFornecedora: produto.descricao,
-              codFornecedora: produto.codigo,
+              codFornecedora: normalizeText(produto.codigo),
               vinculoId: vinculo?.id || '',
             }
           })
@@ -471,7 +473,7 @@ export const NfeCompraModal = ({
             key={field.id}
             sx={{
               px: 2,
-              py: 2,
+              py: 1.5,
               mb: 1,
               borderBottom: '1px solid',
               borderColor: 'divider',
@@ -483,8 +485,8 @@ export const NfeCompraModal = ({
               },
             }}
           >
-            <Grid2 container spacing={2}>
-              <Grid2 size={2}>
+            <Grid2 container spacing={1.5} alignItems="center">
+              <Grid2 size={3}>
                 <Controller
                   name={`itens.${index}.descricaoFornecedora`}
                   control={control}
@@ -503,7 +505,7 @@ export const NfeCompraModal = ({
                 />
               </Grid2>
 
-              <Grid2 size={2}>
+              <Grid2 size={1.7}>
                 <VinculoButton
                   index={index}
                   control={control}
@@ -511,7 +513,7 @@ export const NfeCompraModal = ({
                 />
               </Grid2>
 
-              <Grid2 size={2}>
+              <Grid2 size={1.5}>
                 <Controller
                   name={`itens.${index}.qtdeNf`}
                   control={control}
@@ -530,7 +532,7 @@ export const NfeCompraModal = ({
                 />
               </Grid2>
 
-              <Grid2 size={2}>
+              <Grid2 size={1.7}>
                 <Controller
                   name={`itens.${index}.unidadeNf`}
                   control={control}
@@ -555,7 +557,7 @@ export const NfeCompraModal = ({
                 />
               </Grid2>
 
-              <Grid2 size={2}>
+              <Grid2 size={1.7}>
                 <Controller
                   name={`itens.${index}.valorUnitario`}
                   control={control}
@@ -581,7 +583,7 @@ export const NfeCompraModal = ({
                 />
               </Grid2>
 
-              <Grid2 size={2}>
+              <Grid2 size={1.7}>
                 <Controller
                   name={`itens.${index}.valorIpi`}
                   control={control}
@@ -608,7 +610,7 @@ export const NfeCompraModal = ({
               </Grid2>
 
               <Grid2
-                size={1}
+                size={0.7}
                 container
                 direction="row"
                 alignItems="center"
@@ -618,6 +620,10 @@ export const NfeCompraModal = ({
                   onClick={() => remove(index)}
                   color="error"
                   size="small"
+                  sx={{
+                    transform: 'scale(0.9)',
+                    '&:hover': { transform: 'scale(1)' },
+                  }}
                 >
                   <IconCircleMinus />
                 </IconButton>

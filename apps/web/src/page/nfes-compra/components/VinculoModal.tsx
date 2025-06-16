@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,12 +10,11 @@ import {
   FormHelperText,
   Grid2,
   MenuItem,
-  Stack,
   Switch,
   TextField,
-  Typography,
 } from '@mui/material'
-import { Controller, useForm, useWatch } from 'react-hook-form'
+import { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { FornecedoraAutoComplete } from '../../../components/shared/autocompletes/FornecedoraAutoComplete'
@@ -67,14 +65,35 @@ export const VinculoModal = ({
   } = useForm<CreateOrUpdateVinculoDto>({
     resolver: zodResolver(createOrUpdateVinculoSchema),
     defaultValues: {
-      cod: vinculo?.cod || initialData?.cod || '',
-      undCompra: vinculo?.undCompra || ('' as Unidade),
-      possuiConversao: vinculo?.possuiConversao || false,
-      qtdeEmbalagem: vinculo?.qtdeEmbalagem || null,
-      insumoId: vinculo?.insumo?.id || '',
-      fornecedoraId: vinculo?.fornecedoraId || initialData?.fornecedoraId || '',
+      cod: '',
+      undCompra: '' as Unidade,
+      possuiConversao: false,
+      qtdeEmbalagem: null,
+      insumoId: '',
+      fornecedoraId: '',
     },
   })
+
+  useEffect(() => {
+    if (isEdit) {
+      reset({
+        cod: vinculo?.cod,
+        undCompra: vinculo?.undCompra,
+        possuiConversao: vinculo?.possuiConversao,
+        qtdeEmbalagem: vinculo?.qtdeEmbalagem,
+        insumoId: vinculo?.insumo.id,
+        fornecedoraId: vinculo?.fornecedoraId,
+      })
+    }
+    reset({
+      cod: initialData.cod,
+      fornecedoraId: initialData.fornecedoraId,
+      qtdeEmbalagem: null,
+      possuiConversao: false,
+      undCompra: '' as Unidade,
+      insumoId: '',
+    })
+  }, [isEdit, vinculo, reset, initialData.cod, initialData.fornecedoraId])
 
   const onSubmit = async (data: CreateOrUpdateVinculoDto) => {
     if (!orgSlug) {
@@ -236,87 +255,5 @@ export const VinculoModal = ({
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
-
-interface VinculoButtonProps {
-  index: number
-  control: any
-  orgSlug: string
-  onOpenModal: (index: number) => void
-}
-
-const VinculoButton = ({
-  index,
-  control,
-  orgSlug,
-  onOpenModal,
-}: VinculoButtonProps) => {
-  const codigoFornecedor = useWatch({
-    control,
-    name: `itens.${index}.codigoFornecedor`,
-    defaultValue: '',
-  })
-
-  const vinculoId = useWatch({
-    control,
-    name: `itens.${index}.vinculoId`,
-    defaultValue: '',
-  })
-
-  const { useGetByCod } = useVinculoQueries()
-
-  const {
-    data: vinculo,
-    isLoading,
-    isFetching,
-  } = useGetByCod(codigoFornecedor, orgSlug, {
-    enabled: !!codigoFornecedor && !!orgSlug,
-    staleTime: 5 * 60 * 1000, // 5 minutos de cache
-    retry: false, // Não tentar novamente se não encontrar
-  })
-
-  const isLoadingVinculo = isLoading || isFetching
-  const hasVinculo = !!vinculo || !!vinculoId
-  const descricaoInsumo = vinculo?.insumo?.descricao
-
-  const handleClick = () => {
-    onOpenModal(index)
-  }
-
-  return (
-    <Stack spacing={0.5} alignItems="flex-start">
-      <Button
-        variant={hasVinculo ? 'outlined' : 'contained'}
-        color="primary"
-        onClick={handleClick}
-        disabled={isLoadingVinculo}
-        startIcon={
-          isLoadingVinculo ? <CircularProgress size={16} /> : undefined
-        }
-        size="small"
-        fullWidth
-      >
-        {hasVinculo ? 'Trocar' : 'Selecionar'}
-      </Button>
-
-      {descricaoInsumo && !isLoadingVinculo && (
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{
-            fontSize: '0.75rem',
-            lineHeight: 1.2,
-            maxWidth: '100%',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-          title={descricaoInsumo}
-        >
-          {descricaoInsumo}
-        </Typography>
-      )}
-    </Stack>
   )
 }
