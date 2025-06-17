@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm'
 
 import { Armazem } from './Armazem'
@@ -14,6 +15,7 @@ import { NfeCompraItem } from './NfeCompraItem'
 import { Transportadora } from './Transportadora'
 
 @Entity('nfes_compra')
+@Unique(['nfe', 'chaveNfe', 'organizationId'])
 export class NfeCompra extends BaseAuditEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string

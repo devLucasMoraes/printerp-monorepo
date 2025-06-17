@@ -112,7 +112,7 @@ export const useXmlImport = (
             quantidade: Number(item.prod.qCom),
             valorUnitario: Number(item.prod.vUnCom),
             valorTotal: Number(item.prod.vProd),
-            valorIpi: Number(item.imposto.IPI || 0),
+            valorIpi: Number(item.imposto.IPI) || 0,
             unidade: item.prod.uCom,
             ncm: item.prod.NCM,
             cfop: item.prod.CFOP,

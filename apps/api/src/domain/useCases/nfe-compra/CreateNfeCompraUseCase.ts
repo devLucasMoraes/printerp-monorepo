@@ -18,6 +18,24 @@ export const createNfeCompraUseCase = {
   ): Promise<NfeCompra> {
     return repository.nfeCompra.manager.transaction(async (manager) => {
       // Validação
+
+      const nfe = await manager.findOne(NfeCompra, {
+        where: [
+          {
+            nfe: dto.nfe,
+            organizationId: membership.organization.id,
+          },
+          {
+            chaveNfe: dto.chaveNfe,
+            organizationId: membership.organization.id,
+          },
+        ],
+      })
+
+      if (nfe) {
+        throw new BadRequestError('Nfe de compra ja cadastrada')
+      }
+
       if (dto.itens.length === 0) {
         throw new BadRequestError(
           'Nota fiscal de compra deve ter pelo menos um item',
@@ -52,7 +70,9 @@ export const createNfeCompraUseCase = {
         throw new BadRequestError('Armazém não encontrado')
       }
 
-      // Validação de itens
+      // Carregar e validar vínculos - armazenar em um Map para reutilizar
+      const vinculosMap = new Map<string, Vinculo>()
+
       for (const item of dto.itens) {
         const vinculo = await manager.findOne(Vinculo, {
           where: {
@@ -67,6 +87,9 @@ export const createNfeCompraUseCase = {
         if (!vinculo) {
           throw new BadRequestError('Vinculo não encontrado')
         }
+
+        // Armazenar o vínculo completo para usar depois
+        vinculosMap.set(item.vinculoId, vinculo)
 
         if (item.qtdeNf <= 0) {
           throw new BadRequestError('Quantidade deve ser maior que zero')
@@ -114,21 +137,24 @@ export const createNfeCompraUseCase = {
         valorTotalNfe: dto.valorTotalNfe,
         valorOutros: dto.valorOutros,
         observacao: dto.observacao,
-        fornecedora: { id: dto.fornecedoraId },
-        transportadora: { id: dto.transportadoraId },
-        armazem: { id: dto.armazemId },
-        itens: dto.itens.map((itemDTO) => ({
-          qtdeNf: itemDTO.qtdeNf,
-          unidade: itemDTO.unidadeNf,
-          valorUnitario: itemDTO.valorUnitario,
-          valorIpi: itemDTO.valorIpi,
-          descricaoFornecedora: itemDTO.descricaoFornecedora,
-          codFornecedora: itemDTO.codFornecedora,
-          vinculo: { id: itemDTO.vinculoId },
-          createdBy: membership.user.id,
-          updatedBy: membership.user.id,
-          organizationId: membership.organization.id,
-        })),
+        fornecedora, // Objeto completo ao invés de { id: dto.fornecedoraId }
+        transportadora, // Objeto completo
+        armazem, // Objeto completo
+        itens: dto.itens.map((itemDTO) => {
+          const vinculo = vinculosMap.get(itemDTO.vinculoId) // Usar o vínculo completo do Map
+          return {
+            qtdeNf: itemDTO.qtdeNf,
+            unidadeNf: itemDTO.unidadeNf,
+            valorUnitario: itemDTO.valorUnitario,
+            valorIpi: itemDTO.valorIpi,
+            descricaoFornecedora: itemDTO.descricaoFornecedora,
+            codFornecedora: itemDTO.codFornecedora,
+            vinculo, // Objeto completo com todas as propriedades
+            createdBy: membership.user.id,
+            updatedBy: membership.user.id,
+            organizationId: membership.organization.id,
+          }
+        }),
         createdBy: membership.user.id,
         updatedBy: membership.user.id,
         organizationId: membership.organization.id,
@@ -138,6 +164,7 @@ export const createNfeCompraUseCase = {
 
       // Processamento das movimentações
       for (const item of nfeCompra.itens) {
+        // Agora item.vinculo terá todas as propriedades carregadas
         const possuiConversao = item.vinculo.possuiConversao
 
         const quantidade = possuiConversao

@@ -21,7 +21,10 @@ import {
   getTransportadora,
   GetTransportadoraResponse,
 } from '../../http/transportadora/get-transportadora'
-import { GetTransportadoraByCnpjResponse } from '../../http/transportadora/get-transportadora-by-cnpj'
+import {
+  getTransportadoraByCnpj,
+  GetTransportadoraByCnpjResponse,
+} from '../../http/transportadora/get-transportadora-by-cnpj'
 import {
   listTransportadoras,
   ListTransportadorasResponse,
@@ -64,7 +67,7 @@ export function useTransportadoraQueries() {
     return useQuery({
       ...queryOptions,
       queryKey: [resourceKey, orgSlug, cnpj],
-      queryFn: () => getTransportadora(orgSlug, cnpj),
+      queryFn: () => getTransportadoraByCnpj(orgSlug, cnpj),
     })
   }
 

@@ -84,6 +84,7 @@ export const VinculoModal = ({
         insumoId: vinculo?.insumo.id,
         fornecedoraId: vinculo?.fornecedoraId,
       })
+      return
     }
     reset({
       cod: initialData.cod,

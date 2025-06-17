@@ -22,7 +22,9 @@ export const createNfeCompraSchema = z.object({
   itens: z.array(
     z.object({
       qtdeNf: z.number().nonnegative(),
-      unidadeNf: z.nativeEnum(Unidade),
+      unidadeNf: z.nativeEnum(Unidade, {
+        message: 'Unidade inválida',
+      }),
       valorUnitario: z.number().nonnegative(),
       valorIpi: z.number().nonnegative(),
       descricaoFornecedora: z.string(),

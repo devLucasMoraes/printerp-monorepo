@@ -41,6 +41,35 @@ export const updateNfeCompraUseCase = {
         }
 
         // Validações
+
+        const existingNfe = await manager.findOne(NfeCompra, {
+          where: [
+            {
+              nfe: dto.nfe,
+              organizationId: membership.organization.id,
+            },
+            {
+              chaveNfe: dto.chaveNfe,
+              organizationId: membership.organization.id,
+            },
+          ],
+        })
+
+        if (existingNfe && existingNfe.id !== id) {
+          const isDuplicateNfe = existingNfe.nfe === dto.nfe
+          const isDuplicateChave = existingNfe.chaveNfe === dto.chaveNfe
+
+          if (isDuplicateNfe && isDuplicateChave) {
+            throw new BadRequestError(
+              'NFe de compra já cadastrada (número e chave duplicados)',
+            )
+          } else if (isDuplicateNfe) {
+            throw new BadRequestError('Número da NFe já cadastrado')
+          } else {
+            throw new BadRequestError('Chave da NFe já cadastrada')
+          }
+        }
+
         if (dto.itens.length === 0) {
           throw new BadRequestError('Nfe de compra deve ter pelo menos um item')
         }
@@ -76,6 +105,7 @@ export const updateNfeCompraUseCase = {
         }
 
         // Validação de itens
+        const vinculosMap = new Map<string, Vinculo>()
         for (const itemDTO of dto.itens) {
           const vinculo = await manager.findOne(Vinculo, {
             where: {
@@ -90,6 +120,8 @@ export const updateNfeCompraUseCase = {
           if (!vinculo) {
             throw new BadRequestError('Vinculo não encontrado')
           }
+
+          vinculosMap.set(itemDTO.vinculoId, vinculo)
 
           if (itemDTO.qtdeNf <= 0) {
             throw new BadRequestError('Quantidade deve ser maior que zero')
@@ -174,19 +206,22 @@ export const updateNfeCompraUseCase = {
             fornecedora: { id: dto.fornecedoraId },
             transportadora: { id: dto.transportadoraId },
             armazem: { id: dto.armazemId },
-            itens: dto.itens.map((itemDTO) => ({
-              id: itemDTO.id || undefined,
-              vinculo: { id: itemDTO.vinculoId },
-              qtdeNf: itemDTO.qtdeNf,
-              unidadeNf: itemDTO.unidadeNf,
-              valorUnitario: itemDTO.valorUnitario,
-              valorIpi: itemDTO.valorIpi,
-              descricaoFornecedora: itemDTO.descricaoFornecedora,
-              codFornecedora: itemDTO.codFornecedora,
-              createdBy: itemDTO.id ? undefined : membership.user.id,
-              updatedBy: membership.user.id,
-              organizationId: membership.organization.id,
-            })),
+            itens: dto.itens.map((itemDTO) => {
+              const vinculo = vinculosMap.get(itemDTO.vinculoId)! // Usar o vínculo completo do Map
+              return {
+                id: itemDTO.id || undefined,
+                vinculo, // Objeto completo com todas as propriedades
+                qtdeNf: itemDTO.qtdeNf,
+                unidadeNf: itemDTO.unidadeNf,
+                valorUnitario: itemDTO.valorUnitario,
+                valorIpi: itemDTO.valorIpi,
+                descricaoFornecedora: itemDTO.descricaoFornecedora,
+                codFornecedora: itemDTO.codFornecedora,
+                createdBy: itemDTO.id ? undefined : membership.user.id,
+                updatedBy: membership.user.id,
+                organizationId: membership.organization.id,
+              }
+            }),
           },
         )
 
