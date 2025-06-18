@@ -171,7 +171,7 @@ export const useXmlImport = (
             leadingZeros: true, // Mantém zeros iniciais (ex: "001")
             skipLike: /.*/, // Expressão regular que ignora TODOS os números
           },
-          tagValueProcessor: (tagName, tagValue) => String(tagValue),
+          tagValueProcessor: (_, tagValue) => String(tagValue),
           isArray: (name: string) => {
             // Define elementos que devem ser sempre tratados como arrays
             // Importante para NFe onde alguns elementos podem aparecer múltiplas vezes

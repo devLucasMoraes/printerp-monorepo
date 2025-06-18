@@ -2,7 +2,7 @@ import { useSocketStore } from '../stores/useSocketStore'
 
 export const useSocket = () => {
   const store = useSocketStore()
-  const { connect, disconnect } = store
+  // const { connect, disconnect } = store
 
   /*  useEffect(() => {
     connect()

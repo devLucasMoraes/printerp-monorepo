@@ -46,7 +46,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       await get().checkAuth()
     } catch (error) {
-      set({ error: error.response?.data?.message || 'Falha no login' })
+      if (error instanceof AxiosError) {
+        set({ error: error.response?.data?.message || 'Falha no login' })
+      }
       throw error
     } finally {
       set({ isLoading: false })
@@ -59,7 +61,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       await api.post('/sign-up', payload)
       await get().login(payload.email, payload.password)
     } catch (error) {
-      set({ error: error.response?.data?.message || 'Falha no cadastro' })
+      if (error instanceof AxiosError) {
+        set({ error: error.response?.data?.message || 'Falha no cadastro' })
+      }
       throw error
     } finally {
       set({ isLoading: false })
