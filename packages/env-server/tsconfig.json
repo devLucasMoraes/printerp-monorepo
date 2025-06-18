@@ -1,0 +1,6 @@
+{
+  "extends": "@printerp/tsconfig/node.json",
+  "include": [
+    "index.ts"
+  ]
+}

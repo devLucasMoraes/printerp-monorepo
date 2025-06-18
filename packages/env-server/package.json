@@ -1,0 +1,23 @@
+{
+  "name": "@printerp/env-server",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@printerp/eslint-config": "workspace:*",
+    "@printerp/prettier": "workspace:*",
+    "@printerp/tsconfig": "workspace:*",
+    "@types/node": "^22.15.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@printerp/eslint-config/node"
+    ]
+  },
+  "prettier": "@printerp/prettier"
+}

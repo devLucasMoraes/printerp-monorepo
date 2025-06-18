@@ -4,7 +4,6 @@ export default defineConfig({
   entry: ['src'],
   splitting: false,
   sourcemap: true,
-  minify: true,
   clean: true,
-  noExternal: ['@printerp/auth', '@printerp/env'],
+  noExternal: ['@printerp/auth', '@printerp/env-server'],
 })

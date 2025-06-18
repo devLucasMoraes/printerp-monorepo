@@ -32,9 +32,9 @@ importers:
       '@printerp/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@printerp/env':
+      '@printerp/env-server':
         specifier: workspace:*
-        version: link:../../packages/env
+        version: link:../../packages/env-server
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
@@ -247,6 +247,28 @@ importers:
       '@t3-oss/env-nextjs':
         specifier: ^0.13.4
         version: 0.13.4(arktype@2.1.20)(typescript@5.8.3)(zod@3.24.3)
+      zod:
+        specifier: ^3.24.3
+        version: 3.24.3
+    devDependencies:
+      '@printerp/eslint-config':
+        specifier: workspace:*
+        version: link:../../config/eslint-config
+      '@printerp/prettier':
+        specifier: workspace:*
+        version: link:../../config/prettier
+      '@printerp/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+
+  packages/env-server:
+    dependencies:
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.5.0
       zod:
         specifier: ^3.24.3
         version: 3.24.3
