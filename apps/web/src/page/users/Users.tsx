@@ -122,7 +122,7 @@ const Users = () => {
           setFormOpen(false)
           setSelectedUser(undefined)
         }}
-        user={selectedUser}
+        form={selectedUser}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -163,7 +163,7 @@ const Users = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

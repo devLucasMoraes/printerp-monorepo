@@ -22,16 +22,20 @@ import {
 import { ListEstoquesResponse } from '../../../http/estoque/list-estoques'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface EstoqueModalProps {
+export const EstoqueModal = ({
+  open,
+  onClose,
+  form,
+}: {
   open: boolean
   onClose: () => void
-  estoque?: {
-    data: ListEstoquesResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE'
-  }
-}
-
-export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
+  form:
+    | {
+        data: ListEstoquesResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
@@ -51,13 +55,13 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
   })
 
   useEffect(() => {
-    if (!estoque?.data) {
+    if (!form?.data) {
       return
     }
     reset({
-      quantidade: estoque.data.quantidade,
+      quantidade: form.data.quantidade,
     })
-  }, [estoque, reset])
+  }, [form, reset])
 
   const { mutate: adjustEstoque } = useAdjustEstoque()
 
@@ -66,9 +70,9 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (estoque?.data && estoque.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       adjustEstoque(
-        { id: estoque.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -102,7 +106,7 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
       <DialogTitle>Ajuste de estoque</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {`Informe a quantidade real do insumo: ${estoque?.data?.insumo?.descricao}, do armazém: ${estoque?.data?.armazem?.nome}`}
+          {`Informe a quantidade real do insumo: ${form?.data?.insumo?.descricao}, do armazém: ${form?.data?.armazem?.nome}`}
         </DialogContentText>
         <Grid2 container spacing={2} sx={{ mt: 2 }}>
           <Grid2 size={12}>
@@ -126,7 +130,7 @@ export const EstoqueModal = ({ open, onClose, estoque }: EstoqueModalProps) => {
                     input: {
                       endAdornment: (
                         <InputAdornment position="end">
-                          {estoque?.data && estoque.data.insumo.undEstoque}
+                          {form?.data && form.data.insumo.undEstoque}
                         </InputAdornment>
                       ),
                     },

@@ -145,7 +145,7 @@ const Categorias = () => {
           setFormOpen(false)
           setSelectedCategoria(undefined)
         }}
-        categoria={selectedCategoria}
+        form={selectedCategoria}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -186,7 +186,7 @@ const Categorias = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

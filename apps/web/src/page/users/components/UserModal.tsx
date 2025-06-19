@@ -28,23 +28,25 @@ import { useAlertStore } from '../../../stores/alert-store'
 export const UserModal = ({
   open,
   onClose,
-  user,
+  form,
 }: {
   open: boolean
   onClose: () => void
-  user?: {
-    data?: ListUsersResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
+  form:
+    | {
+        data: ListUsersResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
 }) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
-  const isUpdate = user?.type === 'UPDATE'
+  const isUpdate = form?.type === 'UPDATE'
 
   const schema =
-    user?.data || isUpdate ? updateUserSchema : createOrganizationalUserSchema
+    form?.data || isUpdate ? updateUserSchema : createOrganizationalUserSchema
 
   const {
     control,
@@ -66,7 +68,7 @@ export const UserModal = ({
     useUserQueries()
 
   useEffect(() => {
-    if (!user?.data) {
+    if (!form?.data) {
       reset({
         name: '',
         email: '',
@@ -77,7 +79,7 @@ export const UserModal = ({
       return
     }
 
-    const { data } = user
+    const { data } = form
 
     reset({
       name: data.name,
@@ -86,7 +88,7 @@ export const UserModal = ({
       avatarUrl: data.avatarUrl,
       role: data.role as Role,
     })
-  }, [user, reset])
+  }, [form, reset])
 
   const { mutate: createUser } = useCreateUser()
 
@@ -97,9 +99,9 @@ export const UserModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (isUpdate && user.data) {
+    if (isUpdate && form.data) {
       updateUser(
-        { id: user.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -149,10 +151,10 @@ export const UserModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{user ? 'Editar' : 'Novo'}</DialogTitle>
+      <DialogTitle>{form ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {user
+          {form
             ? 'Preencha os campos abaixo para editar o usuário'
             : 'Preencha os campos abaixo para criar um novo usuário'}
         </DialogContentText>

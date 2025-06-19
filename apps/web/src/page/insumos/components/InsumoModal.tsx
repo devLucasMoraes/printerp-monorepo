@@ -33,22 +33,26 @@ import {
 } from '../../../http/insumo/update-insumo'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface InsumoModalProps {
+export const InsumoModal = ({
+  open,
+  onClose,
+  form,
+}: {
   open: boolean
   onClose: () => void
-  insumo?: {
-    data: ListInsumosResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
-}
-
-export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
+  form:
+    | {
+        data: ListInsumosResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    insumo?.data && insumo.type === 'UPDATE'
+    form?.data && form.type === 'UPDATE'
       ? updateInsumoSchema
       : createInsumoSchema
 
@@ -73,14 +77,14 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
   })
 
   useEffect(() => {
-    if (insumo?.data && (insumo.type === 'UPDATE' || insumo.type === 'COPY')) {
+    if (form?.data && (form.type === 'UPDATE' || form.type === 'COPY')) {
       reset({
-        descricao: insumo.data.descricao,
-        categoriaId: insumo.data.categoria.id,
-        undEstoque: insumo.data.undEstoque,
-        valorUntMed: insumo.data.valorUntMed,
-        valorUntMedAuto: insumo.data.valorUntMedAuto,
-        estoqueMinimo: insumo.data.estoqueMinimo,
+        descricao: form.data.descricao,
+        categoriaId: form.data.categoria.id,
+        undEstoque: form.data.undEstoque,
+        valorUntMed: form.data.valorUntMed,
+        valorUntMedAuto: form.data.valorUntMedAuto,
+        estoqueMinimo: form.data.estoqueMinimo,
       })
     } else {
       reset({
@@ -92,7 +96,7 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
         estoqueMinimo: 0,
       })
     }
-  }, [insumo, reset])
+  }, [form, reset])
 
   const { mutate: createInsumo } = useCreateInsumo()
 
@@ -103,9 +107,9 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (insumo?.data && insumo.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       updateInsumo(
-        { id: insumo.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -153,10 +157,10 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{insumo?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
+      <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {insumo?.type === 'UPDATE'
+          {form?.type === 'UPDATE'
             ? 'Preencha os campos abaixo para editar o insumo'
             : 'Preencha os campos abaixo para criar um novo insumo'}
         </DialogContentText>
@@ -206,7 +210,7 @@ export const InsumoModal = ({ open, onClose, insumo }: InsumoModalProps) => {
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={value}
+                        checked={value || false}
                         onChange={(e) => onChange(e.target.checked)}
                         {...fieldProps}
                       />

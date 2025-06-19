@@ -161,7 +161,7 @@ const Insumos = () => {
           setFormOpen(false)
           setSelectedInsumo(undefined)
         }}
-        insumo={selectedInsumo}
+        form={selectedInsumo}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -202,7 +202,7 @@ const Insumos = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

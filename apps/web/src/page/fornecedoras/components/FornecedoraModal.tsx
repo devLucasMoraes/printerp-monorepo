@@ -28,10 +28,12 @@ import { useAlertStore } from '../../../stores/alert-store'
 interface FornecedoraModalProps {
   open: boolean
   onClose: () => void
-  form?: {
-    data: ListFornecedorasResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
+  form:
+    | {
+        data: ListFornecedorasResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
 }
 
 export const FornecedoraModal = ({

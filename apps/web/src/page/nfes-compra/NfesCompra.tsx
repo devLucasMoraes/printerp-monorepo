@@ -24,8 +24,8 @@ const NfesCompra = () => {
   const { orgSlug } = useParams()
 
   const [selectedNfeCompra, setSelectedNfeCompra] = useState<{
-    data?: ListNfesCompraResponse
-    nfeData?: NfeData
+    data: ListNfesCompraResponse | undefined
+    nfeData: NfeData | undefined
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' | 'IMPORT_XML'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -38,6 +38,7 @@ const NfesCompra = () => {
   const { parseXmlFile } = useXmlImport({
     onSuccess: (nfeData) => {
       console.log({ nfeData })
+
       setSelectedNfeCompra({
         data: undefined,
         nfeData,
@@ -67,7 +68,11 @@ const NfesCompra = () => {
   const { mutate: deleteById } = useDeleteNfeCompra()
 
   const handleConfirmDelete = (requisicao: ListNfesCompraResponse) => {
-    setSelectedNfeCompra({ data: requisicao, type: 'DELETE' })
+    setSelectedNfeCompra({
+      data: requisicao,
+      nfeData: undefined,
+      type: 'DELETE',
+    })
     setConfirmModalOpen(true)
   }
 
@@ -98,12 +103,20 @@ const NfesCompra = () => {
   }
 
   const handleEdit = (requisicaoEstoque: ListNfesCompraResponse) => {
-    setSelectedNfeCompra({ data: requisicaoEstoque, type: 'UPDATE' })
+    setSelectedNfeCompra({
+      data: requisicaoEstoque,
+      nfeData: undefined,
+      type: 'UPDATE',
+    })
     setFormOpen(true)
   }
 
   const handleCopy = (requisicaoEstoque: ListNfesCompraResponse): void => {
-    setSelectedNfeCompra({ data: requisicaoEstoque, type: 'COPY' })
+    setSelectedNfeCompra({
+      data: requisicaoEstoque,
+      nfeData: undefined,
+      type: 'COPY',
+    })
     setFormOpen(true)
   }
 
@@ -260,6 +273,7 @@ const NfesCompra = () => {
                   setFormOpen(true)
                   setSelectedNfeCompra({
                     data: undefined,
+                    nfeData: undefined,
                     type: 'CREATE',
                   })
                 }}
@@ -275,7 +289,7 @@ const NfesCompra = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

@@ -145,7 +145,7 @@ const Requisitantes = () => {
           setFormOpen(false)
           setSelectedRequisitante(undefined)
         }}
-        requisitante={selectedRequisitante}
+        form={selectedRequisitante}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -186,7 +186,7 @@ const Requisitantes = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

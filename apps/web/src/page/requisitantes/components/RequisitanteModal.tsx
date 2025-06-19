@@ -25,26 +25,26 @@ import {
 } from '../../../http/requisitante/update-requisitante'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface RequisitanteModalProps {
-  open: boolean
-  onClose: () => void
-  requisitante?: {
-    data: ListRequisitantesResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
-}
-
 export const RequisitanteModal = ({
   open,
   onClose,
-  requisitante,
-}: RequisitanteModalProps) => {
+  form,
+}: {
+  open: boolean
+  onClose: () => void
+  form:
+    | {
+        data: ListRequisitantesResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    requisitante?.data && requisitante.type === 'UPDATE'
+    form?.data && form.type === 'UPDATE'
       ? updateRequisitanteSchema
       : createRequisitanteSchema
 
@@ -65,15 +65,15 @@ export const RequisitanteModal = ({
   })
 
   useEffect(() => {
-    if (requisitante?.data && requisitante.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       reset({
-        nome: requisitante.data.nome,
-        fone: requisitante.data.fone,
+        nome: form.data.nome,
+        fone: form.data.fone,
       })
-    } else if (requisitante?.data && requisitante.type === 'COPY') {
+    } else if (form?.data && form.type === 'COPY') {
       reset({
-        nome: requisitante.data.nome,
-        fone: requisitante.data.fone,
+        nome: form.data.nome,
+        fone: form.data.fone,
       })
     } else {
       reset({
@@ -81,7 +81,7 @@ export const RequisitanteModal = ({
         fone: '',
       })
     }
-  }, [requisitante, reset])
+  }, [form, reset])
 
   const { mutate: createRequisitante } = useCreateRequisitante()
 
@@ -92,9 +92,9 @@ export const RequisitanteModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (requisitante?.data && requisitante.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       updateRequisitante(
-        { id: requisitante.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -144,12 +144,10 @@ export const RequisitanteModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>
-        {requisitante?.type === 'UPDATE' ? 'Editar' : 'Novo'}
-      </DialogTitle>
+      <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {requisitante?.type === 'UPDATE'
+          {form?.type === 'UPDATE'
             ? 'Preencha os campos abaixo para editar o requisitante'
             : 'Preencha os campos abaixo para criar um novo requisitante'}
         </DialogContentText>

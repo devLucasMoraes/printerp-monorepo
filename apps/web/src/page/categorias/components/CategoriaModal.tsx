@@ -26,26 +26,26 @@ import {
 } from '../../../http/categoria/update-categoria'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface CategoriaModalProps {
-  open: boolean
-  onClose: () => void
-  categoria?: {
-    data: ListCategoriasResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
-}
-
 export const CategoriaModal = ({
   open,
   onClose,
-  categoria,
-}: CategoriaModalProps) => {
+  form,
+}: {
+  open: boolean
+  onClose: () => void
+  form:
+    | {
+        data: ListCategoriasResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    categoria?.data && categoria.type === 'UPDATE'
+    form?.data && form.type === 'UPDATE'
       ? updateCategoriaSchema
       : createCategoriaSchema
 
@@ -65,20 +65,20 @@ export const CategoriaModal = ({
   })
 
   useEffect(() => {
-    if (categoria?.data && categoria.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       reset({
-        nome: categoria.data.nome,
+        nome: form.data.nome,
       })
-    } else if (categoria?.data && categoria.type === 'COPY') {
+    } else if (form?.data && form.type === 'COPY') {
       reset({
-        nome: categoria.data.nome,
+        nome: form.data.nome,
       })
     } else {
       reset({
         nome: '',
       })
     }
-  }, [categoria, reset])
+  }, [form, reset])
 
   const { mutate: createCategoria } = useCreateCategoria()
 
@@ -89,9 +89,9 @@ export const CategoriaModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (categoria?.data && categoria.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       updateCategoria(
-        { id: categoria.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -142,13 +142,11 @@ export const CategoriaModal = ({
       onSubmit={handleSubmit(onSubmit)}
     >
       <DialogTitle>
-        <Typography>
-          {categoria?.type === 'UPDATE' ? 'Editar' : 'Nova'}
-        </Typography>
+        <Typography>{form?.type === 'UPDATE' ? 'Editar' : 'Nova'}</Typography>
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {categoria?.type === 'UPDATE'
+          {form?.type === 'UPDATE'
             ? 'Preencha os campos abaixo para editar a categoria'
             : 'Preencha os campos abaixo para criar uma nova categoria'}
         </DialogContentText>

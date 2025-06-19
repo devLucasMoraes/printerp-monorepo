@@ -43,14 +43,16 @@ import { useAlertStore } from '../../../stores/alert-store'
 export const RequisicaoEstoqueModal = ({
   open,
   onClose,
-  requisicaoEstoque,
+  form,
 }: {
   open: boolean
   onClose: () => void
-  requisicaoEstoque?: {
-    data?: ListRequisicoesEstoqueResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
+  form:
+    | {
+        data: ListRequisicoesEstoqueResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
 }) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
@@ -63,7 +65,7 @@ export const RequisicaoEstoqueModal = ({
   const { useGetAll: useGetAllInsumos } = useInsumoQueries()
   const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
 
-  const isUpdate = requisicaoEstoque?.type === 'UPDATE'
+  const isUpdate = form?.type === 'UPDATE'
 
   const schema = isUpdate
     ? updateRequisicaoEstoqueSchema
@@ -112,7 +114,7 @@ export const RequisicaoEstoqueModal = ({
   }, [items, setValue])
 
   useEffect(() => {
-    if (!requisicaoEstoque?.data) {
+    if (!form?.data) {
       reset({
         dataRequisicao: '' as unknown as Date,
         valorTotal: 0,
@@ -126,7 +128,7 @@ export const RequisicaoEstoqueModal = ({
       return
     }
 
-    const { data } = requisicaoEstoque
+    const { data } = form
 
     reset({
       dataRequisicao: new Date(data.dataRequisicao),
@@ -144,7 +146,7 @@ export const RequisicaoEstoqueModal = ({
         unidade: item.unidade,
       })),
     })
-  }, [requisicaoEstoque, reset])
+  }, [form, reset])
 
   const { mutate: createRequisicaoEstoque } = useCreate()
   const { mutate: updateRequisicaoEstoque } = useUpdate()
@@ -164,9 +166,9 @@ export const RequisicaoEstoqueModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (isUpdate && requisicaoEstoque?.data) {
+    if (isUpdate && form?.data) {
       updateRequisicaoEstoque(
-        { id: requisicaoEstoque.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: handleSuccess,
           onError: (error) => {

@@ -38,7 +38,7 @@ interface VinculoModalProps {
     cod: string
     fornecedoraId: string
   }
-  vinculo?: GetVinculoByCodResponse // Vínculo existente para edição
+  vinculo: GetVinculoByCodResponse | undefined
 }
 
 export const VinculoModal = ({

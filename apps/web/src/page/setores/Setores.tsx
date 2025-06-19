@@ -142,7 +142,7 @@ const Setores = () => {
           setFormOpen(false)
           setSelectedSetor(undefined)
         }}
-        setor={selectedSetor}
+        form={selectedSetor}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -183,7 +183,7 @@ const Setores = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

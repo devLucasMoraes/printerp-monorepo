@@ -28,10 +28,12 @@ import { useAlertStore } from '../../../stores/alert-store'
 interface TransportadoraModalProps {
   open: boolean
   onClose: () => void
-  form?: {
-    data: ListTransportadorasResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
+  form:
+    | {
+        data: ListTransportadorasResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
 }
 
 export const TransportadoraModal = ({

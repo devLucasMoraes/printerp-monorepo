@@ -25,26 +25,26 @@ import {
 } from '../../../http/parceiro/update-parceiro'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface ParceiroModalProps {
-  open: boolean
-  onClose: () => void
-  parceiro?: {
-    data: ListParceirosResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
-}
-
 export const ParceiroModal = ({
   open,
   onClose,
-  parceiro,
-}: ParceiroModalProps) => {
+  form,
+}: {
+  open: boolean
+  onClose: () => void
+  form:
+    | {
+        data: ListParceirosResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    parceiro?.data && parceiro.type === 'UPDATE'
+    form?.data && form.type === 'UPDATE'
       ? updateParceiroSchema
       : createParceiroSchema
 
@@ -64,15 +64,15 @@ export const ParceiroModal = ({
   })
 
   useEffect(() => {
-    if (parceiro?.data && parceiro.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       reset({
-        nome: parceiro.data.nome,
-        fone: parceiro.data.fone,
+        nome: form.data.nome,
+        fone: form.data.fone,
       })
-    } else if (parceiro?.data && parceiro.type === 'COPY') {
+    } else if (form?.data && form.type === 'COPY') {
       reset({
-        nome: parceiro.data.nome,
-        fone: parceiro.data.fone,
+        nome: form.data.nome,
+        fone: form.data.fone,
       })
     } else {
       reset({
@@ -80,7 +80,7 @@ export const ParceiroModal = ({
         fone: '',
       })
     }
-  }, [parceiro, reset])
+  }, [form, reset])
 
   const { mutate: createParceiro } = useCreateParceiro()
 
@@ -91,9 +91,9 @@ export const ParceiroModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (parceiro?.data && parceiro.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       updateParceiro(
-        { id: parceiro.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -143,12 +143,10 @@ export const ParceiroModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>
-        {parceiro?.type === 'UPDATE' ? 'Editar' : 'Novo'}
-      </DialogTitle>
+      <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {parceiro?.type === 'UPDATE'
+          {form?.type === 'UPDATE'
             ? 'Preencha os campos abaixo para editar o parceiro'
             : 'Preencha os campos abaixo para criar um novo parceiro'}
         </DialogContentText>

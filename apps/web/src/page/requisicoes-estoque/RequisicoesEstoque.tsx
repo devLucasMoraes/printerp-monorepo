@@ -23,7 +23,7 @@ const RequisicoesEstoque = () => {
   const { orgSlug } = useParams()
 
   const [selectedRequisicaoEstoque, setSelectedRequisicaoEstoque] = useState<{
-    data?: ListRequisicoesEstoqueResponse
+    data: ListRequisicoesEstoqueResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -190,7 +190,7 @@ const RequisicoesEstoque = () => {
           setFormOpen(false)
           setSelectedRequisicaoEstoque(undefined)
         }}
-        requisicaoEstoque={selectedRequisicaoEstoque}
+        form={selectedRequisicaoEstoque}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -221,10 +221,7 @@ const RequisicoesEstoque = () => {
               color="primary"
               onClick={() => {
                 setFormOpen(true)
-                setSelectedRequisicaoEstoque({
-                  data: undefined,
-                  type: 'CREATE',
-                })
+                setSelectedRequisicaoEstoque(undefined)
               }}
             >
               nova requisição
@@ -237,7 +234,7 @@ const RequisicoesEstoque = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

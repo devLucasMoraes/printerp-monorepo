@@ -23,7 +23,7 @@ const Emprestimos = () => {
   const { orgSlug } = useParams()
 
   const [selectedEmprestimo, setSelectedEmprestimo] = useState<{
-    data?: ListEmprestimosResponse
+    data: ListEmprestimosResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
   }>()
   const [paginationModel, setPaginationModel] = useState({
@@ -101,10 +101,7 @@ const Emprestimos = () => {
   }
 
   const handleCreate = () => {
-    setSelectedEmprestimo({
-      type: 'CREATE',
-      data: undefined,
-    })
+    setSelectedEmprestimo(undefined)
     setFormOpen(true)
   }
 
@@ -180,7 +177,7 @@ const Emprestimos = () => {
           setFormOpen(false)
           setSelectedEmprestimo(undefined)
         }}
-        emprestimo={selectedEmprestimo}
+        form={selectedEmprestimo}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -217,7 +214,7 @@ const Emprestimos = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

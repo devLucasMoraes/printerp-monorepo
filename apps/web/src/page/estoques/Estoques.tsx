@@ -106,7 +106,7 @@ const Estoques = () => {
           setFormOpen(false)
           setSelectedEstoque(undefined)
         }}
-        estoque={selectedEstoque}
+        form={selectedEstoque}
       />
     </>
   )
@@ -122,7 +122,7 @@ const Estoques = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

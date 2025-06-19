@@ -144,7 +144,7 @@ const Armazens = () => {
           setFormOpen(false)
           setSelectedArmazem(undefined)
         }}
-        armazem={selectedArmazem}
+        form={selectedArmazem}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -185,7 +185,7 @@ const Armazens = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

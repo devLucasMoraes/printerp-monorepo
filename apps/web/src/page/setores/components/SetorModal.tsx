@@ -25,24 +25,26 @@ import {
 } from '../../../http/setor/update-setor'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface SetorModalProps {
+export const SetorModal = ({
+  open,
+  onClose,
+  form,
+}: {
   open: boolean
   onClose: () => void
-  setor?: {
-    data: ListSetoresResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
-}
-
-export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
+  form:
+    | {
+        data: ListSetoresResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    setor?.data && setor.type === 'UPDATE'
-      ? updateSetorSchema
-      : createSetorSchema
+    form?.data && form.type === 'UPDATE' ? updateSetorSchema : createSetorSchema
 
   const { useCreate: useCreateSetor, useUpdate: useUpdateSetor } =
     useSetorQueries()
@@ -60,20 +62,20 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
   })
 
   useEffect(() => {
-    if (setor?.data && setor.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       reset({
-        nome: setor.data.nome,
+        nome: form.data.nome,
       })
-    } else if (setor?.data && setor.type === 'COPY') {
+    } else if (form?.data && form.type === 'COPY') {
       reset({
-        nome: setor.data.nome,
+        nome: form.data.nome,
       })
     } else {
       reset({
         nome: '',
       })
     }
-  }, [setor, reset])
+  }, [form, reset])
 
   const { mutate: createSetor } = useCreateSetor()
 
@@ -84,9 +86,9 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (setor?.data && setor.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       updateSetor(
-        { id: setor.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -134,10 +136,10 @@ export const SetorModal = ({ open, onClose, setor }: SetorModalProps) => {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{setor?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
+      <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {setor?.type === 'UPDATE'
+          {form?.type === 'UPDATE'
             ? 'Preencha os campos abaixo para editar o setor'
             : 'Preencha os campos abaixo para criar um novo setor'}
         </DialogContentText>

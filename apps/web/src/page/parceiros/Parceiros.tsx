@@ -145,7 +145,7 @@ const Parceiros = () => {
           setFormOpen(false)
           setSelectedParceiro(undefined)
         }}
-        parceiro={selectedParceiro}
+        form={selectedParceiro}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -186,7 +186,7 @@ const Parceiros = () => {
             isLoading={isLoading}
             paginationModel={paginationModel}
             setPaginationModel={setPaginationModel}
-            totalRowCount={data?.totalElements}
+            totalRowCount={data?.totalElements || 0}
           />
         </DashboardCard>
       ) : (

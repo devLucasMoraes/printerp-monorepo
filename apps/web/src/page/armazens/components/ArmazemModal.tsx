@@ -25,22 +25,26 @@ import {
 } from '../../../http/armazem/update-armazem'
 import { useAlertStore } from '../../../stores/alert-store'
 
-interface ArmazemModalProps {
+export const ArmazemModal = ({
+  open,
+  onClose,
+  form,
+}: {
   open: boolean
   onClose: () => void
-  armazem?: {
-    data: ListArmazensResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
-}
-
-export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
+  form:
+    | {
+        data: ListArmazensResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
+}) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    armazem?.data && armazem.type === 'UPDATE'
+    form?.data && form.type === 'UPDATE'
       ? updateArmazemSchema
       : createArmazemSchema
 
@@ -60,22 +64,22 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
   })
 
   useEffect(() => {
-    if (armazem?.data && armazem.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       reset({
-        nome: armazem.data.nome,
+        nome: form.data.nome,
       })
     }
-    if (armazem?.data && armazem.type === 'COPY') {
+    if (form?.data && form.type === 'COPY') {
       reset({
-        nome: armazem.data.nome,
+        nome: form.data.nome,
       })
     }
-    if (!armazem?.data || armazem?.type === 'CREATE') {
+    if (!form?.data || form?.type === 'CREATE') {
       reset({
         nome: '',
       })
     }
-  }, [armazem, reset])
+  }, [form, reset])
 
   const { mutate: createArmazem } = useCreateArmazem()
 
@@ -86,9 +90,9 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (armazem?.data && armazem.type === 'UPDATE') {
+    if (form?.data && form.type === 'UPDATE') {
       updateArmazem(
-        { id: armazem.data.id, orgSlug, data },
+        { id: form.data.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -138,12 +142,10 @@ export const ArmazemModal = ({ open, onClose, armazem }: ArmazemModalProps) => {
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>
-        {armazem?.type === 'UPDATE' ? 'Editar' : 'Novo'}
-      </DialogTitle>
+      <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {armazem?.type === 'UPDATE'
+          {form?.type === 'UPDATE'
             ? 'Preencha os campos abaixo para editar o armazém'
             : 'Preencha os campos abaixo para criar um novo armazém'}
         </DialogContentText>

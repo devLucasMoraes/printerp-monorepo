@@ -24,7 +24,6 @@ import {
   IconCircleMinus,
   IconPlus,
 } from '@tabler/icons-react'
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import {
   Controller,
@@ -54,14 +53,16 @@ import { DevolucaoModal } from './DevolucaoModal'
 export const EmprestimoModal = ({
   open,
   onClose,
-  emprestimo,
+  form,
 }: {
   open: boolean
   onClose: () => void
-  emprestimo?: {
-    data?: ListEmprestimosResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
+  form:
+    | {
+        data: ListEmprestimosResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
 }) => {
   const [devolucaoModalOpen, setDevolucaoModalOpen] = useState(false)
   const [selectedItemIndex, setSelectedItemIndex] = useState(-1)
@@ -73,10 +74,8 @@ export const EmprestimoModal = ({
   const { useGetAll: useGetAllInsumos } = useInsumoQueries()
   const { data: insumos = [] } = useGetAllInsumos(orgSlug!)
 
-  const queryClient = useQueryClient()
-
   const schema =
-    emprestimo?.data && emprestimo.type === 'UPDATE'
+    form?.data && form.type === 'UPDATE'
       ? updateEmprestimoSchema
       : createEmprestimoSchema
 
@@ -130,7 +129,7 @@ export const EmprestimoModal = ({
   }, [items, setValue])
 
   useEffect(() => {
-    if (!emprestimo?.data) {
+    if (!form?.data) {
       reset({
         dataEmprestimo: '' as unknown as Date,
         previsaoDevolucao: null,
@@ -145,7 +144,7 @@ export const EmprestimoModal = ({
       return
     }
 
-    const { data } = emprestimo
+    const { data } = form
 
     reset({
       dataEmprestimo: new Date(data.dataEmprestimo),
@@ -174,7 +173,7 @@ export const EmprestimoModal = ({
         })),
       })),
     })
-  }, [emprestimo, reset])
+  }, [form, reset])
 
   const { mutate: createEmprestimo } = useCreateEmprestimo()
   const { mutate: updateEmprestimo } = useUpdateEmprestimo()
@@ -184,10 +183,10 @@ export const EmprestimoModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (emprestimo?.data && emprestimo?.type === 'UPDATE') {
+    if (form?.data && form?.type === 'UPDATE') {
       updateEmprestimo(
         {
-          id: emprestimo.data.id,
+          id: form.data.id,
           orgSlug,
           data,
         },
@@ -195,7 +194,6 @@ export const EmprestimoModal = ({
           onSuccess: () => {
             onClose()
             reset()
-            queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
             enqueueSnackbar('Emprestimo atualizado com sucesso', {
               variant: 'success',
             })
@@ -210,14 +208,13 @@ export const EmprestimoModal = ({
       )
     }
 
-    if (emprestimo?.type === 'CREATE') {
+    if (form?.type === 'CREATE') {
       createEmprestimo(
         { orgSlug, data },
         {
           onSuccess: () => {
             onClose()
             reset()
-            queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
             enqueueSnackbar('Emprestimo criado com sucesso', {
               variant: 'success',
             })
@@ -291,13 +288,11 @@ export const EmprestimoModal = ({
         maxWidth="xl"
         disableRestoreFocus
       >
-        <DialogTitle>
-          {emprestimo?.type === 'UPDATE' ? 'Editar' : 'Novo'}
-        </DialogTitle>
+        <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
         <DialogContent>
           {renderModals()}
           <DialogContentText>
-            {emprestimo?.type === 'UPDATE'
+            {form?.type === 'UPDATE'
               ? 'Atualize os dados do emprestimo'
               : 'Crie um novo emprestimo'}
           </DialogContentText>
