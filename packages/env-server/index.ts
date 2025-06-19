@@ -18,6 +18,8 @@ const serverEnvSchema = z.object({
   DB_PASSWORD: z.string().default('docker'),
   DB_DATABASE: z.string().default('printerp'),
 
+  FRONTEND_URL: z.string().url(),
+
   // Secrets
   JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
   COOKIE_SECRET: z.string().min(1, 'COOKIE_SECRET is required'),

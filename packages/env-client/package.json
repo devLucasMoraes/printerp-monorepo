@@ -1,0 +1,21 @@
+{
+  "name": "@printerp/env-client",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@printerp/eslint-config": "workspace:*",
+    "@printerp/prettier": "workspace:*",
+    "@printerp/tsconfig": "workspace:*"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@printerp/eslint-config/library"
+    ]
+  },
+  "prettier": "@printerp/prettier"
+}

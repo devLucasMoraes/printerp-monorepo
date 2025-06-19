@@ -1,4 +1,4 @@
-import { env } from '@printerp/env'
+import { env } from '@printerp/env-client'
 import axios from 'axios'
 
 import { useAuthStore } from '../../stores/auth-store'

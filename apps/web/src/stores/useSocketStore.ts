@@ -1,4 +1,4 @@
-import { env } from '@printerp/env'
+import { env } from '@printerp/env-client'
 import { io, Socket } from 'socket.io-client'
 import { create } from 'zustand'
 

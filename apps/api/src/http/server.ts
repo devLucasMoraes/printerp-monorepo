@@ -161,7 +161,7 @@ app.register(fastifyCookie, {
 })
 
 app.register(fastifyCors, {
-  origin: 'http://localhost:5173',
+  origin: env.FRONTEND_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 })
