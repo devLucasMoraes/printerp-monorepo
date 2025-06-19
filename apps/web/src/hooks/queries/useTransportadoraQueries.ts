@@ -99,7 +99,7 @@ export function useTransportadoraQueries() {
       'queryKey' | 'queryFn'
     >,
   ) => {
-    const { page = 0, size = 20, sort } = params
+    const { page = 0, size = 20, sort = 'ASC' } = params
 
     return useQuery({
       ...queryOptions,

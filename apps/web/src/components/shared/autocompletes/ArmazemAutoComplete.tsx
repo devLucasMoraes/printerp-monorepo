@@ -40,9 +40,11 @@ export const ArmazemAutoComplete = ({ field, error }: FieldProps) => {
           helperText={error?.message}
           onBlur={field.onBlur}
           label="Armazem"
+          size="medium"
           slotProps={{
             input: {
               ...params.InputProps,
+              className: params.InputProps?.className || '',
               endAdornment: (
                 <>
                   {isLoading ? (

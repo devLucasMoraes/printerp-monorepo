@@ -28,25 +28,25 @@ import { useAlertStore } from '../../../stores/alert-store'
 export const OrganizationModal = ({
   open,
   onClose,
-  organization,
+  form,
 }: {
   open: boolean
   onClose: () => void
-  organization?: {
-    data?: ListOrganizationsResponse
-    type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-  }
+  form:
+    | {
+        data: ListOrganizationsResponse
+        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
+      }
+    | undefined
 }) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
-  const isUpdate = organization?.type === 'UPDATE'
+  const isUpdate = form?.type === 'UPDATE'
 
   const schema =
-    organization?.data || isUpdate
-      ? updateOrganizationSchema
-      : createOrganizationSchema
+    form?.data || isUpdate ? updateOrganizationSchema : createOrganizationSchema
 
   const {
     control,
@@ -63,19 +63,19 @@ export const OrganizationModal = ({
   const { useCreate: useCreateOrg, useUpdate: useUpdateOrg } = useOrgQueries()
 
   useEffect(() => {
-    if (!organization?.data) {
+    if (!form?.data) {
       reset({
         name: '',
       })
       return
     }
 
-    const { data } = organization
+    const { data } = form
 
     reset({
       name: data.name,
     })
-  }, [organization, reset])
+  }, [form, reset])
 
   const { mutate: createOrg } = useCreateOrg()
 
@@ -86,7 +86,7 @@ export const OrganizationModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (isUpdate && organization.data) {
+    if (isUpdate && form.data) {
       updateOrg(
         { orgSlug, data },
         {
@@ -135,10 +135,10 @@ export const OrganizationModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{organization ? 'Editar' : 'Nova'}</DialogTitle>
+      <DialogTitle>{form ? 'Editar' : 'Nova'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {organization
+          {form
             ? 'Preencha os campos abaixo para editar a organização'
             : 'Preencha os campos abaixo para criar uma nova organização'}
         </DialogContentText>

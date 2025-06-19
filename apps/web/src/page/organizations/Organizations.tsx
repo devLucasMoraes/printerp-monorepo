@@ -114,7 +114,7 @@ const Organizations = () => {
           setFormOpen(false)
           setSelectedOrganization(undefined)
         }}
-        organization={selectedOrganization}
+        form={selectedOrganization}
       />
       <ConfirmationModal
         open={confirmModalOpen}
@@ -155,7 +155,7 @@ const Organizations = () => {
           isLoading={isLoading}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
-          totalRowCount={data?.totalElements}
+          totalRowCount={data?.totalElements || 0}
         />
       </DashboardCard>
     </PageContainer>

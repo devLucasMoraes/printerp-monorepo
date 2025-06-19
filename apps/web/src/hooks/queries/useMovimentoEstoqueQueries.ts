@@ -20,7 +20,7 @@ export function useMovimentoEstoqueQueries() {
       'queryKey' | 'queryFn'
     >,
   ) => {
-    const { page = 0, size = 20, sort, filters = {} } = params
+    const { page = 0, size = 20, sort = 'ASC', filters = {} } = params
 
     return useQuery({
       ...queryOptions,
