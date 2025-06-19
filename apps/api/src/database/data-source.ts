@@ -4,6 +4,8 @@ import { env } from '@printerp/env-server'
 import { join } from 'path'
 import { DataSource } from 'typeorm'
 
+import { entities } from '@/domain/entities'
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: env.DB_HOST,
@@ -13,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: env.DB_DATABASE,
   synchronize: false,
   logging: true,
-  entities: [join(__dirname, '../domain/entities/**/*.{ts,js}')],
+  entities,
   migrations: [join(__dirname, './migrations/**/*.{ts,js}')],
   subscribers: [join(__dirname, './subscribers/**/*.{ts,js}')],
 })

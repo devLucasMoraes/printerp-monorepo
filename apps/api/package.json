@@ -34,6 +34,7 @@
     "@printerp/eslint-config": "workspace:*",
     "@printerp/prettier": "workspace:*",
     "@printerp/tsconfig": "workspace:*",
+    "@swc/core": "^1.12.1",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^22.15.3",
     "dotenv-cli": "^8.0.0",
