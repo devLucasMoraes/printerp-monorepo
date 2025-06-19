@@ -1,26 +1,24 @@
 {
   "extends": "@printerp/tsconfig/node.json",
-  "include": [
-    "src/**/*",
-    "@types/*.d.ts",
-  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
-      ],
+      ]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
-    "allowJs": true,
     "outDir": "./dist",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "strictPropertyInitialization": false,
-    "types": [
-      "node",
-    ]
-  }
+    "rootDir": "./src"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.*"
+  ]
 }
