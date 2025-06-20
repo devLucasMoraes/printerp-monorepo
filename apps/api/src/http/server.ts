@@ -285,6 +285,7 @@ const start = async () => {
   try {
     await app.listen({
       port: env.SERVER_PORT,
+      host: '0.0.0.0',
     })
     console.log(`Server running at http://localhost:${env.SERVER_PORT}`)
     console.log(
