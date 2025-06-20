@@ -44,7 +44,6 @@ export const ArmazemAutoComplete = ({ field, error }: FieldProps) => {
           slotProps={{
             input: {
               ...params.InputProps,
-              className: params.InputProps?.className || '',
               endAdornment: (
                 <>
                   {isLoading ? (

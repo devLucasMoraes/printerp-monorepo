@@ -93,7 +93,7 @@ export function useFornecedoraQueries() {
       'queryKey' | 'queryFn'
     >,
   ) => {
-    const { page = 0, size = 20, sort = 'ASC' } = params
+    const { page = 0, size = 20, sort = 'updatedAt,desc' } = params
 
     return useQuery({
       ...queryOptions,

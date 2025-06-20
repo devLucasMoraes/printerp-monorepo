@@ -1,10 +1,5 @@
 import { alpha, Box, Card, styled } from '@mui/material'
-import {
-  DataGrid,
-  GridColDef,
-  GridRowIdGetter,
-  GridValidRowModel,
-} from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridValidRowModel } from '@mui/x-data-grid'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 const PAGE_SIZE_KEY = 'dataTablePageSize'
@@ -78,7 +73,6 @@ interface ServerDataTableProps {
       pageSize: number
     }>
   >
-  customGetRowId?: GridRowIdGetter
 }
 
 export const ServerDataTable = ({
@@ -86,7 +80,6 @@ export const ServerDataTable = ({
   rows,
   totalRowCount,
   setPaginationModel,
-  customGetRowId,
   paginationModel,
   isLoading,
 }: ServerDataTableProps) => {
@@ -101,7 +94,7 @@ export const ServerDataTable = ({
     if (savedPageSize !== paginationModel.pageSize) {
       setPaginationModel((prev) => ({ ...prev, pageSize: savedPageSize }))
     }
-  }, [])
+  }, [paginationModel.pageSize, setPaginationModel])
 
   const handlePaginationModelChange = (newModel: {
     page: number
@@ -120,7 +113,6 @@ export const ServerDataTable = ({
       <StyledDataGrid
         autoHeight
         rows={rows ?? []}
-        getRowId={customGetRowId || ((row) => row.id)}
         columns={columns}
         pageSizeOptions={ALLOWED_SIZES}
         disableRowSelectionOnClick
