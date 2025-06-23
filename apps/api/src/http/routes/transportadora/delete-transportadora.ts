@@ -13,7 +13,7 @@ export async function deleteTransportadora(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/transportadoras/:transportadoraId',
+      '/organizations/:orgSlug/transportadoras/:transportadoraId',
       {
         schema: {
           tags: ['transportadoras'],

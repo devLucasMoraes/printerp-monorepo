@@ -13,7 +13,7 @@ export async function deleteInsumo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/insumos/:insumoId',
+      '/organizations/:orgSlug/insumos/:insumoId',
       {
         schema: {
           tags: ['insumos'],

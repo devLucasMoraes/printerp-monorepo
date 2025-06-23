@@ -19,7 +19,7 @@ export async function updateSetor(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/api/v1/organizations/:orgSlug/setores/:setorId',
+      '/organizations/:orgSlug/setores/:setorId',
       {
         schema: {
           tags: ['setores'],

@@ -16,7 +16,7 @@ export async function createOrganization(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations',
+      '/organizations',
       {
         schema: {
           tags: ['organizations'],

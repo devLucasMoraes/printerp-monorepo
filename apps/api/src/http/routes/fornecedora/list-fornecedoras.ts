@@ -13,7 +13,7 @@ export async function listFornecedoras(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/fornecedoras/list',
+      '/organizations/:orgSlug/fornecedoras/list',
       {
         schema: {
           tags: ['fornecedoras'],

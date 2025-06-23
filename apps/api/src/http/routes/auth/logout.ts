@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 export async function logout(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/api/v1/sessions/logout',
+    '/sessions/logout',
     {
       schema: {
         tags: ['auth'],

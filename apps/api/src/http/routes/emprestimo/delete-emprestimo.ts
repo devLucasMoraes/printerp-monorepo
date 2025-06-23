@@ -13,7 +13,7 @@ export async function deleteEmprestimo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/emprestimos/:emprestimoId',
+      '/organizations/:orgSlug/emprestimos/:emprestimoId',
       {
         schema: {
           tags: ['emprestimos'],

@@ -13,7 +13,7 @@ export async function deleteRequisitante(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/requisitantes/:requisitanteId',
+      '/organizations/:orgSlug/requisitantes/:requisitanteId',
       {
         schema: {
           tags: ['requisitantes'],

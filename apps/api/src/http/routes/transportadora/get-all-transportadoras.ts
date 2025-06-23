@@ -13,7 +13,7 @@ export async function getAllTransportadoras(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/transportadoras',
+      '/organizations/:orgSlug/transportadoras',
       {
         schema: {
           tags: ['transportadoras'],

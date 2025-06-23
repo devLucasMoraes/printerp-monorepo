@@ -8,8 +8,8 @@ interface SocketState {
   lastError: string | null
   connect: () => Promise<void>
   disconnect: () => void
-  emit: (event: string, data: any) => void
-  subscribe: (event: string, callback: (data: any) => void) => () => void
+  emit: (event: string, data: unknown) => void
+  subscribe: (event: string, callback: (data: unknown) => void) => () => void
   setError: (error: string | null) => void
 }
 
@@ -76,7 +76,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     }
   },
 
-  emit: (event: string, data: any) => {
+  emit: (event: string, data: unknown) => {
     const { socket, isConnected } = get()
     if (socket && isConnected) {
       socket.emit(event, data)
@@ -85,16 +85,24 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     }
   },
 
-  subscribe: (event: string, callback: (data: any) => void) => {
+  subscribe: (event: string, callback: (data: unknown) => void) => {
     const { socket } = get()
     if (!socket) {
       console.warn('Cannot subscribe: socket not initialized')
       return () => {}
     }
 
-    socket.on(event, callback)
+    const handler = (data: unknown) => {
+      try {
+        callback(data)
+      } catch (error) {
+        console.error(`Error handling socket event ${event}:`, error)
+      }
+    }
+
+    socket.on(event, handler)
     return () => {
-      socket.off(event, callback)
+      socket.off(event, handler)
     }
   },
 

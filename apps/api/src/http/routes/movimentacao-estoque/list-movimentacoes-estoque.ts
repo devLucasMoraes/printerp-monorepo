@@ -14,7 +14,7 @@ export async function listMovimentacoesEstoque(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/movimentacoes-estoque/list',
+      '/organizations/:orgSlug/movimentacoes-estoque/list',
       {
         schema: {
           tags: ['movimentacoes-estoque'],

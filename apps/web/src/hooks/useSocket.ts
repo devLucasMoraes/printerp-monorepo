@@ -1,15 +1,17 @@
-import { useSocketStore } from '../stores/useSocketStore'
+import { useEffect } from 'react'
+
+import { useSocketStore } from '../stores/socket-store'
 
 export const useSocket = () => {
   const store = useSocketStore()
-  // const { connect, disconnect } = store
+  const { connect, disconnect } = store
 
-  /*  useEffect(() => {
+  useEffect(() => {
     connect()
     return () => {
       disconnect()
     }
-  }, [connect, disconnect]) */
+  }, [connect, disconnect])
 
   return store
 }

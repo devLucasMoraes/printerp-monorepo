@@ -13,7 +13,7 @@ export async function deleteFornecedora(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/fornecedoras/:fornecedoraId',
+      '/organizations/:orgSlug/fornecedoras/:fornecedoraId',
       {
         schema: {
           tags: ['fornecedoras'],

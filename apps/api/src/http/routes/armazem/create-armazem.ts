@@ -19,7 +19,7 @@ export async function createArmazem(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/armazens',
+      '/organizations/:slug/armazens',
       {
         schema: {
           tags: ['armazens'],

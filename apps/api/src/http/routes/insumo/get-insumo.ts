@@ -14,7 +14,7 @@ export async function getInsumo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/insumos/:insumoId',
+      '/organizations/:orgSlug/insumos/:insumoId',
       {
         schema: {
           tags: ['insumos'],

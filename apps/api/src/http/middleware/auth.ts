@@ -5,6 +5,34 @@ import { repository } from '@/domain/repositories'
 
 import { UnauthorizedError } from '../_errors/unauthorized-error'
 
+async function addUserToOrganizationRoom(
+  app: FastifyInstance,
+  userId: string,
+  orgSlug: string,
+) {
+  try {
+    // Buscar todos os sockets conectados
+    const sockets = await app.io.fetchSockets()
+    console.log({ sockets })
+
+    // Filtrar sockets do usuário específico
+    const userSockets = sockets.filter((socket) => socket.userId === userId)
+
+    // Adicionar cada socket do usuário à sala da organização
+    userSockets.forEach((socket) => {
+      if (!socket.rooms.has(orgSlug)) {
+        socket.join(orgSlug)
+        app.log.info(`Socket ${socket.id} adicionado à sala: ${orgSlug}`)
+      }
+    })
+  } catch (error) {
+    app.log.error(
+      `Erro ao adicionar usuário ${userId} à sala ${orgSlug}:`,
+      error,
+    )
+  }
+}
+
 export const auth = fastifyPlugin(async (app: FastifyInstance) => {
   app.addHook('preHandler', async (req) => {
     req.getCurrentUserId = async () => {
@@ -42,6 +70,8 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
       console.log({ member })
 
       const { organization } = member
+
+      await addUserToOrganizationRoom(app, userId, organization.slug)
 
       return {
         membership: member,

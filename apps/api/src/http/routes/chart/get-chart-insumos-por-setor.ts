@@ -13,7 +13,7 @@ export async function getChartInsumosPorSetor(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/charts/insumos-por-setor/:periodo',
+      '/organizations/:orgSlug/charts/insumos-por-setor/:periodo',
       {
         schema: {
           tags: ['chart'],

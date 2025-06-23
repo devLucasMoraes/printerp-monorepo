@@ -14,7 +14,7 @@ export async function getAllNfesCompra(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/nfes-compra',
+      '/organizations/:orgSlug/nfes-compra',
       {
         schema: {
           tags: ['nfes-compra'],

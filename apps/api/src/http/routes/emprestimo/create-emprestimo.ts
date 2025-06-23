@@ -35,7 +35,7 @@ export async function createEmprestimo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/emprestimos',
+      '/organizations/:slug/emprestimos',
       {
         schema: {
           tags: ['emprestimos'],

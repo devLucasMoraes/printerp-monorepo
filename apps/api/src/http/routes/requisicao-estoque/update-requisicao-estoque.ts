@@ -35,7 +35,7 @@ export async function updateRequisicaoEstoque(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/api/v1/organizations/:orgSlug/requisicoes-estoque/:requisicaoEstoqueId',
+      '/organizations/:orgSlug/requisicoes-estoque/:requisicaoEstoqueId',
       {
         schema: {
           tags: ['requisicoes-estoque'],

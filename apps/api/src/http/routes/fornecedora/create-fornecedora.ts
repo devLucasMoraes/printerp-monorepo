@@ -22,7 +22,7 @@ export async function createFornecedora(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/fornecedoras',
+      '/organizations/:slug/fornecedoras',
       {
         schema: {
           tags: ['fornecedoras'],

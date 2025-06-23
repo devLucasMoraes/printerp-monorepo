@@ -13,7 +13,7 @@ export async function getChartSaidasMensais(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/charts/saidas-mensais',
+      '/organizations/:orgSlug/charts/saidas-mensais',
       {
         schema: {
           tags: ['chart'],

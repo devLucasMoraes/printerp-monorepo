@@ -13,7 +13,7 @@ export async function listCategorias(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/categorias/list',
+      '/organizations/:orgSlug/categorias/list',
       {
         schema: {
           tags: ['categorias'],

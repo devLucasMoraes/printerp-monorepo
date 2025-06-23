@@ -26,7 +26,7 @@ export async function createOrUpdateVinculo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:orgSlug/vinculos',
+      '/organizations/:orgSlug/vinculos',
       {
         schema: {
           tags: ['vinculos'],

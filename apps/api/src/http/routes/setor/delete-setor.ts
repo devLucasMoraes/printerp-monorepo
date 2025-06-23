@@ -13,7 +13,7 @@ export async function deleteSetor(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/setores/:setorId',
+      '/organizations/:orgSlug/setores/:setorId',
       {
         schema: {
           tags: ['setores'],

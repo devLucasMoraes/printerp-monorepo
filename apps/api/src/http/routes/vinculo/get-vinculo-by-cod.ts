@@ -15,7 +15,7 @@ export async function getVinculoByCod(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/vinculos/cod/:cod',
+      '/organizations/:orgSlug/vinculos/cod/:cod',
       {
         schema: {
           tags: ['vinculos'],

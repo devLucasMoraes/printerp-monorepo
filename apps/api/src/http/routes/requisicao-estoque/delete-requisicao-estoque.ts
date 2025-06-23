@@ -13,7 +13,7 @@ export async function deleteRequisicaoEstoque(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/requisicoes-estoque/:requisicaoEstoqueId',
+      '/organizations/:orgSlug/requisicoes-estoque/:requisicaoEstoqueId',
       {
         schema: {
           tags: ['requisicoes-estoque'],

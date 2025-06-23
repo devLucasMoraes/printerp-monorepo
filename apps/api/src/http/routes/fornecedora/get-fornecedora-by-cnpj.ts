@@ -14,7 +14,7 @@ export async function getFornecedoraByCnpj(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/fornecedoras/cnpj/:cnpj',
+      '/organizations/:orgSlug/fornecedoras/cnpj/:cnpj',
       {
         schema: {
           tags: ['fornecedoras'],

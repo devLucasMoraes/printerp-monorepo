@@ -20,7 +20,7 @@ export async function createRequisitante(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/requisitantes',
+      '/organizations/:slug/requisitantes',
       {
         schema: {
           tags: ['requisitantes'],

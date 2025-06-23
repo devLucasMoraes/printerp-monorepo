@@ -19,7 +19,7 @@ export async function createSetor(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/setores',
+      '/organizations/:slug/setores',
       {
         schema: {
           tags: ['setores'],
@@ -55,6 +55,12 @@ export async function createSetor(app: FastifyInstance) {
         const { nome } = req.body
 
         const setor = await createSetorUseCase.execute({ nome }, membership)
+
+        app.io.in(slug).emit('invalidateSetorCache', {
+          operation: 'create',
+          orgSlug: slug,
+          setorId: setor.id,
+        })
 
         return res.status(201).send({ setorId: setor.id })
       },

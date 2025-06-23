@@ -46,7 +46,7 @@ export async function updateEmprestimo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/api/v1/organizations/:orgSlug/emprestimos/:emprestimoId',
+      '/organizations/:orgSlug/emprestimos/:emprestimoId',
       {
         schema: {
           tags: ['emprestimos'],

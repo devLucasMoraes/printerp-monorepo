@@ -23,7 +23,7 @@ export async function createOrganizationalUser(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/users',
+      '/organizations/:slug/users',
       {
         schema: {
           tags: ['users'],

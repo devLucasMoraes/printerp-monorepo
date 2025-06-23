@@ -15,7 +15,7 @@ export async function getAllUsers(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/users',
+      '/organizations/:orgSlug/users',
       {
         schema: {
           tags: ['users'],

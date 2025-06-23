@@ -14,7 +14,7 @@ export async function getUser(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/users/:userId',
+      '/organizations/:orgSlug/users/:userId',
       {
         schema: {
           tags: ['categorias'],

@@ -10,7 +10,7 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useSetorQueries } from '../../hooks/queries/useSetorQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListSetoresResponse } from '../../http/setor/list-setores'
 import { useAlertStore } from '../../stores/alert-store'
 import { SetorModal } from './components/SetorModal'
@@ -21,6 +21,8 @@ const Setores = () => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
   const { orgSlug } = useParams()
 
+  useCacheInvalidation(orgSlug || '')
+
   const [selectedSetor, setSelectedSetor] = useState<{
     data: ListSetoresResponse
     type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
@@ -30,33 +32,15 @@ const Setores = () => {
     pageSize: 10,
   })
 
-  const isSocketConnected = useEntityChangeSocket(
-    'setor',
-    {
-      invalidate: ['requisicaoEstoque'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'setor',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetSetoresPaginated,
     useDelete: useDeleteSetor,
   } = useSetorQueries()
 
-  const { data, isLoading } = useGetSetoresPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetSetoresPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
   const { mutate: deleteById } = useDeleteSetor()
 
   const handleConfirmDelete = (setor: ListSetoresResponse) => {

@@ -127,13 +127,13 @@ export function useEntityChangeSocket(
       unsubscribeFunctions.forEach((unsubscribe) => unsubscribe())
     }
   }, [
-    socket.isConnected,
     entityName,
     queryClient,
     handleInvalidateQueries,
     handleNotification,
     memoizedConfig.dependsOn,
     memoizedOptions.entityLabel,
+    socket,
   ])
 
   return socket.isConnected

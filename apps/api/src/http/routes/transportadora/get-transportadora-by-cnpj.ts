@@ -14,7 +14,7 @@ export async function getTransportadoraByCnpj(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/transportadoras/cnpj/:cnpj',
+      '/organizations/:orgSlug/transportadoras/cnpj/:cnpj',
       {
         schema: {
           tags: ['transportadoras'],

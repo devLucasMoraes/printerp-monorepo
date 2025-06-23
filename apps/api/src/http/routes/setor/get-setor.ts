@@ -13,7 +13,7 @@ export async function getSetor(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .get(
-      '/api/v1/organizations/:orgSlug/setores/:setorId',
+      '/organizations/:orgSlug/setores/:setorId',
       {
         schema: {
           tags: ['setores'],

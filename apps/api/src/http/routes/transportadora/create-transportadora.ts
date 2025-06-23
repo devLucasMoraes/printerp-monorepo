@@ -22,7 +22,7 @@ export async function createTransportadora(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/transportadoras',
+      '/organizations/:slug/transportadoras',
       {
         schema: {
           tags: ['transportadoras'],

@@ -14,7 +14,7 @@ export async function deleteUser(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/users/:userId',
+      '/organizations/:orgSlug/users/:userId',
       {
         schema: {
           tags: ['users'],

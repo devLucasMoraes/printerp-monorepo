@@ -13,7 +13,7 @@ export async function deleteNfeCompra(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .delete(
-      '/api/v1/organizations/:orgSlug/nfes-compra/:nfeCompraId',
+      '/organizations/:orgSlug/nfes-compra/:nfeCompraId',
       {
         schema: {
           tags: ['nfes-compra'],

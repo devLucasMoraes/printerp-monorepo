@@ -26,7 +26,7 @@ export async function createInsumo(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/api/v1/organizations/:slug/insumos',
+      '/organizations/:slug/insumos',
       {
         schema: {
           tags: ['insumos'],

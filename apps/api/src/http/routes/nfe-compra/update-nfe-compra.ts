@@ -46,7 +46,7 @@ export async function updateNfeCompra(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .put(
-      '/api/v1/organizations/:orgSlug/nfes-compra/:nfeCompraId',
+      '/organizations/:orgSlug/nfes-compra/:nfeCompraId',
       {
         schema: {
           tags: ['nfes-compra'],
