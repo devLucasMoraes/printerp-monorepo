@@ -56,6 +56,12 @@ export async function updateSetor(app: FastifyInstance) {
 
         await updateSetorUseCase.execute(setorId, { nome }, membership)
 
+        app.io.in(orgSlug).emit('invalidateSetorCache', {
+          operation: 'update',
+          orgSlug,
+          setorId,
+        })
+
         return res.status(204).send()
       },
     )

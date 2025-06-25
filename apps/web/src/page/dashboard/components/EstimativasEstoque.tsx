@@ -16,10 +16,12 @@ import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useEstoqueQueries } from '../../../hooks/queries/useEstoqueQueries'
-import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../../hooks/useCacheInvalidation'
 import { formatDateBR } from '../../../util/formatDateBR'
 
 export const EstimativasEstoque = () => {
+  useCacheInvalidation()
+
   const { orgSlug } = useParams()
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -49,21 +51,13 @@ export const EstimativasEstoque = () => {
     }
   }, [searchInput, debouncedSearch])
 
-  const isSocketConnected = useEntityChangeSocket('estoque')
-
   const { useListPaginated: useGetEstoquesPaginated } = useEstoqueQueries()
 
-  const { data } = useGetEstoquesPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-      filters,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data } = useGetEstoquesPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+    filters,
+  })
   return (
     <DashboardCard
       title="Estimativas de estoque"

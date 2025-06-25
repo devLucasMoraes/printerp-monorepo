@@ -10,12 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useArmazemQueries } from '../../hooks/queries/useArmazemQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListArmazensResponse } from '../../http/armazem/list-armazens'
 import { useAlertStore } from '../../stores/alert-store'
 import { ArmazemModal } from './components/ArmazemModal'
 
 const Armazens = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { orgSlug } = useParams()
@@ -30,33 +32,15 @@ const Armazens = () => {
     pageSize: 10,
   })
 
-  const isSocketConnected = useEntityChangeSocket(
-    'armazem',
-    {
-      invalidate: ['estoque', 'requisicaoEstoque'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Armazém',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetArmazensPaginated,
     useDelete: useDeleteArmazem,
   } = useArmazemQueries()
 
-  const { data, isLoading } = useGetArmazensPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetArmazensPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
   const { mutate: deleteById } = useDeleteArmazem()
 
   const handleConfirmDelete = (armazem: ListArmazensResponse) => {

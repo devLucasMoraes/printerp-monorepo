@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createCategoria,
   CreateCategoriaDTO,
@@ -31,8 +32,9 @@ import {
 } from '../../http/categoria/update-categoria'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.CATEGORIA
+
 export function useCategoriaQueries() {
-  const resourceKey = 'categorias'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

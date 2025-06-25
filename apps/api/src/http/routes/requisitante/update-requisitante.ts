@@ -61,6 +61,12 @@ export async function updateRequisitante(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateRequisitanteCache', {
+          operation: 'update',
+          orgSlug,
+          requisitanteId,
+        })
+
         return res.status(204).send()
       },
     )

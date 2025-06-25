@@ -88,6 +88,12 @@ export async function updateEmprestimo(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateEmprestimoCache', {
+          operation: 'update',
+          orgSlug,
+          emprestimoId,
+        })
+
         return res.status(204).send()
       },
     )

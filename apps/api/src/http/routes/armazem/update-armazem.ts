@@ -56,6 +56,12 @@ export async function updateArmazem(app: FastifyInstance) {
 
         await updateArmazemUseCase.execute(armazemId, { nome }, membership)
 
+        app.io.in(orgSlug).emit('invalidateArmazemCache', {
+          operation: 'update',
+          orgSlug,
+          armazemId,
+        })
+
         return res.status(204).send()
       },
     )

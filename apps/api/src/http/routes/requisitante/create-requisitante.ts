@@ -60,6 +60,12 @@ export async function createRequisitante(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateRequisitanteCache', {
+          operation: 'create',
+          orgSlug: slug,
+          requisitanteId: requisitante.id,
+        })
+
         return res.status(201).send({ requisitanteId: requisitante.id })
       },
     )

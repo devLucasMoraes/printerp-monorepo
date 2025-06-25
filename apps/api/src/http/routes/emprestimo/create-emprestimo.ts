@@ -75,6 +75,12 @@ export async function createEmprestimo(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateEmprestimoCache', {
+          operation: 'create',
+          orgSlug: slug,
+          emprestimoId: emprestimo.id,
+        })
+
         return res.status(201).send({ emprestimoId: emprestimo.id })
       },
     )

@@ -51,6 +51,12 @@ export async function deleteRequisicaoEstoque(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateRequisicaoEstoqueCache', {
+          operation: 'delete',
+          orgSlug,
+          requisicaoEstoqueId,
+        })
+
         return res.status(204).send()
       },
     )

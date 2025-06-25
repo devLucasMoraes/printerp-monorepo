@@ -13,30 +13,20 @@ import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useMovimentoEstoqueQueries } from '../../../hooks/queries/useMovimentoEstoqueQueries'
-import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../../hooks/useCacheInvalidation'
 import { formatDateBR } from '../../../util/formatDateBR'
 
 const MovimentacoesRecentes = () => {
+  useCacheInvalidation()
+
   const { orgSlug } = useParams()
   const { useListPaginated: useGetMovimentacoes } = useMovimentoEstoqueQueries()
 
-  const isSocketConnected = useEntityChangeSocket(
-    'movimento-estoque',
-    { dependsOn: ['requisicaoEstoque', 'emprestimo'] },
-    { showNotifications: false },
-  )
-
-  const { data: movimentacoes } = useGetMovimentacoes(
-    orgSlug || '',
-    {
-      page: 0,
-      size: 5,
-      sort: 'updatedAt,desc',
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data: movimentacoes } = useGetMovimentacoes(orgSlug || '', {
+    page: 0,
+    size: 5,
+    sort: 'updatedAt,desc',
+  })
   return (
     <DashboardCard title="Movimentações recentes">
       <>

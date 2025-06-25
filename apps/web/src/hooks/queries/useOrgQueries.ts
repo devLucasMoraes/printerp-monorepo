@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createOrganization,
   CreateOrganizationDto,
@@ -31,8 +32,9 @@ import {
 } from '../../http/orgs/update-organization'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.ORGANIZATION
+
 export function useOrgQueries() {
-  const resourceKey = 'organizations'
   const queryClient = useQueryClient()
   const useGetBySlug = (
     orgSlug: string,

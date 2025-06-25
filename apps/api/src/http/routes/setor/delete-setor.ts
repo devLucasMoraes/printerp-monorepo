@@ -48,6 +48,12 @@ export async function deleteSetor(app: FastifyInstance) {
 
         await deleteSetorUseCase.execute(setorId, membership)
 
+        app.io.in(orgSlug).emit('invalidateSetorCache', {
+          operation: 'delete',
+          orgSlug,
+          setorId,
+        })
+
         return res.status(204).send()
       },
     )

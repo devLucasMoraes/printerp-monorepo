@@ -11,6 +11,7 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useNfeCompraQueries } from '../../hooks/queries/useNfeCompraQueries'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { useXmlImport } from '../../hooks/useXmlImport'
 import { ListNfesCompraResponse } from '../../http/nfe-compra/list-nfes-compra'
 import { useAlertStore } from '../../stores/alert-store'
@@ -18,6 +19,8 @@ import { NfeData } from '../../types'
 import { NfeCompraModal } from './components/NfeCompraModal'
 
 const NfesCompra = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)

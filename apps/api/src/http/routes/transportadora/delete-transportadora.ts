@@ -48,6 +48,12 @@ export async function deleteTransportadora(app: FastifyInstance) {
 
         await deleteTransportadoraUseCase.execute(transportadoraId, membership)
 
+        app.io.in(orgSlug).emit('invalidateTransportadoraCache', {
+          operation: 'delete',
+          orgSlug,
+          transportadoraId,
+        })
+
         return res.status(204).send()
       },
     )

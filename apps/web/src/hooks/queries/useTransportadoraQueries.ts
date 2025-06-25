@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createTransportadora,
   CreateTransportadoraDTO,
@@ -35,8 +36,9 @@ import {
 } from '../../http/transportadora/update-transportadora'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.TRANSPORTADORA
+
 export function useTransportadoraQueries() {
-  const resourceKey = 'transportadoras'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

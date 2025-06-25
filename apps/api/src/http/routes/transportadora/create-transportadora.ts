@@ -62,6 +62,12 @@ export async function createTransportadora(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateTransportadoraCache', {
+          operation: 'create',
+          orgSlug: slug,
+          transportadoraId: transportadora.id,
+        })
+
         return res.status(201).send({ transportadoraId: transportadora.id })
       },
     )

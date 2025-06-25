@@ -48,6 +48,12 @@ export async function deleteNfeCompra(app: FastifyInstance) {
 
         await deleteNfeCompraUseCase.execute(nfeCompraId, membership)
 
+        app.io.in(orgSlug).emit('invalidateNfeCompraCache', {
+          operation: 'delete',
+          orgSlug,
+          nfeCompraId,
+        })
+
         return res.status(204).send()
       },
     )

@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createParceiro,
   CreateParceiroDTO,
@@ -31,8 +32,9 @@ import {
 } from '../../http/parceiro/update-parceiro'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.PARCEIRO
+
 export function useParceiroQueries() {
-  const resourceKey = 'parceiros'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

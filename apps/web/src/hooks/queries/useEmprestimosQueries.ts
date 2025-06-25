@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createEmprestimo,
   CreateEmprestimoDTO,
@@ -31,8 +32,9 @@ import {
 } from '../../http/emprestimo/update-emprestimo'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.EMPRESTIMO
+
 export function useEmprestimoQueries() {
-  const resourceKey = 'emprestimos'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

@@ -84,6 +84,12 @@ export async function updateInsumo(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateInsumoCache', {
+          operation: 'update',
+          orgSlug,
+          insumoId,
+        })
+
         return res.status(204).send()
       },
     )

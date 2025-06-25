@@ -45,6 +45,12 @@ export async function shtutdownOrganization(app: FastifyInstance) {
 
         await deleteOrganizationUseCase.execute(organization.id, membership)
 
+        app.io.in(organization.slug).emit('invalidateOrganizationCache', {
+          operation: 'delete',
+          orgSlug: organization.slug,
+          organizationId: organization.id,
+        })
+
         return res.status(204).send()
       },
     )

@@ -48,6 +48,12 @@ export async function deleteParceiro(app: FastifyInstance) {
 
         await deleteParceiroUseCase.execute(parceiroId, membership)
 
+        app.io.in(orgSlug).emit('invalidateParceiroCache', {
+          operation: 'delete',
+          orgSlug,
+          parceiroId,
+        })
+
         return res.status(204).send()
       },
     )

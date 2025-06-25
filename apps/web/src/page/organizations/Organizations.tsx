@@ -9,11 +9,14 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { role } from '../../constants'
 import { useOrgQueries } from '../../hooks/queries/useOrgQueries'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListOrganizationsResponse } from '../../http/orgs/list-organizations'
 import { useAlertStore } from '../../stores/alert-store'
 import { OrganizationModal } from './components/OrganizationModal'
 
 const Organizations = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)

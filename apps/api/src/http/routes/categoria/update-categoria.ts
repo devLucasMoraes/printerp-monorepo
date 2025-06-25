@@ -56,6 +56,12 @@ export async function updateCategoria(app: FastifyInstance) {
 
         await updateCategoriaUseCase.execute(categoriaId, { nome }, membership)
 
+        app.io.in(orgSlug).emit('invalidateCategoriaCache', {
+          operation: 'update',
+          orgSlug,
+          categoriaId,
+        })
+
         return res.status(204).send()
       },
     )

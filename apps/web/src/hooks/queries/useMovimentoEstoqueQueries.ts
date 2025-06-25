@@ -1,13 +1,14 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   listMovimentacoesEstoque,
   ListMovimentacoesEstoqueResponse,
 } from '../../http/movimentacao-estoque/list-movimentacoes-estoque'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
-const resourceKey = 'movimento-estoque'
+const resourceKey = ResourceKeys.MOVIMENTO_ESTOQUE
 export function useMovimentoEstoqueQueries() {
   const useListPaginated = (
     orgSlug: string,

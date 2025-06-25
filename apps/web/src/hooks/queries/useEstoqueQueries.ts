@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   adjustEstoque,
   AdjustEstoqueDTO,
@@ -17,7 +18,8 @@ import {
 } from '../../http/estoque/list-estoques'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
-const resourceKey = 'estoque'
+const resourceKey = ResourceKeys.ESTOQUE
+
 export function useEstoqueQueries() {
   const queryClient = useQueryClient()
   const useListPaginated = (

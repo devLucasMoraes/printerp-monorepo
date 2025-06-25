@@ -56,6 +56,12 @@ export async function createArmazem(app: FastifyInstance) {
 
         const armazem = await createArmazemUseCase.execute({ nome }, membership)
 
+        app.io.in(slug).emit('invalidateArmazemCache', {
+          operation: 'create',
+          orgSlug: slug,
+          armazemId: armazem.id,
+        })
+
         return res.status(201).send({ armazemId: armazem.id })
       },
     )

@@ -74,6 +74,12 @@ export async function createRequisicaoEstoque(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateRequisicaoEstoqueCache', {
+          operation: 'create',
+          orgSlug: slug,
+          requisicaoEstoqueId: requisicaoEstoque.id,
+        })
+
         return res
           .status(201)
           .send({ requisicaoEstoqueId: requisicaoEstoque.id })

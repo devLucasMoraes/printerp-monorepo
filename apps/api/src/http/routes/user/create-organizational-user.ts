@@ -73,6 +73,12 @@ export async function createOrganizationalUser(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateUserCache', {
+          operation: 'create',
+          orgSlug: slug,
+          userId: user.id,
+        })
+
         return res.status(201).send({ userId: user.id })
       },
     )

@@ -54,6 +54,12 @@ export async function deleteUser(app: FastifyInstance) {
 
         await deleteUserUseCase.execute(userId, membership)
 
+        app.io.in(orgSlug).emit('invalidateUserCache', {
+          operation: 'delete',
+          orgSlug,
+          userId,
+        })
+
         return res.status(204).send()
       },
     )

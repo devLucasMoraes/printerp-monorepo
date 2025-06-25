@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createOrUpdateVinculo,
   CreateOrUpdateVinculoDto,
@@ -18,8 +19,9 @@ import {
 } from '../../http/vinculo/get-vinculo-by-cod'
 import { ErrorResponse } from '../../types'
 
+const resourceKey = ResourceKeys.VINCULO
+
 export function useVinculoQueries() {
-  const resourceKey = 'vinculos'
   const queryClient = useQueryClient()
 
   const useGetByCod = (

@@ -10,11 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useFornecedoraQueries } from '../../hooks/queries/useFornecedoraQueries'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListFornecedorasResponse } from '../../http/fornecedora/list-fornecedoras'
 import { useAlertStore } from '../../stores/alert-store'
 import { FornecedoraModal } from './components/FornecedoraModal'
 
 const Fornecedoras = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)

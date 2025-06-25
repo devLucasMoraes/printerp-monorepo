@@ -61,6 +61,12 @@ export async function updateParceiro(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateParceiroCache', {
+          operation: 'update',
+          orgSlug,
+          parceiroId,
+        })
+
         return res.status(204).send()
       },
     )

@@ -58,6 +58,12 @@ export async function updateOrganization(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(organization.slug).emit('invalidateOrganizationCache', {
+          operation: 'update',
+          orgSlug: organization.slug,
+          organizationId: organization.id,
+        })
+
         return res.status(204).send()
       },
     )

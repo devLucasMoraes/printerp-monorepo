@@ -11,12 +11,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useRequisicaoEstoqueQueries } from '../../hooks/queries/useRequisicaoEstoqueQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListRequisicoesEstoqueResponse } from '../../http/requisicao-estoque/list-requisicoes-estoque'
 import { useAlertStore } from '../../stores/alert-store'
 import { RequisicaoEstoqueModal } from './components/RequisicaoEstoqueModal'
 
 const RequisicoesEstoque = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
@@ -33,34 +35,15 @@ const RequisicoesEstoque = () => {
 
   const queryClient = useQueryClient()
 
-  const isSocketConnected = useEntityChangeSocket(
-    'requisicaoEstoque',
-    {
-      invalidate: ['estoque'],
-      dependsOn: ['requisitante', 'setor', 'insumo', 'armazem'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Requisição',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetRequisicoesEstoquePaginated,
     useDelete: useDeleteRequisicaoEstoque,
   } = useRequisicaoEstoqueQueries()
 
-  const { data, isLoading } = useGetRequisicoesEstoquePaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetRequisicoesEstoquePaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
   const { mutate: deleteById } = useDeleteRequisicaoEstoque()
 
   const handleConfirmDelete = (requisicao: ListRequisicoesEstoqueResponse) => {

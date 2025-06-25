@@ -48,6 +48,12 @@ export async function deleteFornecedora(app: FastifyInstance) {
 
         await deleteFornecedoraUseCase.execute(fornecedoraId, membership)
 
+        app.io.in(orgSlug).emit('invalidateFornecedoraCache', {
+          operation: 'delete',
+          orgSlug,
+          fornecedoraId,
+        })
+
         return res.status(204).send()
       },
     )

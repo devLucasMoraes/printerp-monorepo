@@ -60,6 +60,12 @@ export async function createParceiro(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateParceiroCache', {
+          operation: 'create',
+          orgSlug: slug,
+          parceiroId: parceiro.id,
+        })
+
         return res.status(201).send({ parceiroId: parceiro.id })
       },
     )

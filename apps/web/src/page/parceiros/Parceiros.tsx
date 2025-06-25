@@ -10,12 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useParceiroQueries } from '../../hooks/queries/useParceiroQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListParceirosResponse } from '../../http/parceiro/list-parceiros'
 import { useAlertStore } from '../../stores/alert-store'
 import { ParceiroModal } from './components/ParceiroModal'
 
 const Parceiros = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
@@ -30,33 +32,15 @@ const Parceiros = () => {
     pageSize: 10,
   })
 
-  const isSocketConnected = useEntityChangeSocket(
-    'parceiro',
-    {
-      invalidate: ['requisicaoEstoque'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Parceiro',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetParceirosPaginated,
     useDelete: useDeleteParceiro,
   } = useParceiroQueries()
 
-  const { data, isLoading } = useGetParceirosPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetParceirosPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
   const { mutate: deleteById } = useDeleteParceiro()
 
   const handleConfirmDelete = (parceiro: ListParceirosResponse) => {

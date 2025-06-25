@@ -85,6 +85,12 @@ export async function createNfeCompra(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateNfeCompraCache', {
+          operation: 'create',
+          orgSlug: slug,
+          nfeCompraId: nfeCompra.id,
+        })
+
         return res.status(201).send({ nfeCompraId: nfeCompra.id })
       },
     )

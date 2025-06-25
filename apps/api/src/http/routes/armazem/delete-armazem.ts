@@ -48,6 +48,12 @@ export async function deleteArmazem(app: FastifyInstance) {
 
         await deleteArmazemUseCase.execute(armazemId, membership)
 
+        app.io.in(orgSlug).emit('invalidateArmazemCache', {
+          operation: 'delete',
+          orgSlug,
+          armazemId,
+        })
+
         return res.status(204).send()
       },
     )

@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createNfeCompra,
   CreateNfeCompraDTO,
@@ -31,8 +32,9 @@ import {
 } from '../../http/nfe-compra/update-nfe-compra'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.NFE_COMPRA
+
 export function useNfeCompraQueries() {
-  const resourceKey = 'nfes-compra'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

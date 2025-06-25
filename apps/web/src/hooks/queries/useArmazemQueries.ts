@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createArmazem,
   CreateArmazemDTO,
@@ -26,8 +27,9 @@ import {
 import { ListCategoriasResponse } from '../../http/categoria/list-categorias'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.ARMAZEM
+
 export function useArmazemQueries() {
-  const resourceKey = 'armazens'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

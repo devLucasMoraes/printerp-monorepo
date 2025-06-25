@@ -59,6 +59,12 @@ export async function createCategoria(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateCategoriaCache', {
+          operation: 'create',
+          orgSlug: slug,
+          categoriaId: categoria.id,
+        })
+
         return res.status(201).send({ categoriaId: categoria.id })
       },
     )

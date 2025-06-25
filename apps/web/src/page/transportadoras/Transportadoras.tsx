@@ -10,11 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useTransportadoraQueries } from '../../hooks/queries/useTransportadoraQueries'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListTransportadorasResponse } from '../../http/transportadora/list-transportadoras'
 import { useAlertStore } from '../../stores/alert-store'
 import { TransportadoraModal } from './components/TransportadoraModal'
 
 const Transportadoras = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)

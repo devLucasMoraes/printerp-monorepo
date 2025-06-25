@@ -10,29 +10,22 @@ import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useChartsQueries } from '../../../hooks/queries/useChartsQueries'
-import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../../hooks/useCacheInvalidation'
 
 const SaidasMensais = () => {
-  // chart color
+  useCacheInvalidation()
+
   const theme = useTheme()
   const secondary = theme.palette.secondary.main
   const secondarylight = '#f5fcff'
   const errorlight = '#fdede8'
   const successlight = theme.palette.success.light
 
-  const isSocketConnected = useEntityChangeSocket(
-    'charts',
-    { dependsOn: ['requisicaoEstoque'] },
-    { showNotifications: false },
-  )
-
   const { orgSlug } = useParams()
 
   const { useGetChartSaidasMensais: chartSaidasMensais } = useChartsQueries()
 
-  const { data } = chartSaidasMensais(orgSlug || '', {
-    staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-  })
+  const { data } = chartSaidasMensais(orgSlug || '')
 
   // chart
   const optionscolumnchart: ApexCharts.ApexOptions = {

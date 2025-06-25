@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createRequisicaoEstoque,
   CreateRequisicaoEstoqueDTO,
@@ -31,8 +32,9 @@ import {
 } from '../../http/requisicao-estoque/update-requisicao-estoque'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.REQUISICAO_ESTOQUE
+
 export function useRequisicaoEstoqueQueries() {
-  const resourceKey = 'requisicoes-estoque'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

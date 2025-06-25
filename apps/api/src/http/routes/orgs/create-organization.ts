@@ -41,6 +41,12 @@ export async function createOrganization(app: FastifyInstance) {
           userId,
         )
 
+        app.io.in(organization.slug).emit('invalidateOrganizationCache', {
+          operation: 'create',
+          orgSlug: organization.slug,
+          organizationId: organization.id,
+        })
+
         return res
           .status(201)
           .send({ organizationId: organization.id, slug: organization.slug })

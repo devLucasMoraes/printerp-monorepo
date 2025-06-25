@@ -48,6 +48,12 @@ export async function deleteRequisitante(app: FastifyInstance) {
 
         await deleteRequisitanteUseCase.execute(requisitanteId, membership)
 
+        app.io.in(orgSlug).emit('invalidateRequisitanteCache', {
+          operation: 'delete',
+          orgSlug,
+          requisitanteId,
+        })
+
         return res.status(204).send()
       },
     )

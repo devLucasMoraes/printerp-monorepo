@@ -11,11 +11,14 @@ import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { role } from '../../constants'
 import { useUserQueries } from '../../hooks/queries/useUserQueries'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListUsersResponse } from '../../http/user/list-users'
 import { useAlertStore } from '../../stores/alert-store'
 import { UserModal } from './components/UserModal'
 
 const Users = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)

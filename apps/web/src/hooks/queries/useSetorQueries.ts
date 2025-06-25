@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createSetor,
   CreateSetorDTO,
@@ -22,8 +23,9 @@ import { listSetores, ListSetoresResponse } from '../../http/setor/list-setores'
 import { updateSetor, UpdateSetorDTO } from '../../http/setor/update-setor'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.SETOR
+
 export function useSetorQueries() {
-  const resourceKey = 'setores'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

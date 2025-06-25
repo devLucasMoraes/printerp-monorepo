@@ -48,6 +48,12 @@ export async function deleteInsumo(app: FastifyInstance) {
 
         await deleteInsumoUseCase.execute(insumoId, membership)
 
+        app.io.in(orgSlug).emit('invalidateInsumoCache', {
+          operation: 'delete',
+          orgSlug,
+          insumoId,
+        })
+
         return res.status(204).send()
       },
     )

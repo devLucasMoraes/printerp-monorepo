@@ -22,12 +22,12 @@ async function addUserToOrganizationRoom(
     userSockets.forEach((socket) => {
       if (!socket.rooms.has(orgSlug)) {
         socket.join(orgSlug)
-        app.log.info(`Socket ${socket.id} adicionado à sala: ${orgSlug}`)
+        app.log.info(`Socket ${socket.id} adicionado a sala: ${orgSlug}`)
       }
     })
   } catch (error) {
     app.log.error(
-      `Erro ao adicionar usuário ${userId} à sala ${orgSlug}:`,
+      `Erro ao adicionar usuário ${userId} a sala ${orgSlug}:`,
       error,
     )
   }

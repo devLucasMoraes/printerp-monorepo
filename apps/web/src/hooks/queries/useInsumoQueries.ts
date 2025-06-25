@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createInsumo,
   CreateInsumoDTO,
@@ -25,8 +26,9 @@ import {
 import { updateInsumo, UpdateInsumoDTO } from '../../http/insumo/update-insumo'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.INSUMO
+
 export function useInsumoQueries() {
-  const resourceKey = 'insumos'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

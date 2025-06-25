@@ -4,9 +4,11 @@ import { IconArrowUpLeft } from '@tabler/icons-react'
 import Chart from 'react-apexcharts'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
+import { useCacheInvalidation } from '../../../hooks/useCacheInvalidation'
 
 const YearlyBreakup = () => {
-  // chart color
+  useCacheInvalidation()
+
   const theme = useTheme()
   const primary = theme.palette.primary.main
   const primarylight = '#ecf2ff'

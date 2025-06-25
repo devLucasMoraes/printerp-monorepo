@@ -63,6 +63,12 @@ export async function updateFornecedora(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateFornecedoraCache', {
+          operation: 'update',
+          orgSlug,
+          fornecedoraId,
+        })
+
         return res.status(204).send()
       },
     )

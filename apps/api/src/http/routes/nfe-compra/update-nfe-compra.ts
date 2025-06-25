@@ -88,6 +88,12 @@ export async function updateNfeCompra(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateNfeCompraCache', {
+          operation: 'update',
+          orgSlug,
+          nfeCompraId,
+        })
+
         return res.status(204).send()
       },
     )

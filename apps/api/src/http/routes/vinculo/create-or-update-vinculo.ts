@@ -85,6 +85,12 @@ export async function createOrUpdateVinculo(app: FastifyInstance) {
 
         console.log({ vinculo })
 
+        app.io.in(orgSlug).emit('invalidateVinculoCache', {
+          operation: 'create',
+          orgSlug,
+          vinculoId: vinculo.id,
+        })
+
         return res.status(200).send(vinculo)
       },
     )

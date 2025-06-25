@@ -10,12 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useCategoriaQueries } from '../../hooks/queries/useCategoriaQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListCategoriasResponse } from '../../http/categoria/list-categorias'
 import { useAlertStore } from '../../stores/alert-store'
 import { CategoriaModal } from './components/CategoriaModal'
 
 const Categorias = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
@@ -30,34 +32,15 @@ const Categorias = () => {
     pageSize: 10,
   })
 
-  const isSocketConnected = useEntityChangeSocket(
-    'categoria',
-    {
-      // Quando categoria mudar, invalida insumos
-      invalidate: ['insumo'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Categoria',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetCategoriasPaginated,
     useDelete: useDeleteCategoria,
   } = useCategoriaQueries()
 
-  const { data, isLoading } = useGetCategoriasPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetCategoriasPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
   const { mutate: deleteById } = useDeleteCategoria()
 
   const handleConfirmDelete = (categoria: ListCategoriasResponse) => {

@@ -6,28 +6,21 @@ import { useParams } from 'react-router'
 
 import DashboardCard from '../../../components/cards/DashboardCard'
 import { useChartsQueries } from '../../../hooks/queries/useChartsQueries'
-import { useEntityChangeSocket } from '../../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../../hooks/useCacheInvalidation'
 
 const VisaoGeralInsumosPorSetor = () => {
+  useCacheInvalidation()
+
   const [period, setPeriod] = useState('1')
   const theme = useTheme()
 
   const { orgSlug } = useParams()
 
-  // Socket para revalidação em tempo real
-  const isSocketConnected = useEntityChangeSocket(
-    'charts',
-    { dependsOn: ['requisicaoEstoque', 'requisicaoEstoqueItem'] },
-    { showNotifications: false },
-  )
-
   // Usar React Query para gerenciar estado e cache
   const { useGetChartInsumosPorSetor: chartInsumosPorSetor } =
     useChartsQueries()
 
-  const { data } = chartInsumosPorSetor(orgSlug || '', period, {
-    staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-  })
+  const { data } = chartInsumosPorSetor(orgSlug || '', period)
 
   const handleChange = (event: SelectChangeEvent) => {
     setPeriod(event.target.value)

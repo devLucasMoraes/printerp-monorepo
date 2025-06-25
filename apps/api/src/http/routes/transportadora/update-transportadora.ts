@@ -63,6 +63,12 @@ export async function updateTransportadora(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(orgSlug).emit('invalidateTransportadoraCache', {
+          operation: 'update',
+          orgSlug,
+          transportadoraId,
+        })
+
         return res.status(204).send()
       },
     )

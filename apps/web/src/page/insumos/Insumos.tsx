@@ -10,12 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useInsumoQueries } from '../../hooks/queries/useInsumoQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListInsumosResponse } from '../../http/insumo/list-insumos'
 import { useAlertStore } from '../../stores/alert-store'
 import { InsumoModal } from './components/InsumoModal'
 
 const Insumos = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
@@ -30,34 +32,15 @@ const Insumos = () => {
     pageSize: 10,
   })
 
-  const isSocketConnected = useEntityChangeSocket(
-    'insumo',
-    {
-      // Insumo depende das mudanças em categoria
-      dependsOn: ['categoria'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Insumo',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetInsumosPaginated,
     useDelete: useDeleteInsumo,
   } = useInsumoQueries()
 
-  const { data, isLoading } = useGetInsumosPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetInsumosPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
   const { mutate: deleteById } = useDeleteInsumo()
 
   const handleConfirmDelete = (insumo: ListInsumosResponse) => {

@@ -62,6 +62,12 @@ export async function createFornecedora(app: FastifyInstance) {
           membership,
         )
 
+        app.io.in(slug).emit('invalidateFornecedoraCache', {
+          operation: 'create',
+          orgSlug: slug,
+          fornecedoraId: fornecedora.id,
+        })
+
         return res.status(201).send({ fornecedoraId: fornecedora.id })
       },
     )

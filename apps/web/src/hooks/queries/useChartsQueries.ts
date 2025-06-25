@@ -1,6 +1,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   getChartInsumosPorSetor,
   InsumosPorSetorResponse,
@@ -11,8 +12,9 @@ import {
 } from '../../http/chart/get-chart-saidas-mensais'
 import { ErrorResponse } from '../../types'
 
+const resourceKey = ResourceKeys.CHARTS
+
 export function useChartsQueries() {
-  const resourceKey = 'charts'
   const useGetChartSaidasMensais = (
     orgSlug: string,
     queryOptions?: Omit<

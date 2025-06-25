@@ -48,6 +48,12 @@ export async function deleteCategoria(app: FastifyInstance) {
 
         await deleteCategoriaUseCase.execute(categoriaId, membership)
 
+        app.io.in(orgSlug).emit('invalidateCategoriaCache', {
+          operation: 'delete',
+          orgSlug,
+          categoriaId,
+        })
+
         return res.status(204).send()
       },
     )

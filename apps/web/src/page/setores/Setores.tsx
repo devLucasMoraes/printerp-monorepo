@@ -16,12 +16,12 @@ import { useAlertStore } from '../../stores/alert-store'
 import { SetorModal } from './components/SetorModal'
 
 const Setores = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
   const { orgSlug } = useParams()
-
-  useCacheInvalidation(orgSlug || '')
 
   const [selectedSetor, setSelectedSetor] = useState<{
     data: ListSetoresResponse

@@ -48,6 +48,12 @@ export async function deleteEmprestimo(app: FastifyInstance) {
 
         await deleteEmprestimoUseCase.execute(emprestimoId, membership)
 
+        app.io.in(orgSlug).emit('invalidateEmprestimoCache', {
+          operation: 'delete',
+          orgSlug,
+          emprestimoId,
+        })
+
         return res.status(204).send()
       },
     )

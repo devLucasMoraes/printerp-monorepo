@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 
+import { ResourceKeys } from '../../constants/ResourceKeys'
 import {
   createOrganizationalUser,
   CreateOrganizationalUserDTO,
@@ -19,8 +20,9 @@ import { listUsers, ListUsersResponse } from '../../http/user/list-users'
 import { updateUser, UpdateUserDTO } from '../../http/user/update-user'
 import { ErrorResponse, Page, PageParams } from '../../types'
 
+const resourceKey = ResourceKeys.USER
+
 export function useUserQueries() {
-  const resourceKey = 'users'
   const queryClient = useQueryClient()
   const useGetById = (
     id: string,

@@ -11,12 +11,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useEmprestimoQueries } from '../../hooks/queries/useEmprestimosQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListEmprestimosResponse } from '../../http/emprestimo/list-emprestimos'
 import { useAlertStore } from '../../stores/alert-store'
 import { EmprestimoModal } from './components/EmprestimoModal'
 
 const Emprestimos = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
@@ -33,34 +35,15 @@ const Emprestimos = () => {
 
   const queryClient = useQueryClient()
 
-  const isSocketConnected = useEntityChangeSocket(
-    'emprestimo',
-    {
-      invalidate: ['estoque'],
-      dependsOn: ['parceiro', 'insumo', 'armazem'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Empréstimo',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetEmprestimos,
     useDelete: useDeleteEmprestimo,
   } = useEmprestimoQueries()
 
-  const { data, isLoading } = useGetEmprestimos(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetEmprestimos(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
 
   const { mutate: deleteById } = useDeleteEmprestimo()
 

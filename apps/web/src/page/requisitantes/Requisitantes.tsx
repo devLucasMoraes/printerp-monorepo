@@ -10,12 +10,14 @@ import PageContainer from '../../components/container/PageContainer'
 import { ConfirmationModal } from '../../components/shared/ConfirmationModal'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useRequisitanteQueries } from '../../hooks/queries/useRequisitanteQueries'
-import { useEntityChangeSocket } from '../../hooks/useEntityChangeSocket'
+import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { ListRequisitantesResponse } from '../../http/requisitante/list-requisitantes'
 import { useAlertStore } from '../../stores/alert-store'
 import { RequisitanteModal } from './components/RequisitanteModal'
 
 const Requisitantes = () => {
+  useCacheInvalidation()
+
   const [formOpen, setFormOpen] = useState(false)
   const [confirmModalOpen, setConfirmModalOpen] = useState(false)
   const { enqueueSnackbar } = useAlertStore((state) => state)
@@ -30,33 +32,16 @@ const Requisitantes = () => {
     pageSize: 10,
   })
 
-  const isSocketConnected = useEntityChangeSocket(
-    'requisitante',
-    {
-      invalidate: ['requisicaoEstoque'],
-    },
-    {
-      showNotifications: true,
-      entityLabel: 'Requisitante',
-      suppressSocketAlert: formOpen || confirmModalOpen,
-    },
-  )
-
   const {
     useListPaginated: useGetRequisitantesPaginated,
     useDelete: useDeleteRequisitante,
   } = useRequisitanteQueries()
 
-  const { data, isLoading } = useGetRequisitantesPaginated(
-    orgSlug || '',
-    {
-      page: paginationModel.page,
-      size: paginationModel.pageSize,
-    },
-    {
-      staleTime: isSocketConnected ? Infinity : 1 * 60 * 1000,
-    },
-  )
+  const { data, isLoading } = useGetRequisitantesPaginated(orgSlug || '', {
+    page: paginationModel.page,
+    size: paginationModel.pageSize,
+  })
+
   const { mutate: deleteById } = useDeleteRequisitante()
 
   const handleConfirmDelete = (requisitante: ListRequisitantesResponse) => {
