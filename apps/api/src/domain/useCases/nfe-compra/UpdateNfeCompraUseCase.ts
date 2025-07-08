@@ -237,7 +237,8 @@ export const updateNfeCompraUseCase = {
           await updateValorUntMedUseCase.execute(
             {
               insumo: item.vinculo.insumo,
-              valorUnitarioEntrada: item.valorUnitario + item.valorIpi,
+              valorTotalEntrada:
+                (item.valorUnitario + item.valorIpi) * item.qtdeNf,
               quantidadeEntrada: quantidade,
             },
             manager,

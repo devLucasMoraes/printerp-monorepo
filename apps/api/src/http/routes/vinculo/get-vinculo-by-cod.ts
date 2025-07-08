@@ -31,7 +31,7 @@ export async function getVinculoByCod(app: FastifyInstance) {
               cod: z.string(),
               undCompra: z.nativeEnum(Unidade),
               possuiConversao: z.boolean(),
-              qtdeEmbalagem: z.number().nullable(),
+              qtdeEmbalagem: z.coerce.number().nullable(),
               fornecedoraId: z.string().uuid(),
               insumo: z.object({
                 id: z.string().uuid(),

@@ -6,16 +6,12 @@ import { BadRequestError } from '@/http/_errors/bad-request-error'
 interface UpdateValorUntMedParams {
   insumo: Insumo
   quantidadeEntrada: number
-  valorUnitarioEntrada: number
+  valorTotalEntrada: number
 }
 
 export const updateValorUntMedUseCase = {
   async execute(
-    {
-      insumo,
-      quantidadeEntrada,
-      valorUnitarioEntrada,
-    }: UpdateValorUntMedParams,
+    { insumo, quantidadeEntrada, valorTotalEntrada }: UpdateValorUntMedParams,
     manager: EntityManager,
   ) {
     const insumoWithEstoque = await manager.findOne(Insumo, {
@@ -46,7 +42,6 @@ export const updateValorUntMedUseCase = {
         { quantidadeTotalEstoque: 0, valorTotalEstoque: 0 },
       )
 
-    const valorTotalEntrada = quantidadeEntrada * valorUnitarioEntrada
     const novoValorTotalEstoque = valorTotalEstoque + valorTotalEntrada
     const novaQuantidadeTotal = quantidadeTotalEstoque + quantidadeEntrada
 

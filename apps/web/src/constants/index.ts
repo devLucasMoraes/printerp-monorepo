@@ -17,7 +17,7 @@ export const unidades = [
   { value: 'BISNAG', label: 'Bisnaga' },
   { value: 'BLOCO', label: 'Bloco' },
   { value: 'BOBINA', label: 'Bobina' },
-  { value: 'BOMB', label: 'Bomba' },
+  { value: 'BOMB', label: 'Bombona' },
   { value: 'CAPS', label: 'Cápsula' },
   { value: 'CART', label: 'Cartela' },
   { value: 'CENTO', label: 'Cento' },
