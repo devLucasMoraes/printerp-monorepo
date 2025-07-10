@@ -56,7 +56,7 @@ export async function getAllUsers(app: FastifyInstance) {
 
         if (cannot('get', authUser)) {
           throw new UnauthorizedError(
-            'Você não tem permissão para realizar essa ação',
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

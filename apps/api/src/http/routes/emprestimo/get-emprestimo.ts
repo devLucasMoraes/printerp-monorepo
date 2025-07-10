@@ -4,10 +4,9 @@ import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
 import { getEmprestimoUseCase } from '@/domain/useCases/emprestimo/GetEmprestimoUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getEmprestimo(app: FastifyInstance) {
   app
@@ -92,7 +91,7 @@ export async function getEmprestimo(app: FastifyInstance) {
         )
 
         if (cannot('get', 'Emprestimo')) {
-          throw new UnauthorizedError(
+          throw new ForbiddenError(
             'Você não tem permissão para acessar esse recurso',
           )
         }

@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { chartSaidasMensaisUseCase } from '@/domain/useCases/charts/ChartSaidasMensaisUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getChartSaidasMensais(app: FastifyInstance) {
   app
@@ -43,7 +42,7 @@ export async function getChartSaidasMensais(app: FastifyInstance) {
         )
 
         if (cannot('get', 'Chart')) {
-          throw new UnauthorizedError(
+          throw new ForbiddenError(
             'Você não tem permissão para acessar este recurso',
           )
         }

@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { deleteParceiroUseCase } from '@/domain/useCases/parceiro/DeleteParceiroUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function deleteParceiro(app: FastifyInstance) {
   app
@@ -39,8 +38,8 @@ export async function deleteParceiro(app: FastifyInstance) {
         )
 
         if (cannot('delete', 'Parceiro')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para deletar um parceiro',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

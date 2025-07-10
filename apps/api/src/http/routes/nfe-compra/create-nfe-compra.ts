@@ -4,10 +4,9 @@ import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
 import { createNfeCompraUseCase } from '@/domain/useCases/nfe-compra/CreateNfeCompraUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
   nfe: z.string(),
@@ -73,7 +72,7 @@ export async function createNfeCompra(app: FastifyInstance) {
         )
 
         if (cannot('create', 'NfeCompra')) {
-          throw new UnauthorizedError(
+          throw new ForbiddenError(
             'Você não tem permissão para acessar esse recurso',
           )
         }

@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { listCategoriaUseCase } from '@/domain/useCases/categoria/ListCategoriaUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function listCategorias(app: FastifyInstance) {
   app
@@ -65,8 +64,8 @@ export async function listCategorias(app: FastifyInstance) {
         )
 
         if (cannot('get', 'Categoria')) {
-          throw new UnauthorizedError(
-            'You do not have permission to list categories',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

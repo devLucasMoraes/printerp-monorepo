@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { Role } from '@/domain/entities/Role'
 import { createOrganizationalUserUseCase } from '@/domain/useCases/user/CreateOrganizationalUserUseCase'
-import { UnauthorizedError } from '@/http/_errors/unauthorized-error'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
@@ -58,8 +58,8 @@ export async function createOrganizationalUser(app: FastifyInstance) {
         })
 
         if (cannot('create', authUser)) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para criar um usuário',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

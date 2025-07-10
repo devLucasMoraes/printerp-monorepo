@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { deleteCategoriaUseCase } from '@/domain/useCases/categoria/DeleteCategoriaUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function deleteCategoria(app: FastifyInstance) {
   app
@@ -39,8 +38,8 @@ export async function deleteCategoria(app: FastifyInstance) {
         )
 
         if (cannot('delete', 'Categoria')) {
-          throw new UnauthorizedError(
-            'You do not have permission to delete a category',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

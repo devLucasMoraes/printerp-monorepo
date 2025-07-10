@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { createRequisitanteUseCase } from '@/domain/useCases/requisitante/CreateRequisitanteUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
   nome: z.string(),
@@ -48,8 +47,8 @@ export async function createRequisitante(app: FastifyInstance) {
         )
 
         if (cannot('create', 'Requisitante')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para criar um requisitante',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

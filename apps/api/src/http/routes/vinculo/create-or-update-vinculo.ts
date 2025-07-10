@@ -4,11 +4,10 @@ import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
 import { createOrUpdateVinculoUseCase } from '@/domain/useCases/vinculo/CreateOrUpdateVinculoUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 import { normalizeText } from '@/utils/normalizeText'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
   cod: z.string().transform((value) => normalizeText(value)),
@@ -71,7 +70,7 @@ export async function createOrUpdateVinculo(app: FastifyInstance) {
         )
 
         if (cannot('create', 'Vinculo')) {
-          throw new UnauthorizedError(
+          throw new ForbiddenError(
             'Você não tem permissão para acessar esse recurso',
           )
         }

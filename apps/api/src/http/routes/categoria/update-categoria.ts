@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { updateCategoriaUseCase } from '@/domain/useCases/categoria/UpdateCategoriaUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
   nome: z.string(),
@@ -46,8 +45,8 @@ export async function updateCategoria(app: FastifyInstance) {
         )
 
         if (cannot('update', 'Categoria')) {
-          throw new UnauthorizedError(
-            'You do not have permission to update a category',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

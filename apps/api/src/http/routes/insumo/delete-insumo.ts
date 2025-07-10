@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { deleteInsumoUseCase } from '@/domain/useCases/insumo/DeleteInsumoUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function deleteInsumo(app: FastifyInstance) {
   app
@@ -39,8 +38,8 @@ export async function deleteInsumo(app: FastifyInstance) {
         )
 
         if (cannot('delete', 'Insumo')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para deletar insumos',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

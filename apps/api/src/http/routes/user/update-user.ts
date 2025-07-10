@@ -5,10 +5,9 @@ import { z } from 'zod'
 
 import { Role } from '@/domain/entities/Role'
 import { updateUserUseCase } from '@/domain/useCases/user/UpdateUserUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
   name: z.string(),
@@ -59,8 +58,8 @@ export async function updateUser(app: FastifyInstance) {
         })
 
         if (cannot('update', authUser)) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para realizar essa ação',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

@@ -4,10 +4,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { deleteOrganizationUseCase } from '@/domain/useCases/organization/DeleteOrganizationUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function shtutdownOrganization(app: FastifyInstance) {
   app
@@ -38,8 +37,8 @@ export async function shtutdownOrganization(app: FastifyInstance) {
         const { cannot } = getUserPermissions(userId, membership.role)
 
         if (cannot('delete', authOrganization)) {
-          throw new UnauthorizedError(
-            'You are not allowed to shutdown this organization',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

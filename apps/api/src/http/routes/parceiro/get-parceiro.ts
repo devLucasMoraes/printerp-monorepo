@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { getParceiroUseCase } from '@/domain/useCases/parceiro/GetParceiroUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getParceiro(app: FastifyInstance) {
   app
@@ -50,8 +49,8 @@ export async function getParceiro(app: FastifyInstance) {
         )
 
         if (cannot('get', 'Parceiro')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para realizar essa ação',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

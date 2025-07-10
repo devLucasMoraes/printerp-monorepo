@@ -4,10 +4,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { updateOrganizationUseCase } from '@/domain/useCases/organization/UpdateOrganizationUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 const bodySchema = z.object({
   name: z.string(),
@@ -47,8 +46,8 @@ export async function updateOrganization(app: FastifyInstance) {
         const { cannot } = getUserPermissions(userId, membership.role)
 
         if (cannot('update', authOrganization)) {
-          throw new UnauthorizedError(
-            'You are not allowed to update this organization',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

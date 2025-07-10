@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { deleteRequisitanteUseCase } from '@/domain/useCases/requisitante/DeleteRequisitanteUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function deleteRequisitante(app: FastifyInstance) {
   app
@@ -39,8 +38,8 @@ export async function deleteRequisitante(app: FastifyInstance) {
         )
 
         if (cannot('delete', 'Requisitante')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para deletar um requisitante',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

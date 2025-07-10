@@ -4,10 +4,9 @@ import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
 import { getAllInsumoUseCase } from '@/domain/useCases/insumo/GetAllInsumoUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getAllInsumos(app: FastifyInstance) {
   app
@@ -60,8 +59,8 @@ export async function getAllInsumos(app: FastifyInstance) {
         )
 
         if (cannot('get', 'Insumo')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para acessar este recurso',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

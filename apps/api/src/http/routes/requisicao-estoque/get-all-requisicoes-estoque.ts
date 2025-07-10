@@ -4,10 +4,9 @@ import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
 import { getAllRequisicaoEstoqueUseCase } from '@/domain/useCases/requisicao-estoque/GetAllRequisicaoEstoqueUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getAllRequisicoesEstoque(app: FastifyInstance) {
   app
@@ -80,8 +79,8 @@ export async function getAllRequisicoesEstoque(app: FastifyInstance) {
         )
 
         if (cannot('get', 'RequisicaoEstoque')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para acessar este recurso',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

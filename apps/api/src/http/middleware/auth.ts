@@ -3,6 +3,7 @@ import fastifyPlugin from 'fastify-plugin'
 
 import { repository } from '@/domain/repositories'
 
+import { ForbiddenError } from '../_errors/Forbidden-error'
 import { UnauthorizedError } from '../_errors/unauthorized-error'
 
 async function addUserToOrganizationRoom(
@@ -64,7 +65,7 @@ export const auth = fastifyPlugin(async (app: FastifyInstance) => {
         .getOne()
 
       if (!member) {
-        throw new UnauthorizedError('Você não faz parte dessa organização')
+        throw new ForbiddenError('Você não faz parte dessa organização')
       }
 
       console.log({ member })

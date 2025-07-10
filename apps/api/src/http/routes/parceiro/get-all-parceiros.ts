@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { getAllParceiroUseCase } from '@/domain/useCases/parceiro/GetAllParceiroUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getAllParceiros(app: FastifyInstance) {
   app
@@ -51,8 +50,8 @@ export async function getAllParceiros(app: FastifyInstance) {
         )
 
         if (cannot('get', 'Parceiro')) {
-          throw new UnauthorizedError(
-            'Você não tem permissão para listar parceiros',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

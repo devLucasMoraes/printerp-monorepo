@@ -3,10 +3,9 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { deleteTransportadoraUseCase } from '@/domain/useCases/transportadora/DeleteTransportadoraUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function deleteTransportadora(app: FastifyInstance) {
   app
@@ -39,7 +38,7 @@ export async function deleteTransportadora(app: FastifyInstance) {
         )
 
         if (cannot('delete', 'Transportadora')) {
-          throw new UnauthorizedError(
+          throw new ForbiddenError(
             'Você não tem permissão para acessar esse recurso',
           )
         }

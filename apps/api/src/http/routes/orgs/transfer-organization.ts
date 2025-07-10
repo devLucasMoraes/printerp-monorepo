@@ -6,11 +6,11 @@ import { z } from 'zod'
 import { Member } from '@/domain/entities/Member'
 import { Role } from '@/domain/entities/Role'
 import { repository } from '@/domain/repositories'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
 import { BadRequestError } from '../../_errors/bad-request-error'
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function transferOrganization(app: FastifyInstance) {
   app
@@ -46,8 +46,8 @@ export async function transferOrganization(app: FastifyInstance) {
         const { cannot } = getUserPermissions(userId, membership.role)
 
         if (cannot('transfer_ownership', authOrganization)) {
-          throw new UnauthorizedError(
-            'You are not allowed to transfer ownership of this organization',
+          throw new ForbiddenError(
+            'Você não tem permissão para acessar esse recurso',
           )
         }
 

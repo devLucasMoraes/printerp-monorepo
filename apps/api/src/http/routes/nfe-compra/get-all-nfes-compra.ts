@@ -4,10 +4,9 @@ import { z } from 'zod'
 
 import { Unidade } from '@/domain/entities/Unidade'
 import { getAllNfesCompraUseCase } from '@/domain/useCases/nfe-compra/GetAllNfesCompraUseCase'
+import { ForbiddenError } from '@/http/_errors/Forbidden-error'
 import { auth } from '@/http/middleware/auth'
 import { getUserPermissions } from '@/utils/get-user-permissions'
-
-import { UnauthorizedError } from '../../_errors/unauthorized-error'
 
 export async function getAllNfesCompra(app: FastifyInstance) {
   app
@@ -100,7 +99,7 @@ export async function getAllNfesCompra(app: FastifyInstance) {
         )
 
         if (cannot('get', 'NfeCompra')) {
-          throw new UnauthorizedError(
+          throw new ForbiddenError(
             'Você não tem permissão para acessar este recurso',
           )
         }
