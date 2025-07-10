@@ -72,11 +72,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   checkAuth: async () => {
     try {
+      set({ isLoading: true })
       const { data } = await api.get('/profile')
       set({ user: data.user })
     } catch (error) {
       await get().logout()
       throw error
+    } finally {
+      set({ isLoading: false })
     }
   },
 
@@ -88,6 +91,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   logout: async () => {
     try {
+      set({ isLoading: true })
       await api.post('/sessions/logout')
     } finally {
       set({
@@ -97,6 +101,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         error: null,
       })
       localStorage.removeItem('selectedOrg')
+      set({ isLoading: false })
     }
   },
 }))

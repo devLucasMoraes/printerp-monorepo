@@ -1,4 +1,4 @@
-import { Box, Card, Grid, Stack, styled, Typography } from '@mui/material'
+import { Box, Card, Grid2, Stack, styled, Typography } from '@mui/material'
 import { Link } from 'react-router'
 
 import PageContainer from '../../components/container/PageContainer'
@@ -70,18 +70,14 @@ const Login = () => {
   return (
     <PageContainer title="Login" description="this is Login page">
       <StyledRoot>
-        <Grid
+        <Grid2
           container
           spacing={0}
           justifyContent="center"
           sx={{ minHeight: '100vh' }}
         >
-          <Grid
-            item
-            xs={12}
-            sm={12}
-            lg={4}
-            xl={3}
+          <Grid2
+            size={{ xs: 12, sm: 12, lg: 4, xl: 3 }}
             display="flex"
             justifyContent="center"
             alignItems="center"
@@ -124,8 +120,8 @@ const Login = () => {
                 </Stack>
               </Box>
             </StyledCard>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </StyledRoot>
     </PageContainer>
   )
