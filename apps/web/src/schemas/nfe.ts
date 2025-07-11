@@ -228,7 +228,7 @@ const DupSchema = z.object({
 const CobrSchema = z
   .object({
     fat: FatSchema,
-    dup: z.array(DupSchema),
+    dup: z.array(DupSchema).optional(),
   })
   .optional()
 
