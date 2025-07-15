@@ -62,6 +62,7 @@ export const VinculoModal = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<CreateOrUpdateVinculoDto>({
     resolver: zodResolver(createOrUpdateVinculoSchema),
     defaultValues: {
@@ -73,6 +74,8 @@ export const VinculoModal = ({
       fornecedoraId: '',
     },
   })
+
+  const possuiConversao = watch('possuiConversao')
 
   useEffect(() => {
     if (isEdit) {
@@ -207,7 +210,11 @@ export const VinculoModal = ({
               name="possuiConversao"
               control={control}
               render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormControl error={!!errors.possuiConversao} fullWidth>
+                <FormControl
+                  error={!!errors.possuiConversao}
+                  fullWidth
+                  sx={{ alignItems: 'end' }}
+                >
                   <FormControlLabel
                     control={
                       <Switch
@@ -233,6 +240,7 @@ export const VinculoModal = ({
               render={({ field }) => (
                 <TextField
                   {...field}
+                  disabled={!possuiConversao}
                   type="number"
                   label="Quantidade por Embalagem"
                   error={!!errors.qtdeEmbalagem}

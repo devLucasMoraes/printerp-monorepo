@@ -67,9 +67,10 @@ const Estoques = () => {
     },
     {
       field: 'quantidade',
-      headerName: 'Quantidade',
+      headerName: 'Quantidade / Und. Estoque',
       minWidth: 155,
       flex: 0.1,
+      valueFormatter: (params, row) => `${params} / ${row.insumo.undEstoque}`,
     },
     {
       field: 'actions',

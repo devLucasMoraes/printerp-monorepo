@@ -778,7 +778,7 @@ export const NfeCompraModal = ({
               />
             </Grid2>
 
-            <Grid2 size={3}>
+            <Grid2 size={2.4}>
               <Controller
                 name="valorTotalIpi"
                 control={control}
@@ -806,7 +806,7 @@ export const NfeCompraModal = ({
               />
             </Grid2>
 
-            <Grid2 size={3}>
+            <Grid2 size={2.4}>
               <Controller
                 name="valorTotalProdutos"
                 control={control}
@@ -834,7 +834,7 @@ export const NfeCompraModal = ({
               />
             </Grid2>
 
-            <Grid2 size={3}>
+            <Grid2 size={2.4}>
               <Controller
                 name="valorDesconto"
                 control={control}
@@ -862,7 +862,7 @@ export const NfeCompraModal = ({
               />
             </Grid2>
 
-            <Grid2 size={3}>
+            <Grid2 size={2.4}>
               <Controller
                 name="valorSeguro"
                 control={control}
@@ -890,7 +890,35 @@ export const NfeCompraModal = ({
               />
             </Grid2>
 
-            <Grid2 size={3}>
+            <Grid2 size={2.4}>
+              <Controller
+                name="valorOutros"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    label="Outros valores"
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">R$</InputAdornment>
+                        ),
+                      },
+                    }}
+                    error={!!errors.valorOutros}
+                    helperText={errors.valorOutros?.message}
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(value === '' ? null : Number(value))
+                    }}
+                  />
+                )}
+              />
+            </Grid2>
+
+            <Grid2 size={8}>
               <Controller
                 name="valorFrete"
                 control={control}
@@ -926,34 +954,6 @@ export const NfeCompraModal = ({
                   <TransportadoraAutoComplete
                     field={field}
                     error={errors.transportadoraId}
-                  />
-                )}
-              />
-            </Grid2>
-
-            <Grid2 size={3}>
-              <Controller
-                name="valorOutros"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type="number"
-                    label="Outros valores"
-                    slotProps={{
-                      input: {
-                        startAdornment: (
-                          <InputAdornment position="start">R$</InputAdornment>
-                        ),
-                      },
-                    }}
-                    error={!!errors.valorOutros}
-                    helperText={errors.valorOutros?.message}
-                    value={field.value ?? ''}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      field.onChange(value === '' ? null : Number(value))
-                    }}
                   />
                 )}
               />

@@ -88,6 +88,11 @@ const Insumos = () => {
       headerName: 'Valor unitário',
       minWidth: 155,
       flex: 0.1,
+      valueFormatter: (value: number) =>
+        value.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }),
     },
     {
       field: 'undEstoque',

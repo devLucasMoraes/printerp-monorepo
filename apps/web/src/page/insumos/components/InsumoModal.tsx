@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid2,
+  InputAdornment,
   MenuItem,
   Switch,
   TextField,
@@ -189,6 +190,13 @@ export const InsumoModal = ({
                   {...field}
                   type="number"
                   label="Valor unitário"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">R$</InputAdornment>
+                      ),
+                    },
+                  }}
                   error={!!errors.valorUntMed}
                   helperText={errors.valorUntMed?.message}
                   fullWidth
