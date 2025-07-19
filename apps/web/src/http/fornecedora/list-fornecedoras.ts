@@ -1,7 +1,7 @@
 import { Page, PageParams } from '../../types'
 import { api } from '../api/axios'
 
-export interface ListFornecedorasResponse {
+export type ListFornecedorasResponse = {
   id: string
   nomeFantasia: string
   razaoSocial: string

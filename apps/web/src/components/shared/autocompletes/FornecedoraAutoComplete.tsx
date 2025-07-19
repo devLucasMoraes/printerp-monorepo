@@ -28,10 +28,10 @@ export const FornecedoraAutoComplete = ({ field, error }: FieldProps) => {
   return (
     <Autocomplete
       value={selectedFornecedora}
-      id="categoria-select"
       options={fornecedoras}
       getOptionLabel={(option) => option.nomeFantasia}
       isOptionEqualToValue={(option, value) => option.id === value.id}
+      fullWidth
       onChange={(_, newValue) => {
         field.onChange(newValue ? newValue.id : null)
       }}
@@ -42,6 +42,7 @@ export const FornecedoraAutoComplete = ({ field, error }: FieldProps) => {
           helperText={error?.message}
           onBlur={field.onBlur}
           label="Fornecedora"
+          fullWidth
           slotProps={{
             input: {
               ...params.InputProps,

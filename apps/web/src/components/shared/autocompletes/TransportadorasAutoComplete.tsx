@@ -28,13 +28,13 @@ export const TransportadoraAutoComplete = ({ field, error }: FieldProps) => {
   return (
     <Autocomplete
       value={selectedTransportadora}
-      id="categoria-select"
       options={transportadoras}
       getOptionLabel={(option) => option.nomeFantasia}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       onChange={(_, newValue) => {
         field.onChange(newValue ? newValue.id : null)
       }}
+      fullWidth
       renderInput={(params) => (
         <TextField
           {...params}
@@ -42,6 +42,7 @@ export const TransportadoraAutoComplete = ({ field, error }: FieldProps) => {
           helperText={error?.message}
           onBlur={field.onBlur}
           label="Transportadora"
+          fullWidth
           slotProps={{
             input: {
               ...params.InputProps,

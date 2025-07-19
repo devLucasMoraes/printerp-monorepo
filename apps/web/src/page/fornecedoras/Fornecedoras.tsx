@@ -152,7 +152,8 @@ const Fornecedoras = () => {
           setFormOpen(false)
           setSelectedFornecedora(undefined)
         }}
-        form={selectedFornecedora}
+        formType={selectedFornecedora?.type}
+        initialData={selectedFornecedora?.data}
       />
       <ConfirmationModal
         open={confirmModalOpen}

@@ -16,6 +16,7 @@ import { useParams } from 'react-router'
 import { useTransportadoraQueries } from '../../../hooks/queries/useTransportadoraQueries'
 import {
   CreateTransportadoraDTO,
+  CreateTransportadoraResponse,
   createTransportadoraSchema,
 } from '../../../http/transportadora/create-transportadora'
 import { ListTransportadorasResponse } from '../../../http/transportadora/list-transportadoras'
@@ -28,25 +29,24 @@ import { useAlertStore } from '../../../stores/alert-store'
 interface TransportadoraModalProps {
   open: boolean
   onClose: () => void
-  form:
-    | {
-        data: ListTransportadorasResponse
-        type: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE'
-      }
-    | undefined
+  formType: 'UPDATE' | 'COPY' | 'CREATE' | 'DELETE' | undefined
+  initialData: ListTransportadorasResponse | CreateTransportadoraDTO | undefined
+  onSuccess?: (transportadoraId: CreateTransportadoraResponse) => void
 }
 
 export const TransportadoraModal = ({
   open,
   onClose,
-  form,
+  formType,
+  initialData,
+  onSuccess,
 }: TransportadoraModalProps) => {
   const { enqueueSnackbar } = useAlertStore((state) => state)
 
   const { orgSlug } = useParams()
 
   const schema =
-    form?.data && form.type === 'UPDATE'
+    initialData && formType === 'UPDATE'
       ? updateTransportadoraSchema
       : createTransportadoraSchema
 
@@ -71,7 +71,7 @@ export const TransportadoraModal = ({
   })
 
   useEffect(() => {
-    if (!form?.data) {
+    if (!initialData) {
       reset({
         nomeFantasia: '',
         razaoSocial: '',
@@ -80,15 +80,14 @@ export const TransportadoraModal = ({
       })
       return
     }
-    const { data } = form
 
     reset({
-      nomeFantasia: data.nomeFantasia,
-      razaoSocial: data.razaoSocial,
-      cnpj: data.cnpj,
-      fone: data.fone,
+      nomeFantasia: initialData.nomeFantasia,
+      razaoSocial: initialData.razaoSocial,
+      cnpj: initialData.cnpj,
+      fone: initialData.fone,
     })
-  }, [form, reset])
+  }, [initialData, reset])
 
   const { mutate: createTransportadora } = useCreateTransportadora()
 
@@ -101,9 +100,9 @@ export const TransportadoraModal = ({
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
     }
-    if (form?.data && form.type === 'UPDATE') {
+    if (initialData && 'id' in initialData && formType === 'UPDATE') {
       updateTransportadora(
-        { id: form.data.id, orgSlug, data },
+        { id: initialData.id, orgSlug, data },
         {
           onSuccess: () => {
             onClose()
@@ -124,12 +123,13 @@ export const TransportadoraModal = ({
       createTransportadora(
         { orgSlug, data },
         {
-          onSuccess: () => {
+          onSuccess: (data) => {
             onClose()
             reset()
             enqueueSnackbar('Transportadora criada com sucesso', {
               variant: 'success',
             })
+            onSuccess?.(data)
           },
           onError: (error) => {
             console.error(error)
@@ -153,10 +153,10 @@ export const TransportadoraModal = ({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <DialogTitle>{form?.type === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
+      <DialogTitle>{formType === 'UPDATE' ? 'Editar' : 'Novo'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {form?.type === 'UPDATE'
+          {formType === 'UPDATE'
             ? 'Preencha os campos abaixo para editar o transportadora'
             : 'Preencha os campos abaixo para criar um novo transportadora'}
         </DialogContentText>

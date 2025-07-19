@@ -15,12 +15,13 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
-import { IconCircleMinus, IconPlus } from '@tabler/icons-react'
+import { IconCircleMinus, IconLibraryPlus, IconPlus } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useParams } from 'react-router'
 import { v4 as uuidv4 } from 'uuid'
@@ -33,12 +34,14 @@ import { Unidade } from '../../../constants/Unidade'
 import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
 import { useNfeCompraQueries } from '../../../hooks/queries/useNfeCompraQueries'
 import { useTransportadoraQueries } from '../../../hooks/queries/useTransportadoraQueries'
+import { CreateFornecedoraResponse } from '../../../http/fornecedora/create-fornecedora'
 import { createNfeCompraSchema } from '../../../http/nfe-compra/create-nfe-compra'
 import { ListNfesCompraResponse } from '../../../http/nfe-compra/list-nfes-compra'
 import {
   UpdateNfeCompraDTO,
   updateNfeCompraSchema,
 } from '../../../http/nfe-compra/update-nfe-compra'
+import { CreateTransportadoraResponse } from '../../../http/transportadora/create-transportadora'
 import { CreateOrUpdateVinculoResponse } from '../../../http/vinculo/create-or-update-vinculo'
 import {
   getVinculoByCod,
@@ -47,6 +50,8 @@ import {
 import { useAlertStore } from '../../../stores/alert-store'
 import { NfeData } from '../../../types'
 import { normalizeText } from '../../../util/normalizeText'
+import { FornecedoraModal } from '../../fornecedoras/components/FornecedoraModal'
+import { TransportadoraModal } from '../../transportadoras/components/TransportadoraModal'
 import { VinculoButton } from './VinculoButton'
 import { VinculoModal } from './VinculoModal'
 
@@ -80,11 +85,34 @@ export const NfeCompraModal = ({
     GetVinculoByCodResponse | undefined
   >()
 
+  const [fornecedoraModalOpen, setFornecedoraModalOpen] = useState(false)
+  const [transportadoraModalOpen, setTransportadoraModalOpen] = useState(false)
+
   const { useCreate, useUpdate } = useNfeCompraQueries()
   const { useGetByCnpj: useGetFornecedoraByCnpj } = useFornecedoraQueries()
   const { useGetByCnpj: useGetTranspotadoraByCnpj } = useTransportadoraQueries()
 
   const nfeData = form?.nfeData
+
+  const initialFornecedoraData = useMemo(() => {
+    if (!nfeData) return undefined
+    return {
+      nomeFantasia: nfeData.fornecedor.nomeFantasia || '',
+      razaoSocial: nfeData.fornecedor.razaoSocial || '',
+      cnpj: nfeData.fornecedor.cnpj || '',
+      fone: '',
+    }
+  }, [nfeData])
+
+  const initialTransportadoraData = useMemo(() => {
+    if (!nfeData) return undefined
+    return {
+      nomeFantasia: nfeData.transportadora.razaoSocial || '',
+      razaoSocial: nfeData.transportadora.razaoSocial || '',
+      cnpj: nfeData.transportadora.cnpj || '',
+      fone: '',
+    }
+  }, [nfeData])
 
   const { data: fornecedora } = useGetFornecedoraByCnpj(
     nfeData?.fornecedor.cnpj || '',
@@ -428,6 +456,20 @@ export const NfeCompraModal = ({
     setVinculoModalOpen(false)
   }
 
+  const handleFornecedoraSuccess = ({
+    fornecedoraId,
+  }: CreateFornecedoraResponse) => {
+    setValue('fornecedoraId', fornecedoraId)
+    setFornecedoraModalOpen(false)
+  }
+
+  const handleTransportadoraSuccess = ({
+    transportadoraId,
+  }: CreateTransportadoraResponse) => {
+    setValue('transportadoraId', transportadoraId)
+    setTransportadoraModalOpen(false)
+  }
+
   const renderModals = () => (
     <>
       <VinculoModal
@@ -436,6 +478,21 @@ export const NfeCompraModal = ({
         onSuccess={handleVinculoSuccess}
         initialData={initialData}
         vinculo={selectedVinculo}
+      />
+      <FornecedoraModal
+        open={fornecedoraModalOpen}
+        onClose={() => setFornecedoraModalOpen(false)}
+        formType="CREATE"
+        initialData={initialFornecedoraData}
+        onSuccess={handleFornecedoraSuccess}
+      />
+
+      <TransportadoraModal
+        open={transportadoraModalOpen}
+        onClose={() => setTransportadoraModalOpen(false)}
+        formType="CREATE"
+        initialData={initialTransportadoraData}
+        onSuccess={handleTransportadoraSuccess}
       />
     </>
   )
@@ -766,16 +823,23 @@ export const NfeCompraModal = ({
             </Grid2>
 
             <Grid2 size={4}>
-              <Controller
-                name="fornecedoraId"
-                control={control}
-                render={({ field }) => (
-                  <FornecedoraAutoComplete
-                    field={field}
-                    error={errors.fornecedoraId}
-                  />
-                )}
-              />
+              <Stack spacing={1} direction="row">
+                <Controller
+                  name="fornecedoraId"
+                  control={control}
+                  render={({ field }) => (
+                    <FornecedoraAutoComplete
+                      field={field}
+                      error={errors.fornecedoraId}
+                    />
+                  )}
+                />
+                <Tooltip title="Adicionar fornecedora">
+                  <IconButton onClick={() => setFornecedoraModalOpen(true)}>
+                    <IconLibraryPlus />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
             </Grid2>
 
             <Grid2 size={2.4}>
@@ -947,16 +1011,23 @@ export const NfeCompraModal = ({
             </Grid2>
 
             <Grid2 size={4}>
-              <Controller
-                name="transportadoraId"
-                control={control}
-                render={({ field }) => (
-                  <TransportadoraAutoComplete
-                    field={field}
-                    error={errors.transportadoraId}
-                  />
-                )}
-              />
+              <Stack spacing={1} direction="row">
+                <Controller
+                  name="transportadoraId"
+                  control={control}
+                  render={({ field }) => (
+                    <TransportadoraAutoComplete
+                      field={field}
+                      error={errors.transportadoraId}
+                    />
+                  )}
+                />
+                <Tooltip title="Adicionar transportadora">
+                  <IconButton onClick={() => setTransportadoraModalOpen(true)}>
+                    <IconLibraryPlus />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
             </Grid2>
 
             <Grid2 size={12}>

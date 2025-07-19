@@ -152,7 +152,8 @@ const Transportadoras = () => {
           setFormOpen(false)
           setSelectedTransportadora(undefined)
         }}
-        form={selectedTransportadora}
+        formType={selectedTransportadora?.type}
+        initialData={selectedTransportadora?.data}
       />
       <ConfirmationModal
         open={confirmModalOpen}
