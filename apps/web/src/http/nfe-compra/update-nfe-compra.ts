@@ -16,9 +16,10 @@ export const updateNfeCompraSchema = z.object({
   valorTotalNfe: z.number().nonnegative(),
   valorOutros: z.number().nonnegative(),
   observacao: z.string().nullable(),
+  addEstoque: z.boolean(),
   fornecedoraId: z.string().uuid(),
   transportadoraId: z.string().uuid(),
-  armazemId: z.string().uuid(),
+  armazemId: z.string().uuid().nullable(),
   itens: z.array(
     z.object({
       id: z.string().uuid().nullable(),

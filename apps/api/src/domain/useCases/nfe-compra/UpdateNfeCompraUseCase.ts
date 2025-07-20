@@ -96,7 +96,7 @@ export const updateNfeCompraUseCase = {
 
         const armazem = await manager.findOne(Armazem, {
           where: {
-            id: dto.armazemId,
+            id: dto.armazemId || undefined,
             organizationId: membership.organization.id,
           },
         })
@@ -163,6 +163,13 @@ export const updateNfeCompraUseCase = {
 
         // Reverter movimentações antigas
         for (const item of nfeCompra.itens) {
+          if (!nfeCompra.addEstoque) {
+            break
+          }
+
+          if (!nfeCompra.armazem)
+            throw new BadRequestError('Armazém precisa ser informado')
+
           const possuiConversao = item.vinculo.possuiConversao
 
           const quantidade = possuiConversao
@@ -203,9 +210,10 @@ export const updateNfeCompraUseCase = {
             valorTotalNfe: dto.valorTotalNfe,
             valorOutros: dto.valorOutros,
             observacao: dto.observacao,
+            addEstoque: dto.addEstoque,
             fornecedora: { id: dto.fornecedoraId },
             transportadora: { id: dto.transportadoraId },
-            armazem: { id: dto.armazemId },
+            armazem: { id: dto.armazemId || undefined },
             itens: dto.itens.map((itemDTO) => {
               const vinculo = vinculosMap.get(itemDTO.vinculoId)! // Usar o vínculo completo do Map
               return {
@@ -229,6 +237,13 @@ export const updateNfeCompraUseCase = {
 
         // Processar novas movimentações
         for (const item of savedNfe.itens) {
+          if (!savedNfe.addEstoque) {
+            break
+          }
+
+          if (!savedNfe.armazem)
+            throw new BadRequestError('Armazém precisa ser informado')
+
           const possuiConversao = item.vinculo.possuiConversao
 
           const quantidade = possuiConversao

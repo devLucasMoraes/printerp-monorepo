@@ -9,11 +9,15 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
   Grid2,
   IconButton,
   InputAdornment,
   MenuItem,
   Stack,
+  Switch,
   TextField,
   Tooltip,
   Typography,
@@ -141,6 +145,7 @@ export const NfeCompraModal = ({
     reset,
     setValue,
     getValues,
+    watch,
   } = useForm<UpdateNfeCompraDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -159,9 +164,12 @@ export const NfeCompraModal = ({
       fornecedoraId: '',
       transportadoraId: '',
       armazemId: '',
+      addEstoque: true,
       itens: [],
     },
   })
+
+  const addEstoque = watch('addEstoque')
 
   const { fields, prepend, remove } = useFieldArray({
     control,
@@ -292,6 +300,7 @@ export const NfeCompraModal = ({
             fornecedoraId: fornecedora?.id || '',
             transportadoraId: transportadora?.id || '',
             armazemId: '',
+            addEstoque: true,
             itens: itensComVinculos,
           })
         } catch (error) {
@@ -329,7 +338,8 @@ export const NfeCompraModal = ({
         observacao: data.observacao,
         fornecedoraId: data.fornecedora.id,
         transportadoraId: data.transportadora.id,
-        armazemId: data.armazem.id,
+        addEstoque: data.addEstoque,
+        armazemId: data.armazem ? data.armazem.id : null,
         itens: data.itens.map((item) => ({
           id: item.id,
           qtdeNf: Number(item.qtdeNf),
@@ -360,6 +370,7 @@ export const NfeCompraModal = ({
       fornecedoraId: '',
       transportadoraId: '',
       armazemId: '',
+      addEstoque: true,
       itens: [],
     })
   }, [form, fornecedora?.id, reset, transportadora?.id])
@@ -744,10 +755,45 @@ export const NfeCompraModal = ({
 
             <Grid2 size={3}>
               <Controller
+                name="addEstoque"
+                control={control}
+                render={({ field: { value, onChange, ...fieldProps } }) => (
+                  <FormControl
+                    error={!!errors.addEstoque}
+                    fullWidth
+                    sx={{ alignItems: 'end' }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={value}
+                          onChange={(e) => {
+                            onChange(e.target.checked)
+                            setValue('armazemId', e.target.checked ? '' : null)
+                          }}
+                          {...fieldProps}
+                        />
+                      }
+                      label="Adicionar ao estoque"
+                    />
+                    <FormHelperText>
+                      {errors.addEstoque?.message}
+                    </FormHelperText>
+                  </FormControl>
+                )}
+              />
+            </Grid2>
+
+            <Grid2 size={3}>
+              <Controller
                 name="armazemId"
                 control={control}
                 render={({ field }) => (
-                  <ArmazemAutoComplete field={field} error={errors.armazemId} />
+                  <ArmazemAutoComplete
+                    field={field}
+                    error={errors.armazemId}
+                    disabled={!addEstoque}
+                  />
                 )}
               />
             </Grid2>

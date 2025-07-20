@@ -38,6 +38,7 @@ export async function getAllNfesCompra(app: FastifyInstance) {
                 valorTotalNfe: z.coerce.number(),
                 valorOutros: z.coerce.number(),
                 observacao: z.string().nullable(),
+                addEstoque: z.boolean(),
                 fornecedora: z.object({
                   id: z.string().uuid(),
                   nomeFantasia: z.string(),
@@ -46,10 +47,12 @@ export async function getAllNfesCompra(app: FastifyInstance) {
                   id: z.string().uuid(),
                   nomeFantasia: z.string(),
                 }),
-                armazem: z.object({
-                  id: z.string().uuid(),
-                  nome: z.string(),
-                }),
+                armazem: z
+                  .object({
+                    id: z.string().uuid(),
+                    nome: z.string(),
+                  })
+                  .nullable(),
                 itens: z.array(
                   z.object({
                     id: z.string().uuid(),

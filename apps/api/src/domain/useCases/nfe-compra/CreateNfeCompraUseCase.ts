@@ -62,12 +62,18 @@ export const createNfeCompraUseCase = {
         throw new BadRequestError('Transportadora não encontrada')
       }
 
-      const armazem = await manager.findOneBy(Armazem, {
-        id: dto.armazemId,
-        organizationId: membership.organization.id,
-      })
-      if (!armazem) {
-        throw new BadRequestError('Armazém não encontrado')
+      let armazem: Armazem | null
+      if (dto.armazemId != null) {
+        armazem = await manager.findOneBy(Armazem, {
+          id: dto.armazemId,
+          organizationId: membership.organization.id,
+        })
+
+        if (!armazem) {
+          throw new BadRequestError('Armazém não encontrado')
+        }
+      } else {
+        armazem = null
       }
 
       // Carregar e validar vínculos - armazenar em um Map para reutilizar
@@ -137,11 +143,12 @@ export const createNfeCompraUseCase = {
         valorTotalNfe: dto.valorTotalNfe,
         valorOutros: dto.valorOutros,
         observacao: dto.observacao,
-        fornecedora, // Objeto completo ao invés de { id: dto.fornecedoraId }
-        transportadora, // Objeto completo
-        armazem, // Objeto completo
+        addEstoque: dto.addEstoque,
+        fornecedora,
+        transportadora,
+        armazem,
         itens: dto.itens.map((itemDTO) => {
-          const vinculo = vinculosMap.get(itemDTO.vinculoId) // Usar o vínculo completo do Map
+          const vinculo = vinculosMap.get(itemDTO.vinculoId)
           return {
             qtdeNf: itemDTO.qtdeNf,
             unidadeNf: itemDTO.unidadeNf,
@@ -149,7 +156,7 @@ export const createNfeCompraUseCase = {
             valorIpi: itemDTO.valorIpi,
             descricaoFornecedora: itemDTO.descricaoFornecedora,
             codFornecedora: itemDTO.codFornecedora,
-            vinculo, // Objeto completo com todas as propriedades
+            vinculo,
             createdBy: membership.user.id,
             updatedBy: membership.user.id,
             organizationId: membership.organization.id,
@@ -164,7 +171,13 @@ export const createNfeCompraUseCase = {
 
       // Processamento das movimentações
       for (const item of nfeCompra.itens) {
-        // Agora item.vinculo terá todas as propriedades carregadas
+        if (!nfeCompra.addEstoque) {
+          break
+        }
+
+        if (!nfeCompra.armazem)
+          throw new BadRequestError('Armazém precisa ser informado')
+
         const possuiConversao = item.vinculo.possuiConversao
 
         const quantidade = possuiConversao

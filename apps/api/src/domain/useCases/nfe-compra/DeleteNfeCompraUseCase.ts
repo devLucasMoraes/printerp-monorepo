@@ -29,6 +29,13 @@ export const deleteNfeCompraUseCase = {
 
       // Reverter movimentações para cada item
       for (const item of requisicao.itens) {
+        if (!requisicao.addEstoque) {
+          break
+        }
+
+        if (!requisicao.armazem)
+          throw new BadRequestError('Armazém precisa ser informado')
+
         const possuiConversao = item.vinculo.possuiConversao
 
         const quantidade = possuiConversao

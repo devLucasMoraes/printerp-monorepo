@@ -16,6 +16,7 @@ export interface ListNfesCompraResponse {
   valorTotalNfe: number
   valorOutros: number
   observacao: string | null
+  addEstoque: boolean
   fornecedora: {
     id: string
     nomeFantasia: string

@@ -1,7 +1,13 @@
-import { Autocomplete, CircularProgress, TextField } from '@mui/material'
+import {
+  Autocomplete,
+  AutocompleteProps,
+  CircularProgress,
+  TextField,
+} from '@mui/material'
 import { useParams } from 'react-router'
 
 import { useArmazemQueries } from '../../../hooks/queries/useArmazemQueries'
+import { GetAllArmazensResponse } from '../../../http/armazem/get-all-armazens'
 
 type FieldProps = {
   field: {
@@ -15,7 +21,23 @@ type FieldProps = {
   }
 }
 
-export const ArmazemAutoComplete = ({ field, error }: FieldProps) => {
+// Estende as props do Autocomplete omitindo as props controladas internamente
+export type ArmazemAutoCompleteProps = FieldProps &
+  Omit<
+    AutocompleteProps<GetAllArmazensResponse, false, false, false>,
+    | 'value'
+    | 'onChange'
+    | 'options'
+    | 'renderInput'
+    | 'getOptionLabel'
+    | 'isOptionEqualToValue'
+  >
+
+export const ArmazemAutoComplete = ({
+  field,
+  error,
+  ...autocompleteProps
+}: ArmazemAutoCompleteProps) => {
   const { orgSlug } = useParams()
   const { useGetAll: useGetAllArmazems } = useArmazemQueries()
   const { data: armazens = [], isLoading } = useGetAllArmazems(orgSlug!)
@@ -25,8 +47,8 @@ export const ArmazemAutoComplete = ({ field, error }: FieldProps) => {
 
   return (
     <Autocomplete
+      {...autocompleteProps}
       value={selectedArmazem}
-      id="categoria-select"
       options={armazens}
       getOptionLabel={(option) => option.nome}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -41,18 +63,16 @@ export const ArmazemAutoComplete = ({ field, error }: FieldProps) => {
           onBlur={field.onBlur}
           label="Armazem"
           size="medium"
-          slotProps={{
-            input: {
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {isLoading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            },
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {isLoading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
           }}
         />
       )}
