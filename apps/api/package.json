@@ -9,7 +9,9 @@
     "env:load": "dotenv -e ../../.env --",
     "typeorm": "tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts",
     "build": "tsup",
-    "start": "node dist/http/server.js"
+    "start": "node dist/http/server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -43,10 +45,5 @@
     "tsup": "^8.5.0",
     "tsx": "^4.19.3"
   },
-  "prettier": "@printerp/prettier",
-  "eslintConfig": {
-    "extends": [
-      "@printerp/eslint-config/node"
-    ]
-  }
+  "prettier": "@printerp/prettier"
 }

@@ -17,4 +17,4 @@ const config = {
   endOfLine: "auto",
 };
 
-export default config;
+module.exports = config;

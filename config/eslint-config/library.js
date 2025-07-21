@@ -1,64 +1,71 @@
-/** @type {import("eslint").Linter.Config} */
-module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-    jest: true,
+import js from '@eslint/js'
+import prettierPlugin from 'eslint-plugin-prettier/recommended'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
+
+export default tseslint.config(
+  // Base configurations
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+
+  // Ignore patterns
+  {
+    ignores: ['node_modules/**', 'dist/**'],
   },
-  extends: [
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'standard',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
-  plugins: ['react', 'jsx-a11y', '@typescript-eslint', 'simple-import-sort'],
-  rules: {
-    'react/self-closing-comp': 'error',
-    'prettier/prettier': [
-      'error',
-      {
-        printWidth: 80,
-        tabWidth: 2,
-        singleQuote: true,
-        trailingComma: 'all',
-        arrowParens: 'always',
-        semi: false,
-        endOfLine: 'auto',
+
+  // Main React/TypeScript configuration
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.es2020,
       },
-    ],
-    'react/react-in-jsx-scope': 'off',
-    'react/prop-types': 'off',
-    'jsx-a11y/alt-text': [
-      'warn',
-      {
-        elements: ['img'],
-        img: ['Image'],
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
-    ],
-    'jsx-a11y/aria-props': 'warn',
-    'jsx-a11y/aria-proptypes': 'warn',
-    'jsx-a11y/aria-unsupported-elements': 'warn',
-    'jsx-a11y/role-has-required-aria-props': 'warn',
-    'jsx-a11y/role-supports-aria-props': 'warn',
-    'react/no-unknown-property': 'error',
-    'simple-import-sort/imports': 'error',
-  },
-  settings: {
-    react: {
-      version: 'detect',
     },
-    'import/parsers': {
-      [require.resolve('@typescript-eslint/parser')]: ['.ts', '.tsx', '.d.ts'],
+    plugins: {
+      react: react,
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      // React Hooks rules
+      ...reactHooks.configs.recommended.rules,
+
+      // React Refresh rules
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+
+      // React rules
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'react/jsx-uses-react': 'off',
+      'react/jsx-uses-vars': 'error',
+
+      // Import sorting
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
   },
-  ignorePatterns: ['node_modules'],
-}
+
+  // Prettier configuration (must be last)
+  prettierPlugin,
+)

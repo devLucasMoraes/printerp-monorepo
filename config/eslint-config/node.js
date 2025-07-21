@@ -1,37 +1,40 @@
-/** @type {import("eslint").Linter.Config} */
-module.exports = {
-  env: {
-    es2021: true,
-    node: true,
+import js from '@eslint/js'
+import prettierPlugin from 'eslint-plugin-prettier/recommended'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
+
+export default tseslint.config(
+  // Base ESLint recommended
+  js.configs.recommended,
+
+  // TypeScript ESLint recommended
+  ...tseslint.configs.recommended,
+
+  // Ignore patterns
+  {
+    ignores: ['node_modules/**', 'dist/**'],
   },
-  extends: [
-    'standard',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
-  plugins: ['@typescript-eslint', 'simple-import-sort'],
-  rules: {
-    'prettier/prettier': [
-      'error',
-      {
-        printWidth: 80,
-        tabWidth: 2,
-        singleQuote: true,
-        trailingComma: 'all',
-        arrowParens: 'always',
-        semi: false,
+
+  // Main configuration
+  {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
       },
-    ],
-    'simple-import-sort/imports': 'error',
-  },
-  settings: {
-    'import/parsers': {
-      [require.resolve('@typescript-eslint/parser')]: ['.ts', '.tsx', '.d.ts'],
+    },
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
     },
   },
-}
+
+  // Prettier deve ser o último para sobrescrever regras conflitantes
+  prettierPlugin,
+)

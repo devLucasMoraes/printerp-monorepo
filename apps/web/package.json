@@ -47,12 +47,8 @@
     "@vitejs/plugin-react": "^4.3.4",
     "dotenv-cli": "^8.0.0",
     "typescript": "~5.6.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "globals": "^16.3.0"
   },
-  "prettier": "@printerp/prettier",
-  "eslintConfig": {
-    "extends": [
-      "@printerp/eslint-config/library"
-    ]
-  }
+  "prettier": "@printerp/prettier"
 }
