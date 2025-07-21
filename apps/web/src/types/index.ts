@@ -1,4 +1,4 @@
-export type Page<T> = {
+export interface Page<T> {
   content: T[] // Conteúdo da página
   totalPages: number // Número total de páginas
   totalElements: number // Número total de elementos
@@ -67,7 +67,7 @@ export interface NfeData {
       uf: string
     }
   }
-  produtos: Array<{
+  produtos: {
     codigo: string
     descricao: string
     quantidade: number
@@ -77,5 +77,5 @@ export interface NfeData {
     ncm: string
     cfop: string
     valorIpi: number
-  }>
+  }[]
 }

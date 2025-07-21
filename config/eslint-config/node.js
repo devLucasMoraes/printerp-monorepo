@@ -5,26 +5,19 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  // Base ESLint recommended
   js.configs.recommended,
 
-  // TypeScript ESLint recommended
-  ...tseslint.configs.recommended,
-
-  // Ignore patterns
   {
     ignores: ['node_modules/**', 'dist/**'],
   },
 
-  // Main configuration
+  // JavaScript files (basic rules)
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
+    files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: {
-        ...globals.node,
-      },
+      globals: globals.node,
     },
     plugins: {
       'simple-import-sort': simpleImportSort,
@@ -35,6 +28,35 @@ export default tseslint.config(
     },
   },
 
-  // Prettier deve ser o último para sobrescrever regras conflitantes
+  // TypeScript files (advanced type-checked rules)
+  {
+    files: ['**/*.{ts,mts,cts,tsx}'],
+    extends: [
+      tseslint.configs.recommendedTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
+    ],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: globals.node,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+
+      // Suas regras TypeScript específicas aqui
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      // ... outras regras da primeira config
+    },
+  },
+
   prettierPlugin,
 )
