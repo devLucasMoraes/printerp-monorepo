@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   MenuItem,
   TextField,
 } from '@mui/material'
@@ -111,7 +111,7 @@ export const UserModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -130,7 +130,7 @@ export const UserModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -157,8 +157,8 @@ export const UserModal = ({
             ? 'Preencha os campos abaixo para editar o usuário'
             : 'Preencha os campos abaixo para criar um novo usuário'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={6}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={6}>
             <Controller
               name="name"
               control={control}
@@ -172,8 +172,8 @@ export const UserModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="password"
               control={control}
@@ -188,8 +188,8 @@ export const UserModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size="grow">
+          </Grid>
+          <Grid size="grow">
             <Controller
               name="email"
               control={control}
@@ -203,8 +203,8 @@ export const UserModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size="auto">
+          </Grid>
+          <Grid size="auto">
             <Controller
               name="role"
               control={control}
@@ -225,8 +225,8 @@ export const UserModal = ({
                 </TextField>
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

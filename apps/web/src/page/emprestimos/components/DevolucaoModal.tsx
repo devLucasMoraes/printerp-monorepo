@@ -5,7 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -98,8 +98,8 @@ export const DevolucaoModal = ({
         )}
       </Stack>
       <DialogContent>
-        <Grid2 container spacing={2}>
-          <Grid2 size={12}>
+        <Grid container spacing={2}>
+          <Grid size={12}>
             <Box>
               {fields.length === 0 ? (
                 <Box
@@ -144,8 +144,8 @@ export const DevolucaoModal = ({
                           },
                         }}
                       >
-                        <Grid2 container spacing={2}>
-                          <Grid2 size={3}>
+                        <Grid container spacing={2}>
+                          <Grid size={3}>
                             <Controller
                               name={`itens.${itemIndex}.devolucaoItens.${index}.insumoId`}
                               control={control}
@@ -167,9 +167,9 @@ export const DevolucaoModal = ({
                                 />
                               )}
                             />
-                          </Grid2>
+                          </Grid>
 
-                          <Grid2 size={2}>
+                          <Grid size={2}>
                             <Controller
                               name={`itens.${itemIndex}.devolucaoItens.${index}.quantidade`}
                               control={control}
@@ -195,9 +195,9 @@ export const DevolucaoModal = ({
                                 />
                               )}
                             />
-                          </Grid2>
+                          </Grid>
 
-                          <Grid2 size={2}>
+                          <Grid size={2}>
                             <Controller
                               name={`itens.${itemIndex}.devolucaoItens.${index}.unidade`}
                               control={control}
@@ -230,9 +230,9 @@ export const DevolucaoModal = ({
                                 </TextField>
                               )}
                             />
-                          </Grid2>
+                          </Grid>
 
-                          <Grid2 size={2}>
+                          <Grid size={2}>
                             <Controller
                               name={`itens.${itemIndex}.devolucaoItens.${index}.valorUnitario`}
                               control={control}
@@ -268,9 +268,9 @@ export const DevolucaoModal = ({
                                 />
                               )}
                             />
-                          </Grid2>
+                          </Grid>
 
-                          <Grid2 size={2}>
+                          <Grid size={2}>
                             <Controller
                               name={`itens.${itemIndex}.devolucaoItens.${index}.dataDevolucao`}
                               control={control}
@@ -295,9 +295,9 @@ export const DevolucaoModal = ({
                                 />
                               )}
                             />
-                          </Grid2>
+                          </Grid>
 
-                          <Grid2
+                          <Grid
                             size={1}
                             container
                             direction="row"
@@ -311,16 +311,16 @@ export const DevolucaoModal = ({
                             >
                               <IconCircleMinus />
                             </IconButton>
-                          </Grid2>
-                        </Grid2>
+                          </Grid>
+                        </Grid>
                       </Box>
                     )
                   })}
                 </Box>
               )}
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => onClose()}>Cancelar</Button>

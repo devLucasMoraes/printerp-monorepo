@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -95,7 +95,7 @@ export const OrganizationModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -112,7 +112,7 @@ export const OrganizationModal = ({
         },
         onError: (error) => {
           console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
+          enqueueSnackbar(error.response?.data.message ?? error.message, {
             variant: 'error',
           })
         },
@@ -138,8 +138,8 @@ export const OrganizationModal = ({
             ? 'Preencha os campos abaixo para editar a organização'
             : 'Preencha os campos abaixo para criar uma nova organização'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={6}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={6}>
             <Controller
               name="name"
               control={control}
@@ -153,8 +153,8 @@ export const OrganizationModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

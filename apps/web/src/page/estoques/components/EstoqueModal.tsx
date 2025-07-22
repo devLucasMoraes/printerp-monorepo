@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   InputAdornment,
   TextField,
 } from '@mui/material'
@@ -81,7 +81,7 @@ export const EstoqueModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -106,8 +106,8 @@ export const EstoqueModal = ({
         <DialogContentText>
           {`Informe a quantidade real do insumo: ${form?.data?.insumo?.descricao}, do armazém: ${form?.data?.armazem?.nome}`}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="quantidade"
               control={control}
@@ -136,8 +136,8 @@ export const EstoqueModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

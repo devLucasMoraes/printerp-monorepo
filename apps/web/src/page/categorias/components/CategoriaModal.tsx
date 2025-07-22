@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
   Typography,
 } from '@mui/material'
@@ -146,8 +146,8 @@ export const CategoriaModal = ({
             ? 'Preencha os campos abaixo para editar a categoria'
             : 'Preencha os campos abaixo para criar uma nova categoria'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="nome"
               control={control}
@@ -161,8 +161,8 @@ export const CategoriaModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

@@ -12,7 +12,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -276,7 +276,7 @@ export const NfeCompraModal = ({
               unidadeNf: produto.unidade as Unidade,
               descricaoFornecedora: produto.descricao,
               codFornecedora: normalizeText(produto.codigo),
-              vinculoId: vinculo?.id || '',
+              vinculoId: vinculo?.id ?? '',
             }
           })
 
@@ -293,8 +293,8 @@ export const NfeCompraModal = ({
             valorTotalNfe: data.valores.valorTotalNfe,
             valorOutros: data.valores.valorOutros,
             observacao: null,
-            fornecedoraId: fornecedora?.id || '',
-            transportadoraId: transportadora?.id || '',
+            fornecedoraId: fornecedora?.id ?? '',
+            transportadoraId: transportadora?.id ?? '',
             armazemId: '',
             addEstoque: true,
             itens: itensComVinculos,
@@ -304,7 +304,7 @@ export const NfeCompraModal = ({
         }
       }
 
-      processXmlImport()
+      void processXmlImport()
     }
   }, [
     form,
@@ -377,7 +377,7 @@ export const NfeCompraModal = ({
   const handleSuccess = () => {
     onClose()
     reset()
-    queryClient.invalidateQueries({ queryKey: ['estoque'] })
+    void queryClient.invalidateQueries({ queryKey: ['estoque'] })
     enqueueSnackbar(
       `Requisição ${isUpdate ? 'atualizada' : 'criada'} com sucesso`,
       { variant: 'success' },
@@ -396,7 +396,7 @@ export const NfeCompraModal = ({
           onSuccess: handleSuccess,
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -409,7 +409,7 @@ export const NfeCompraModal = ({
           onSuccess: handleSuccess,
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -551,8 +551,8 @@ export const NfeCompraModal = ({
               },
             }}
           >
-            <Grid2 container spacing={1.5} alignItems="center">
-              <Grid2 size={3}>
+            <Grid container spacing={1.5} alignItems="center">
+              <Grid size={3}>
                 <Controller
                   name={`itens.${index}.descricaoFornecedora`}
                   control={control}
@@ -569,17 +569,17 @@ export const NfeCompraModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={1.7}>
+              <Grid size={1.7}>
                 <VinculoButton
                   index={index}
                   control={control}
                   onOpenModal={handleOpenVinculoModal}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={1.5}>
+              <Grid size={1.5}>
                 <Controller
                   name={`itens.${index}.qtdeNf`}
                   control={control}
@@ -596,9 +596,9 @@ export const NfeCompraModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={1.7}>
+              <Grid size={1.7}>
                 <Controller
                   name={`itens.${index}.unidadeNf`}
                   control={control}
@@ -621,9 +621,9 @@ export const NfeCompraModal = ({
                     </TextField>
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={1.7}>
+              <Grid size={1.7}>
                 <Controller
                   name={`itens.${index}.valorUnitario`}
                   control={control}
@@ -647,9 +647,9 @@ export const NfeCompraModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={1.7}>
+              <Grid size={1.7}>
                 <Controller
                   name={`itens.${index}.valorIpi`}
                   control={control}
@@ -673,9 +673,9 @@ export const NfeCompraModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2
+              <Grid
                 size={0.7}
                 container
                 direction="row"
@@ -693,8 +693,8 @@ export const NfeCompraModal = ({
                 >
                   <IconCircleMinus />
                 </IconButton>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </Box>
         ))}
       </Box>
@@ -720,8 +720,8 @@ export const NfeCompraModal = ({
               ? 'Preencha os campos abaixo para editar a nota fiscal'
               : 'Preencha os campos abaixo para criar uma nova nota fiscal'}
           </DialogContentText>
-          <Grid2 container spacing={2} sx={{ mt: 2 }}>
-            <Grid2 size="grow">
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid size="grow">
               <Controller
                 name="valorTotalNfe"
                 control={control}
@@ -747,9 +747,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={3}>
+            <Grid size={3}>
               <Controller
                 name="addEstoque"
                 control={control}
@@ -778,9 +778,9 @@ export const NfeCompraModal = ({
                   </FormControl>
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={3}>
+            <Grid size={3}>
               <Controller
                 name="armazemId"
                 control={control}
@@ -792,9 +792,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size="auto">
+            <Grid size="auto">
               <Controller
                 name="dataEmissao"
                 control={control}
@@ -811,9 +811,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size="auto">
+            <Grid size="auto">
               <Controller
                 name="dataRecebimento"
                 control={control}
@@ -830,9 +830,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={6}>
+            <Grid size={6}>
               <Controller
                 name="chaveNfe"
                 control={control}
@@ -846,9 +846,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={2}>
+            <Grid size={2}>
               <Controller
                 name="nfe"
                 control={control}
@@ -862,9 +862,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={4}>
+            <Grid size={4}>
               <Stack spacing={1} direction="row">
                 <Controller
                   name="fornecedoraId"
@@ -882,9 +882,9 @@ export const NfeCompraModal = ({
                   </IconButton>
                 </Tooltip>
               </Stack>
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={2.4}>
+            <Grid size={2.4}>
               <Controller
                 name="valorTotalIpi"
                 control={control}
@@ -910,9 +910,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={2.4}>
+            <Grid size={2.4}>
               <Controller
                 name="valorTotalProdutos"
                 control={control}
@@ -938,9 +938,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={2.4}>
+            <Grid size={2.4}>
               <Controller
                 name="valorDesconto"
                 control={control}
@@ -966,9 +966,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={2.4}>
+            <Grid size={2.4}>
               <Controller
                 name="valorSeguro"
                 control={control}
@@ -994,9 +994,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={2.4}>
+            <Grid size={2.4}>
               <Controller
                 name="valorOutros"
                 control={control}
@@ -1022,9 +1022,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={8}>
+            <Grid size={8}>
               <Controller
                 name="valorFrete"
                 control={control}
@@ -1050,9 +1050,9 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={4}>
+            <Grid size={4}>
               <Stack spacing={1} direction="row">
                 <Controller
                   name="transportadoraId"
@@ -1070,9 +1070,9 @@ export const NfeCompraModal = ({
                   </IconButton>
                 </Tooltip>
               </Stack>
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={12}>
+            <Grid size={12}>
               <Controller
                 name="observacao"
                 control={control}
@@ -1086,10 +1086,10 @@ export const NfeCompraModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
             {/* Items Section */}
-            <Grid2 size={12}>
+            <Grid size={12}>
               <Box sx={{ mt: 2 }}>
                 <Stack
                   direction="row"
@@ -1113,8 +1113,8 @@ export const NfeCompraModal = ({
 
                 {renderItems()}
               </Box>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancelar</Button>

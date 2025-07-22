@@ -9,7 +9,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  Grid2,
+  Grid,
   InputAdornment,
   MenuItem,
   Switch,
@@ -117,7 +117,7 @@ export const InsumoModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -134,7 +134,7 @@ export const InsumoModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -161,8 +161,8 @@ export const InsumoModal = ({
             ? 'Preencha os campos abaixo para editar o insumo'
             : 'Preencha os campos abaixo para criar um novo insumo'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="descricao"
               control={control}
@@ -176,8 +176,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="valorUntMed"
               control={control}
@@ -204,8 +204,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="valorUntMedAuto"
               control={control}
@@ -214,7 +214,7 @@ export const InsumoModal = ({
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={value || false}
+                        checked={value ?? false}
                         onChange={(e) => onChange(e.target.checked)}
                         {...fieldProps}
                       />
@@ -227,8 +227,8 @@ export const InsumoModal = ({
                 </FormControl>
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="estoqueMinimo"
               control={control}
@@ -248,8 +248,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="undEstoque"
               control={control}
@@ -271,8 +271,8 @@ export const InsumoModal = ({
                 </TextField>
               )}
             />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <Controller
               name="categoriaId"
               control={control}
@@ -283,8 +283,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

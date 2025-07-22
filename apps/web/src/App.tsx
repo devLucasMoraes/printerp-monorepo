@@ -1,5 +1,5 @@
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { ptBR } from 'date-fns/locale'
 import { useEffect } from 'react'
@@ -19,7 +19,7 @@ function App() {
 
   const checkAuth = useAuthStore((state) => state.checkAuth)
   useEffect(() => {
-    checkAuth()
+    void checkAuth()
   }, [checkAuth])
 
   return (
