@@ -1,5 +1,5 @@
+import { Helmet } from '@dr.pogodin/react-helmet'
 import type { JSX } from 'react'
-import { Helmet } from 'react-helmet-async'
 
 interface Props {
   description?: string

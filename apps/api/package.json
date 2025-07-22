@@ -31,7 +31,7 @@
     "socket.io": "^4.8.1",
     "typeorm": "^0.3.23",
     "uuid": "^11.0.5",
-    "zod": "^3.24.3"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.7.0",
@@ -40,7 +40,7 @@
     "@printerp/tsconfig": "workspace:*",
     "@swc/core": "^1.12.1",
     "@types/bcryptjs": "^3.0.0",
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.1.0",
     "dotenv-cli": "^8.0.0",
     "tsup": "^8.5.0",
     "tsx": "^4.19.3"

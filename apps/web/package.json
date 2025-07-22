@@ -12,6 +12,7 @@
     "env:load": "dotenv -e ../../.env --"
   },
   "dependencies": {
+    "@dr.pogodin/react-helmet": "^3.0.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "^3.10.0",
@@ -29,12 +30,11 @@
     "react": "^19.1.0",
     "react-apexcharts": "^1.7.0",
     "react-dom": "^19.1.0",
-    "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.54.2",
     "react-router": "^7.1.3",
     "socket.io-client": "^4.8.1",
     "uuid": "^11.0.5",
-    "zod": "^3.24.1",
+    "zod": "^3.25.76",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

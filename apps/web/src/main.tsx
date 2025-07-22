@@ -1,6 +1,6 @@
+import { HelmetProvider } from '@dr.pogodin/react-helmet'
 import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
-import { HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter } from 'react-router'
 
 import App from './App.tsx'
