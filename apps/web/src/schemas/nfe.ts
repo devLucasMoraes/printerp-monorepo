@@ -136,7 +136,7 @@ const PISAliqSchema = z.object({
 })
 
 const PISSchema = z.object({
-  PISAliq: PISAliqSchema,
+  PISAliq: PISAliqSchema.optional(),
 })
 
 const COFINSAliqSchema = z.object({
@@ -147,7 +147,7 @@ const COFINSAliqSchema = z.object({
 })
 
 const COFINSSchema = z.object({
-  COFINSAliq: COFINSAliqSchema,
+  COFINSAliq: COFINSAliqSchema.optional(),
 })
 
 const ImpostoSchema = z.object({
