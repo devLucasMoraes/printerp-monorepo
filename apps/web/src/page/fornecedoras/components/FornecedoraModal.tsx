@@ -14,16 +14,14 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
-import {
+import type {
   CreateFornecedoraDTO,
   CreateFornecedoraResponse,
-  createFornecedoraSchema,
 } from '../../../http/fornecedora/create-fornecedora'
-import { ListFornecedorasResponse } from '../../../http/fornecedora/list-fornecedoras'
-import {
-  UpdateFornecedoraDTO,
-  updateFornecedoraSchema,
-} from '../../../http/fornecedora/update-fornecedora'
+import { createFornecedoraSchema } from '../../../http/fornecedora/create-fornecedora'
+import type { ListFornecedorasResponse } from '../../../http/fornecedora/list-fornecedoras'
+import type { UpdateFornecedoraDTO } from '../../../http/fornecedora/update-fornecedora'
+import { updateFornecedoraSchema } from '../../../http/fornecedora/update-fornecedora'
 import { useAlertStore } from '../../../stores/alert-store'
 
 interface FornecedoraModalProps {

@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createCategoria,
+import type {
   CreateCategoriaDTO,
   CreateCategoriaResponse,
 } from '../../http/categoria/create-categoria'
+import { createCategoria } from '../../http/categoria/create-categoria'
 import { deleteCategoria } from '../../http/categoria/delete-categoria'
-import {
-  getAllCategorias,
-  GetAllCategoriasResponse,
-} from '../../http/categoria/get-all-categorias'
-import {
-  getCategoria,
-  GetCategoriaResponse,
-} from '../../http/categoria/get-categoria'
-import {
-  listCategorias,
-  ListCategoriasResponse,
-} from '../../http/categoria/list-categorias'
-import {
-  updateCategoria,
-  UpdateCategoriaDTO,
-} from '../../http/categoria/update-categoria'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllCategoriasResponse } from '../../http/categoria/get-all-categorias'
+import { getAllCategorias } from '../../http/categoria/get-all-categorias'
+import type { GetCategoriaResponse } from '../../http/categoria/get-categoria'
+import { getCategoria } from '../../http/categoria/get-categoria'
+import type { ListCategoriasResponse } from '../../http/categoria/list-categorias'
+import { listCategorias } from '../../http/categoria/list-categorias'
+import type { UpdateCategoriaDTO } from '../../http/categoria/update-categoria'
+import { updateCategoria } from '../../http/categoria/update-categoria'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.CATEGORIA
 

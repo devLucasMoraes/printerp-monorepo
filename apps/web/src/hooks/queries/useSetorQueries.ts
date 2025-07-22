@@ -1,27 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createSetor,
+import type {
   CreateSetorDTO,
   CreateSetorResponse,
 } from '../../http/setor/create-setor'
+import { createSetor } from '../../http/setor/create-setor'
 import { deleteSetor } from '../../http/setor/delete-setor'
-import {
-  getAllSetores,
-  GetAllSetoresResponse,
-} from '../../http/setor/get-all-setores'
-import { getSetor, GetSetorResponse } from '../../http/setor/get-setor'
-import { listSetores, ListSetoresResponse } from '../../http/setor/list-setores'
-import { updateSetor, UpdateSetorDTO } from '../../http/setor/update-setor'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllSetoresResponse } from '../../http/setor/get-all-setores'
+import { getAllSetores } from '../../http/setor/get-all-setores'
+import type { GetSetorResponse } from '../../http/setor/get-setor'
+import { getSetor } from '../../http/setor/get-setor'
+import type { ListSetoresResponse } from '../../http/setor/list-setores'
+import { listSetores } from '../../http/setor/list-setores'
+import type { UpdateSetorDTO } from '../../http/setor/update-setor'
+import { updateSetor } from '../../http/setor/update-setor'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.SETOR
 

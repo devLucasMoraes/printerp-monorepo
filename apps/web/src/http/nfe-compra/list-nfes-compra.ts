@@ -1,5 +1,5 @@
-import { Unidade } from '../../constants/Unidade'
-import { Page, PageParams } from '../../types'
+import type { Unidade } from '../../constants/Unidade'
+import type { Page, PageParams } from '../../types'
 import { api } from '../api/axios'
 
 export interface ListNfesCompraResponse {

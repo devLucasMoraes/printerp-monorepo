@@ -1,31 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createArmazem,
+import type {
   CreateArmazemDTO,
   CreateArmazemResponse,
 } from '../../http/armazem/create-armazem'
+import { createArmazem } from '../../http/armazem/create-armazem'
 import { deleteArmazem } from '../../http/armazem/delete-armazem'
-import {
-  getAllArmazens,
-  GetAllArmazensResponse,
-} from '../../http/armazem/get-all-armazens'
-import { getArmazem, GetArmazemResponse } from '../../http/armazem/get-armazem'
+import type { GetAllArmazensResponse } from '../../http/armazem/get-all-armazens'
+import { getAllArmazens } from '../../http/armazem/get-all-armazens'
+import type { GetArmazemResponse } from '../../http/armazem/get-armazem'
+import { getArmazem } from '../../http/armazem/get-armazem'
 import { listArmazens } from '../../http/armazem/list-armazens'
-import {
-  updateArmazem,
-  UpdateArmazemDTO,
-} from '../../http/armazem/update-armazem'
-import { ListCategoriasResponse } from '../../http/categoria/list-categorias'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { UpdateArmazemDTO } from '../../http/armazem/update-armazem'
+import { updateArmazem } from '../../http/armazem/update-armazem'
+import type { ListCategoriasResponse } from '../../http/categoria/list-categorias'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.ARMAZEM
 

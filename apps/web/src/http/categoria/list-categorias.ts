@@ -1,4 +1,4 @@
-import { Page, PageParams } from '../../types'
+import type { Page, PageParams } from '../../types'
 import { api } from '../api/axios'
 
 export interface ListCategoriasResponse {

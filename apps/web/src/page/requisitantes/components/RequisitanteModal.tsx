@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useRequisitanteQueries } from '../../../hooks/queries/useRequisitanteQueries'
-import {
-  CreateRequisitanteDTO,
-  createRequisitanteSchema,
-} from '../../../http/requisitante/create-requisitante'
-import { ListRequisitantesResponse } from '../../../http/requisitante/list-requisitantes'
-import {
-  UpdateRequisitanteDTO,
-  updateRequisitanteSchema,
-} from '../../../http/requisitante/update-requisitante'
+import type { CreateRequisitanteDTO } from '../../../http/requisitante/create-requisitante'
+import { createRequisitanteSchema } from '../../../http/requisitante/create-requisitante'
+import type { ListRequisitantesResponse } from '../../../http/requisitante/list-requisitantes'
+import type { UpdateRequisitanteDTO } from '../../../http/requisitante/update-requisitante'
+import { updateRequisitanteSchema } from '../../../http/requisitante/update-requisitante'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const RequisitanteModal = ({

@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Box, Button, Stack, Typography } from '@mui/material'
+import type { JSX } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField'
-import { SignUpFormData, signUpSchema } from '../../../schemas/auth'
+import type { SignUpFormData } from '../../../schemas/auth'
+import { signUpSchema } from '../../../schemas/auth'
 import { useAlertStore } from '../../../stores/alert-store'
 import { useAuthStore } from '../../../stores/auth-store'
 

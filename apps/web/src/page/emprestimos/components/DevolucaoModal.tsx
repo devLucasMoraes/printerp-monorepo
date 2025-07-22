@@ -21,9 +21,9 @@ import { useParams } from 'react-router'
 
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
-import { UpdateEmprestimoDTO } from '../../../http/emprestimo/update-emprestimo'
+import type { UpdateEmprestimoDTO } from '../../../http/emprestimo/update-emprestimo'
 
 export const DevolucaoModal = ({
   open,

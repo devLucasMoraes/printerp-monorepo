@@ -8,11 +8,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import type { JSX } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField'
-import { LoginFormData, loginSchema } from '../../../schemas/auth'
+import type { LoginFormData } from '../../../schemas/auth'
+import { loginSchema } from '../../../schemas/auth'
 import { useAlertStore } from '../../../stores/alert-store'
 import { useAuthStore } from '../../../stores/auth-store'
 

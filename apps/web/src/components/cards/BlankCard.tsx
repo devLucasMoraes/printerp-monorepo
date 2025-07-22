@@ -1,6 +1,7 @@
 import { Card } from '@mui/material'
+import type { JSX } from 'react'
 
-type Props = {
+interface Props {
   children: JSX.Element | JSX.Element[]
 }
 

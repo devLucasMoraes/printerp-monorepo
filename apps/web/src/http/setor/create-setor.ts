@@ -8,7 +8,7 @@ export const createSetorSchema = z.object({
 
 export type CreateSetorDTO = z.infer<typeof createSetorSchema>
 
-export type CreateSetorResponse = {
+export interface CreateSetorResponse {
   setorId: string
 }
 

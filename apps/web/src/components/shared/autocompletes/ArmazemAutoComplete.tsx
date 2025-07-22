@@ -1,15 +1,11 @@
-import {
-  Autocomplete,
-  AutocompleteProps,
-  CircularProgress,
-  TextField,
-} from '@mui/material'
+import type { AutocompleteProps } from '@mui/material'
+import { Autocomplete, CircularProgress, TextField } from '@mui/material'
 import { useParams } from 'react-router'
 
 import { useArmazemQueries } from '../../../hooks/queries/useArmazemQueries'
-import { GetAllArmazensResponse } from '../../../http/armazem/get-all-armazens'
+import type { GetAllArmazensResponse } from '../../../http/armazem/get-all-armazens'
 
-type FieldProps = {
+interface FieldProps {
   field: {
     value: string | null
     onChange: (value: string | null) => void

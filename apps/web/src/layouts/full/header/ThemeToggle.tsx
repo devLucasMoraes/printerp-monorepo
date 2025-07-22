@@ -16,7 +16,7 @@ type ThemeMode = 'light' | 'dark' | 'system'
 interface ThemeOption {
   value: ThemeMode
   label: string
-  icon: typeof IconSun | typeof IconMoonStars | typeof IconDeviceDesktop
+  icon: typeof IconSun
 }
 
 const themeOptions: ThemeOption[] = [

@@ -14,16 +14,14 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useTransportadoraQueries } from '../../../hooks/queries/useTransportadoraQueries'
-import {
+import type {
   CreateTransportadoraDTO,
   CreateTransportadoraResponse,
-  createTransportadoraSchema,
 } from '../../../http/transportadora/create-transportadora'
-import { ListTransportadorasResponse } from '../../../http/transportadora/list-transportadoras'
-import {
-  UpdateTransportadoraDTO,
-  updateTransportadoraSchema,
-} from '../../../http/transportadora/update-transportadora'
+import { createTransportadoraSchema } from '../../../http/transportadora/create-transportadora'
+import type { ListTransportadorasResponse } from '../../../http/transportadora/list-transportadoras'
+import type { UpdateTransportadoraDTO } from '../../../http/transportadora/update-transportadora'
+import { updateTransportadoraSchema } from '../../../http/transportadora/update-transportadora'
 import { useAlertStore } from '../../../stores/alert-store'
 
 interface TransportadoraModalProps {

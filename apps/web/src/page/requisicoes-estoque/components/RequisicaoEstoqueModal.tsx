@@ -29,15 +29,13 @@ import { InsumoAutoComplete } from '../../../components/shared/autocompletes/Ins
 import { RequisitanteAutoComplete } from '../../../components/shared/autocompletes/RequisitanteAutoComplete'
 import { SetorAutoComplete } from '../../../components/shared/autocompletes/SetorAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useRequisicaoEstoqueQueries } from '../../../hooks/queries/useRequisicaoEstoqueQueries'
 import { createRequisicaoEstoqueSchema } from '../../../http/requisicao-estoque/create-requisicao-estoque'
-import { ListRequisicoesEstoqueResponse } from '../../../http/requisicao-estoque/list-requisicoes-estoque'
-import {
-  UpdateRequisicaoEstoqueDTO,
-  updateRequisicaoEstoqueSchema,
-} from '../../../http/requisicao-estoque/update-requisicao-estoque'
+import type { ListRequisicoesEstoqueResponse } from '../../../http/requisicao-estoque/list-requisicoes-estoque'
+import type { UpdateRequisicaoEstoqueDTO } from '../../../http/requisicao-estoque/update-requisicao-estoque'
+import { updateRequisicaoEstoqueSchema } from '../../../http/requisicao-estoque/update-requisicao-estoque'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const RequisicaoEstoqueModal = ({

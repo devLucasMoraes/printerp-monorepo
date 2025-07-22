@@ -17,12 +17,11 @@ import { useParams } from 'react-router'
 import { role } from '../../../constants'
 import { Role } from '../../../constants/Role'
 import { useUserQueries } from '../../../hooks/queries/useUserQueries'
-import {
-  CreateOrganizationalUserDTO,
-  createOrganizationalUserSchema,
-} from '../../../http/user/create-organizational-user'
-import { ListUsersResponse } from '../../../http/user/list-users'
-import { UpdateUserDTO, updateUserSchema } from '../../../http/user/update-user'
+import type { CreateOrganizationalUserDTO } from '../../../http/user/create-organizational-user'
+import { createOrganizationalUserSchema } from '../../../http/user/create-organizational-user'
+import type { ListUsersResponse } from '../../../http/user/list-users'
+import type { UpdateUserDTO } from '../../../http/user/update-user'
+import { updateUserSchema } from '../../../http/user/update-user'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const UserModal = ({

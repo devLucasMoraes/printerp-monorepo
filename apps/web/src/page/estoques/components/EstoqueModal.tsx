@@ -15,11 +15,9 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useEstoqueQueries } from '../../../hooks/queries/useEstoqueQueries'
-import {
-  AdjustEstoqueDTO,
-  adjustEstoqueSchema,
-} from '../../../http/estoque/adjust-estoque'
-import { ListEstoquesResponse } from '../../../http/estoque/list-estoques'
+import type { AdjustEstoqueDTO } from '../../../http/estoque/adjust-estoque'
+import { adjustEstoqueSchema } from '../../../http/estoque/adjust-estoque'
+import type { ListEstoquesResponse } from '../../../http/estoque/list-estoques'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const EstoqueModal = ({
@@ -130,7 +128,7 @@ export const EstoqueModal = ({
                     input: {
                       endAdornment: (
                         <InputAdornment position="end">
-                          {form?.data && form.data.insumo.undEstoque}
+                          {form?.data?.insumo.undEstoque}
                         </InputAdornment>
                       ),
                     },

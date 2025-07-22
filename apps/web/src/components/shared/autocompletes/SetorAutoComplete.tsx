@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 
 import { useSetorQueries } from '../../../hooks/queries/useSetorQueries'
 
-type FieldProps = {
+interface FieldProps {
   field: {
     value: string | null
     onChange: (value: string | null) => void

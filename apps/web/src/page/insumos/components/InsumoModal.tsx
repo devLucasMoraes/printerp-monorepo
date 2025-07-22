@@ -21,17 +21,13 @@ import { useParams } from 'react-router'
 
 import { CategoriaAutoComplete } from '../../../components/shared/autocompletes/CategoriaAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
-import {
-  CreateInsumoDTO,
-  createInsumoSchema,
-} from '../../../http/insumo/create-insumo'
-import { ListInsumosResponse } from '../../../http/insumo/list-insumos'
-import {
-  UpdateInsumoDTO,
-  updateInsumoSchema,
-} from '../../../http/insumo/update-insumo'
+import type { CreateInsumoDTO } from '../../../http/insumo/create-insumo'
+import { createInsumoSchema } from '../../../http/insumo/create-insumo'
+import type { ListInsumosResponse } from '../../../http/insumo/list-insumos'
+import type { UpdateInsumoDTO } from '../../../http/insumo/update-insumo'
+import { updateInsumoSchema } from '../../../http/insumo/update-insumo'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const InsumoModal = ({

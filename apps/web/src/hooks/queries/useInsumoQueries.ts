@@ -1,30 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createInsumo,
+import type {
   CreateInsumoDTO,
   CreateInsumoResponse,
 } from '../../http/insumo/create-insumo'
+import { createInsumo } from '../../http/insumo/create-insumo'
 import { deleteInsumo } from '../../http/insumo/delete-insumo'
-import {
-  getAllInsumos,
-  GetAllInsumosResponse,
-} from '../../http/insumo/get-all-insumos'
-import { getInsumo, GetInsumoResponse } from '../../http/insumo/get-insumo'
-import {
-  listInsumos,
-  ListInsumosResponse,
-} from '../../http/insumo/list-insumos'
-import { updateInsumo, UpdateInsumoDTO } from '../../http/insumo/update-insumo'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllInsumosResponse } from '../../http/insumo/get-all-insumos'
+import { getAllInsumos } from '../../http/insumo/get-all-insumos'
+import type { GetInsumoResponse } from '../../http/insumo/get-insumo'
+import { getInsumo } from '../../http/insumo/get-insumo'
+import type { ListInsumosResponse } from '../../http/insumo/list-insumos'
+import { listInsumos } from '../../http/insumo/list-insumos'
+import type { UpdateInsumoDTO } from '../../http/insumo/update-insumo'
+import { updateInsumo } from '../../http/insumo/update-insumo'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.INSUMO
 

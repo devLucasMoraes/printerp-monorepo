@@ -1,16 +1,13 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseQueryOptions } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  getChartInsumosPorSetor,
-  InsumosPorSetorResponse,
-} from '../../http/chart/get-chart-insumos-por-setor'
-import {
-  getChartSaidasMensais,
-  SaidasMensaisResponse,
-} from '../../http/chart/get-chart-saidas-mensais'
-import { ErrorResponse } from '../../types'
+import type { InsumosPorSetorResponse } from '../../http/chart/get-chart-insumos-por-setor'
+import { getChartInsumosPorSetor } from '../../http/chart/get-chart-insumos-por-setor'
+import type { SaidasMensaisResponse } from '../../http/chart/get-chart-saidas-mensais'
+import { getChartSaidasMensais } from '../../http/chart/get-chart-saidas-mensais'
+import type { ErrorResponse } from '../../types'
 
 const resourceKey = ResourceKeys.CHARTS
 

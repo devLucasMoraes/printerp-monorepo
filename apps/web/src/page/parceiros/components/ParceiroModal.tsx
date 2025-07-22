@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useParceiroQueries } from '../../../hooks/queries/useParceiroQueries'
-import {
-  CreateParceiroDTO,
-  createParceiroSchema,
-} from '../../../http/parceiro/create-parceiro'
-import { ListParceirosResponse } from '../../../http/parceiro/list-parceiros'
-import {
-  UpdateParceiroDTO,
-  updateParceiroSchema,
-} from '../../../http/parceiro/update-parceiro'
+import type { CreateParceiroDTO } from '../../../http/parceiro/create-parceiro'
+import { createParceiroSchema } from '../../../http/parceiro/create-parceiro'
+import type { ListParceirosResponse } from '../../../http/parceiro/list-parceiros'
+import type { UpdateParceiroDTO } from '../../../http/parceiro/update-parceiro'
+import { updateParceiroSchema } from '../../../http/parceiro/update-parceiro'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const ParceiroModal = ({

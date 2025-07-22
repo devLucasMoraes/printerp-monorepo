@@ -1,8 +1,9 @@
-import { Box, Typography, TypographyProps } from '@mui/material'
+import type { TypographyProps } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 import BlankCard from './BlankCard'
 
-type CenteredMessageCardProps = {
+interface CenteredMessageCardProps {
   message: string
   minHeight?: number
   typographyProps?: TypographyProps

@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useSetorQueries } from '../../../hooks/queries/useSetorQueries'
-import {
-  CreateSetorDTO,
-  createSetorSchema,
-} from '../../../http/setor/create-setor'
-import { ListSetoresResponse } from '../../../http/setor/list-setores'
-import {
-  UpdateSetorDTO,
-  updateSetorSchema,
-} from '../../../http/setor/update-setor'
+import type { CreateSetorDTO } from '../../../http/setor/create-setor'
+import { createSetorSchema } from '../../../http/setor/create-setor'
+import type { ListSetoresResponse } from '../../../http/setor/list-setores'
+import type { UpdateSetorDTO } from '../../../http/setor/update-setor'
+import { updateSetorSchema } from '../../../http/setor/update-setor'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const SetorModal = ({

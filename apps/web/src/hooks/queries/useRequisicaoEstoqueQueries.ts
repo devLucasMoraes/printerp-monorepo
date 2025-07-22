@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createRequisicaoEstoque,
+import type {
   CreateRequisicaoEstoqueDTO,
   CreateRequisicaoEstoqueResponse,
 } from '../../http/requisicao-estoque/create-requisicao-estoque'
+import { createRequisicaoEstoque } from '../../http/requisicao-estoque/create-requisicao-estoque'
 import { deleteRequisicaoEstoque } from '../../http/requisicao-estoque/delete-requisicao-estoque'
-import {
-  getAllRequisicoesEstoque,
-  GetAllRequisicoesEstoqueResponse,
-} from '../../http/requisicao-estoque/get-all-requisicoes-estoque'
-import {
-  getRequisicaoEstoque,
-  GetRequisicaoEstoqueResponse,
-} from '../../http/requisicao-estoque/get-requisicao-estoque'
-import {
-  listRequisicoesEstoque,
-  ListRequisicoesEstoqueResponse,
-} from '../../http/requisicao-estoque/list-requisicoes-estoque'
-import {
-  updateRequisicaoEstoque,
-  UpdateRequisicaoEstoqueDTO,
-} from '../../http/requisicao-estoque/update-requisicao-estoque'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllRequisicoesEstoqueResponse } from '../../http/requisicao-estoque/get-all-requisicoes-estoque'
+import { getAllRequisicoesEstoque } from '../../http/requisicao-estoque/get-all-requisicoes-estoque'
+import type { GetRequisicaoEstoqueResponse } from '../../http/requisicao-estoque/get-requisicao-estoque'
+import { getRequisicaoEstoque } from '../../http/requisicao-estoque/get-requisicao-estoque'
+import type { ListRequisicoesEstoqueResponse } from '../../http/requisicao-estoque/list-requisicoes-estoque'
+import { listRequisicoesEstoque } from '../../http/requisicao-estoque/list-requisicoes-estoque'
+import type { UpdateRequisicaoEstoqueDTO } from '../../http/requisicao-estoque/update-requisicao-estoque'
+import { updateRequisicaoEstoque } from '../../http/requisicao-estoque/update-requisicao-estoque'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.REQUISICAO_ESTOQUE
 

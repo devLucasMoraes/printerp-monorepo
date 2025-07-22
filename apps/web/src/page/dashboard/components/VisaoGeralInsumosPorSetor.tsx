@@ -1,4 +1,5 @@
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import type { SelectChangeEvent } from '@mui/material'
+import { MenuItem, Select } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useState } from 'react'
 import Chart from 'react-apexcharts'
@@ -140,7 +141,7 @@ const VisaoGeralInsumosPorSetor = () => {
         </Select>
       }
     >
-      {data && data.series && data.series.length > 0 ? (
+      {data?.series && data.series.length > 0 ? (
         <Chart
           options={optionscolumnchart}
           series={data.series}

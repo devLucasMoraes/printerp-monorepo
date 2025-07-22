@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useOrgQueries } from '../../../hooks/queries/useOrgQueries'
-import {
-  CreateOrganizationDto,
-  createOrganizationSchema,
-} from '../../../http/orgs/create-organization'
-import { ListOrganizationsResponse } from '../../../http/orgs/list-organizations'
-import {
-  UpdateOrganizationDto,
-  updateOrganizationSchema,
-} from '../../../http/orgs/update-organization'
+import type { CreateOrganizationDto } from '../../../http/orgs/create-organization'
+import { createOrganizationSchema } from '../../../http/orgs/create-organization'
+import type { ListOrganizationsResponse } from '../../../http/orgs/list-organizations'
+import type { UpdateOrganizationDto } from '../../../http/orgs/update-organization'
+import { updateOrganizationSchema } from '../../../http/orgs/update-organization'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const OrganizationModal = ({

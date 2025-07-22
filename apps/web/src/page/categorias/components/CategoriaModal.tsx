@@ -15,15 +15,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useCategoriaQueries } from '../../../hooks/queries/useCategoriaQueries'
-import {
-  CreateCategoriaDTO,
-  createCategoriaSchema,
-} from '../../../http/categoria/create-categoria'
-import { ListCategoriasResponse } from '../../../http/categoria/list-categorias'
-import {
-  UpdateCategoriaDTO,
-  updateCategoriaSchema,
-} from '../../../http/categoria/update-categoria'
+import type { CreateCategoriaDTO } from '../../../http/categoria/create-categoria'
+import { createCategoriaSchema } from '../../../http/categoria/create-categoria'
+import type { ListCategoriasResponse } from '../../../http/categoria/list-categorias'
+import type { UpdateCategoriaDTO } from '../../../http/categoria/update-categoria'
+import { updateCategoriaSchema } from '../../../http/categoria/update-categoria'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const CategoriaModal = ({

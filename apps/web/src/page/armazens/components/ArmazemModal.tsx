@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useArmazemQueries } from '../../../hooks/queries/useArmazemQueries'
-import {
-  CreateArmazemDTO,
-  createArmazemSchema,
-} from '../../../http/armazem/create-armazem'
-import { ListArmazensResponse } from '../../../http/armazem/list-armazens'
-import {
-  UpdateArmazemDTO,
-  updateArmazemSchema,
-} from '../../../http/armazem/update-armazem'
+import type { CreateArmazemDTO } from '../../../http/armazem/create-armazem'
+import { createArmazemSchema } from '../../../http/armazem/create-armazem'
+import type { ListArmazensResponse } from '../../../http/armazem/list-armazens'
+import type { UpdateArmazemDTO } from '../../../http/armazem/update-armazem'
+import { updateArmazemSchema } from '../../../http/armazem/update-armazem'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const ArmazemModal = ({

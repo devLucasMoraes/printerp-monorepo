@@ -20,14 +20,14 @@ import { useParams } from 'react-router'
 import { FornecedoraAutoComplete } from '../../../components/shared/autocompletes/FornecedoraAutoComplete'
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useVinculoQueries } from '../../../hooks/queries/useVinculoQueries'
-import {
+import type {
   CreateOrUpdateVinculoDto,
   CreateOrUpdateVinculoResponse,
-  createOrUpdateVinculoSchema,
 } from '../../../http/vinculo/create-or-update-vinculo'
-import { GetVinculoByCodResponse } from '../../../http/vinculo/get-vinculo-by-cod'
+import { createOrUpdateVinculoSchema } from '../../../http/vinculo/create-or-update-vinculo'
+import type { GetVinculoByCodResponse } from '../../../http/vinculo/get-vinculo-by-cod'
 import { useAlertStore } from '../../../stores/alert-store'
 
 interface VinculoModalProps {

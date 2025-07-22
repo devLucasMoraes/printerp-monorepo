@@ -38,15 +38,13 @@ import { ArmazemAutoComplete } from '../../../components/shared/autocompletes/Ar
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { ParceiroAutoComplete } from '../../../components/shared/autocompletes/ParceiroAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useEmprestimoQueries } from '../../../hooks/queries/useEmprestimosQueries'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { createEmprestimoSchema } from '../../../http/emprestimo/create-emprestimo'
-import { ListEmprestimosResponse } from '../../../http/emprestimo/list-emprestimos'
-import {
-  UpdateEmprestimoDTO,
-  updateEmprestimoSchema,
-} from '../../../http/emprestimo/update-emprestimo'
+import type { ListEmprestimosResponse } from '../../../http/emprestimo/list-emprestimos'
+import type { UpdateEmprestimoDTO } from '../../../http/emprestimo/update-emprestimo'
+import { updateEmprestimoSchema } from '../../../http/emprestimo/update-emprestimo'
 import { useAlertStore } from '../../../stores/alert-store'
 import { DevolucaoModal } from './DevolucaoModal'
 

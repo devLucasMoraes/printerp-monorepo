@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 
 import { useCategoriaQueries } from '../../../hooks/queries/useCategoriaQueries'
 
-type FieldProps = {
+interface FieldProps {
   field: {
     value: string | null
     onChange: (value: string | null) => void

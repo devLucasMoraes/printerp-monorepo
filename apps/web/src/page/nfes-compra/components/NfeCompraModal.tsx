@@ -34,25 +34,21 @@ import { ArmazemAutoComplete } from '../../../components/shared/autocompletes/Ar
 import { FornecedoraAutoComplete } from '../../../components/shared/autocompletes/FornecedoraAutoComplete'
 import { TransportadoraAutoComplete } from '../../../components/shared/autocompletes/TransportadorasAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
 import { useNfeCompraQueries } from '../../../hooks/queries/useNfeCompraQueries'
 import { useTransportadoraQueries } from '../../../hooks/queries/useTransportadoraQueries'
-import { CreateFornecedoraResponse } from '../../../http/fornecedora/create-fornecedora'
+import type { CreateFornecedoraResponse } from '../../../http/fornecedora/create-fornecedora'
 import { createNfeCompraSchema } from '../../../http/nfe-compra/create-nfe-compra'
-import { ListNfesCompraResponse } from '../../../http/nfe-compra/list-nfes-compra'
-import {
-  UpdateNfeCompraDTO,
-  updateNfeCompraSchema,
-} from '../../../http/nfe-compra/update-nfe-compra'
-import { CreateTransportadoraResponse } from '../../../http/transportadora/create-transportadora'
-import { CreateOrUpdateVinculoResponse } from '../../../http/vinculo/create-or-update-vinculo'
-import {
-  getVinculoByCod,
-  GetVinculoByCodResponse,
-} from '../../../http/vinculo/get-vinculo-by-cod'
+import type { ListNfesCompraResponse } from '../../../http/nfe-compra/list-nfes-compra'
+import type { UpdateNfeCompraDTO } from '../../../http/nfe-compra/update-nfe-compra'
+import { updateNfeCompraSchema } from '../../../http/nfe-compra/update-nfe-compra'
+import type { CreateTransportadoraResponse } from '../../../http/transportadora/create-transportadora'
+import type { CreateOrUpdateVinculoResponse } from '../../../http/vinculo/create-or-update-vinculo'
+import type { GetVinculoByCodResponse } from '../../../http/vinculo/get-vinculo-by-cod'
+import { getVinculoByCod } from '../../../http/vinculo/get-vinculo-by-cod'
 import { useAlertStore } from '../../../stores/alert-store'
-import { NfeData } from '../../../types'
+import type { NfeData } from '../../../types'
 import { normalizeText } from '../../../util/normalizeText'
 import { FornecedoraModal } from '../../fornecedoras/components/FornecedoraModal'
 import { TransportadoraModal } from '../../transportadoras/components/TransportadoraModal'
