@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { GetOrganizationsResponse } from '../http/orgs/get-organizations'
+import type { GetOrganizationsResponse } from '../http/orgs/get-organizations'
 
 export const useCurrentOrg = () => {
   const [currentOrg, setCurrentOrg] = useState<GetOrganizationsResponse | null>(

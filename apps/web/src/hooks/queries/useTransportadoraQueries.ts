@@ -1,40 +1,25 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createTransportadora,
+import type {
   CreateTransportadoraDTO,
   CreateTransportadoraResponse,
 } from '../../http/transportadora/create-transportadora'
+import { createTransportadora } from '../../http/transportadora/create-transportadora'
 import { deleteTransportadora } from '../../http/transportadora/delete-transportadora'
-import {
-  getAllTransportadoras,
-  GetAllTransportadorasResponse,
-} from '../../http/transportadora/get-all-transportadoras'
-import {
-  getTransportadora,
-  GetTransportadoraResponse,
-} from '../../http/transportadora/get-transportadora'
-import {
-  getTransportadoraByCnpj,
-  GetTransportadoraByCnpjResponse,
-} from '../../http/transportadora/get-transportadora-by-cnpj'
-import {
-  listTransportadoras,
-  ListTransportadorasResponse,
-} from '../../http/transportadora/list-transportadoras'
-import {
-  updateTransportadora,
-  UpdateTransportadoraDTO,
-} from '../../http/transportadora/update-transportadora'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllTransportadorasResponse } from '../../http/transportadora/get-all-transportadoras'
+import { getAllTransportadoras } from '../../http/transportadora/get-all-transportadoras'
+import type { GetTransportadoraResponse } from '../../http/transportadora/get-transportadora'
+import { getTransportadora } from '../../http/transportadora/get-transportadora'
+import type { GetTransportadoraByCnpjResponse } from '../../http/transportadora/get-transportadora-by-cnpj'
+import { getTransportadoraByCnpj } from '../../http/transportadora/get-transportadora-by-cnpj'
+import type { ListTransportadorasResponse } from '../../http/transportadora/list-transportadoras'
+import { listTransportadoras } from '../../http/transportadora/list-transportadoras'
+import type { UpdateTransportadoraDTO } from '../../http/transportadora/update-transportadora'
+import { updateTransportadora } from '../../http/transportadora/update-transportadora'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.TRANSPORTADORA
 

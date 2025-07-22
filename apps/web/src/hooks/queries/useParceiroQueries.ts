@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createParceiro,
+import type {
   CreateParceiroDTO,
   CreateParceiroResponse,
 } from '../../http/parceiro/create-parceiro'
+import { createParceiro } from '../../http/parceiro/create-parceiro'
 import { deleteParceiro } from '../../http/parceiro/delete-parceiro'
-import {
-  getAllParceiros,
-  GetAllParceirosResponse,
-} from '../../http/parceiro/get-all-parceiros'
-import {
-  getParceiro,
-  GetParceiroResponse,
-} from '../../http/parceiro/get-parceiro'
-import {
-  listParceiros,
-  ListParceirosResponse,
-} from '../../http/parceiro/list-parceiros'
-import {
-  updateParceiro,
-  UpdateParceiroDTO,
-} from '../../http/parceiro/update-parceiro'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllParceirosResponse } from '../../http/parceiro/get-all-parceiros'
+import { getAllParceiros } from '../../http/parceiro/get-all-parceiros'
+import type { GetParceiroResponse } from '../../http/parceiro/get-parceiro'
+import { getParceiro } from '../../http/parceiro/get-parceiro'
+import type { ListParceirosResponse } from '../../http/parceiro/list-parceiros'
+import { listParceiros } from '../../http/parceiro/list-parceiros'
+import type { UpdateParceiroDTO } from '../../http/parceiro/update-parceiro'
+import { updateParceiro } from '../../http/parceiro/update-parceiro'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.PARCEIRO
 

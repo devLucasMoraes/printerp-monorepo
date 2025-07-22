@@ -2,17 +2,17 @@ import { AxiosError } from 'axios'
 import { create } from 'zustand'
 
 import { api } from '../http/api/axios'
-import { SignUpFormData } from '../schemas/auth'
-import { ErrorResponse } from '../types'
+import type { SignUpFormData } from '../schemas/auth'
+import type { ErrorResponse } from '../types'
 
-type User = {
+interface User {
   id: string
   name: string
   email: string | null
   avatarUrl: string | null
 }
 
-type AuthStore = {
+interface AuthStore {
   accessToken: string | null
   user: User | null
   isAuthenticated: boolean

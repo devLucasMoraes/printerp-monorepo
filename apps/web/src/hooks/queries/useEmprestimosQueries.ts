@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createEmprestimo,
+import type {
   CreateEmprestimoDTO,
   CreateEmprestimoResponse,
 } from '../../http/emprestimo/create-emprestimo'
+import { createEmprestimo } from '../../http/emprestimo/create-emprestimo'
 import { deleteEmprestimo } from '../../http/emprestimo/delete-emprestimo'
-import {
-  getAllEmprestimos,
-  GetAllEmprestimosResponse,
-} from '../../http/emprestimo/get-all-emprestimos'
-import {
-  getEmprestimo,
-  GetEmprestimoResponse,
-} from '../../http/emprestimo/get-emprestimo'
-import {
-  listEmprestimos,
-  ListEmprestimosResponse,
-} from '../../http/emprestimo/list-emprestimos'
-import {
-  updateEmprestimo,
-  UpdateEmprestimoDTO,
-} from '../../http/emprestimo/update-emprestimo'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllEmprestimosResponse } from '../../http/emprestimo/get-all-emprestimos'
+import { getAllEmprestimos } from '../../http/emprestimo/get-all-emprestimos'
+import type { GetEmprestimoResponse } from '../../http/emprestimo/get-emprestimo'
+import { getEmprestimo } from '../../http/emprestimo/get-emprestimo'
+import type { ListEmprestimosResponse } from '../../http/emprestimo/list-emprestimos'
+import { listEmprestimos } from '../../http/emprestimo/list-emprestimos'
+import type { UpdateEmprestimoDTO } from '../../http/emprestimo/update-emprestimo'
+import { updateEmprestimo } from '../../http/emprestimo/update-emprestimo'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.EMPRESTIMO
 

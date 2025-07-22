@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useSetorQueries } from '../../../hooks/queries/useSetorQueries'
-import {
-  CreateSetorDTO,
-  createSetorSchema,
-} from '../../../http/setor/create-setor'
-import { ListSetoresResponse } from '../../../http/setor/list-setores'
-import {
-  UpdateSetorDTO,
-  updateSetorSchema,
-} from '../../../http/setor/update-setor'
+import type { CreateSetorDTO } from '../../../http/setor/create-setor'
+import { createSetorSchema } from '../../../http/setor/create-setor'
+import type { ListSetoresResponse } from '../../../http/setor/list-setores'
+import type { UpdateSetorDTO } from '../../../http/setor/update-setor'
+import { updateSetorSchema } from '../../../http/setor/update-setor'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const SetorModal = ({
@@ -99,7 +95,7 @@ export const SetorModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -116,7 +112,7 @@ export const SetorModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -143,8 +139,8 @@ export const SetorModal = ({
             ? 'Preencha os campos abaixo para editar o setor'
             : 'Preencha os campos abaixo para criar um novo setor'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="nome"
               control={control}
@@ -158,8 +154,8 @@ export const SetorModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createNfeCompra,
+import type {
   CreateNfeCompraDTO,
   CreateNfeCompraResponse,
 } from '../../http/nfe-compra/create-nfe-compra'
+import { createNfeCompra } from '../../http/nfe-compra/create-nfe-compra'
 import { deleteNfeCompra } from '../../http/nfe-compra/delete-nfe-compra'
-import {
-  getAllNfesCompra,
-  GetAllNfesCompraResponse,
-} from '../../http/nfe-compra/get-all-nfes-compra'
-import {
-  getNfeCompra,
-  GetNfeCompraResponse,
-} from '../../http/nfe-compra/get-nfe-compra'
-import {
-  listNfesCompra,
-  ListNfesCompraResponse,
-} from '../../http/nfe-compra/list-nfes-compra'
-import {
-  updateNfeCompra,
-  UpdateNfeCompraDTO,
-} from '../../http/nfe-compra/update-nfe-compra'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllNfesCompraResponse } from '../../http/nfe-compra/get-all-nfes-compra'
+import { getAllNfesCompra } from '../../http/nfe-compra/get-all-nfes-compra'
+import type { GetNfeCompraResponse } from '../../http/nfe-compra/get-nfe-compra'
+import { getNfeCompra } from '../../http/nfe-compra/get-nfe-compra'
+import type { ListNfesCompraResponse } from '../../http/nfe-compra/list-nfes-compra'
+import { listNfesCompra } from '../../http/nfe-compra/list-nfes-compra'
+import type { UpdateNfeCompraDTO } from '../../http/nfe-compra/update-nfe-compra'
+import { updateNfeCompra } from '../../http/nfe-compra/update-nfe-compra'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.NFE_COMPRA
 

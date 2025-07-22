@@ -1,5 +1,5 @@
 import { Button, IconButton, Input, Stack } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
+import type { GridColDef } from '@mui/x-data-grid'
 import { IconCopy, IconEdit, IconEraser } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -13,9 +13,9 @@ import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useNfeCompraQueries } from '../../hooks/queries/useNfeCompraQueries'
 import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
 import { useXmlImport } from '../../hooks/useXmlImport'
-import { ListNfesCompraResponse } from '../../http/nfe-compra/list-nfes-compra'
+import type { ListNfesCompraResponse } from '../../http/nfe-compra/list-nfes-compra'
 import { useAlertStore } from '../../stores/alert-store'
-import { NfeData } from '../../types'
+import type { NfeData } from '../../types'
 import { NfeCompraModal } from './components/NfeCompraModal'
 
 const NfesCompra = () => {

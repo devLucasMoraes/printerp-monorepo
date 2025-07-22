@@ -1,6 +1,6 @@
-import { TypographyOptions } from '@mui/material/styles/createTypography'
+import type { TypographyVariantsOptions } from '@mui/material'
 
-const typography: TypographyOptions = {
+const typography: TypographyVariantsOptions = {
   fontFamily: "'Plus Jakarta Sans', sans-serif",
 
   h1: {

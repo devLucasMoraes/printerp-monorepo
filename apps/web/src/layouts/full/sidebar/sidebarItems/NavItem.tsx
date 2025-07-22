@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import { NavLink } from 'react-router'
 
-type NavItem = {
+interface NavItem {
   id?: string
   title?: string
   icon?: any

@@ -1,5 +1,5 @@
 import { Button, IconButton } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
+import type { GridColDef } from '@mui/x-data-grid'
 import { IconEdit, IconEraser } from '@tabler/icons-react'
 import { useState } from 'react'
 
@@ -10,7 +10,7 @@ import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { role } from '../../constants'
 import { useOrgQueries } from '../../hooks/queries/useOrgQueries'
 import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
-import { ListOrganizationsResponse } from '../../http/orgs/list-organizations'
+import type { ListOrganizationsResponse } from '../../http/orgs/list-organizations'
 import { useAlertStore } from '../../stores/alert-store'
 import { OrganizationModal } from './components/OrganizationModal'
 

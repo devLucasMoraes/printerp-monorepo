@@ -2,20 +2,26 @@
   "name": "@printerp/eslint-config",
   "version": "0.0.0",
   "private": true,
-  "files": [
-    "library.js",
-    "next.js",
-    "node.js"
-  ],
-  "devDependencies": {
-    "@rocketseat/eslint-config": "^2.2.2",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "@printerp/prettier": "workspace:*"
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    "./node": "./node.js",
+    "./react": "./react.js"
   },
-  "prettier": "@printerp/prettier",
-  "eslintConfig": {
-    "extends": [
-      "./library.js"
-    ]
-  }
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@printerp/prettier": "workspace:*",
+    "eslint": "^9.31.0",
+    "eslint-plugin-prettier": "^5.5.3",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^16.3.0",
+    "typescript-eslint": "^8.35.1"
+  },
+  "prettier": "@printerp/prettier"
 }

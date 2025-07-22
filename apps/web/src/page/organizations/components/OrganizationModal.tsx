@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useOrgQueries } from '../../../hooks/queries/useOrgQueries'
-import {
-  CreateOrganizationDto,
-  createOrganizationSchema,
-} from '../../../http/orgs/create-organization'
-import { ListOrganizationsResponse } from '../../../http/orgs/list-organizations'
-import {
-  UpdateOrganizationDto,
-  updateOrganizationSchema,
-} from '../../../http/orgs/update-organization'
+import type { CreateOrganizationDto } from '../../../http/orgs/create-organization'
+import { createOrganizationSchema } from '../../../http/orgs/create-organization'
+import type { ListOrganizationsResponse } from '../../../http/orgs/list-organizations'
+import type { UpdateOrganizationDto } from '../../../http/orgs/update-organization'
+import { updateOrganizationSchema } from '../../../http/orgs/update-organization'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const OrganizationModal = ({
@@ -99,7 +95,7 @@ export const OrganizationModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -116,7 +112,7 @@ export const OrganizationModal = ({
         },
         onError: (error) => {
           console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
+          enqueueSnackbar(error.response?.data.message ?? error.message, {
             variant: 'error',
           })
         },
@@ -142,8 +138,8 @@ export const OrganizationModal = ({
             ? 'Preencha os campos abaixo para editar a organização'
             : 'Preencha os campos abaixo para criar uma nova organização'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={6}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={6}>
             <Controller
               name="name"
               control={control}
@@ -157,8 +153,8 @@ export const OrganizationModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

@@ -17,7 +17,7 @@ import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { useOrgQueries } from '../../../hooks/queries/useOrgQueries'
 import { useCurrentOrg } from '../../../hooks/useCurrentOrg'
-import { GetOrganizationsResponse } from '../../../http/orgs/get-organizations'
+import type { GetOrganizationsResponse } from '../../../http/orgs/get-organizations'
 import { useAlertStore } from '../../../stores/alert-store'
 import CreateOrganizationDialog from './OrganizationDialogForm'
 

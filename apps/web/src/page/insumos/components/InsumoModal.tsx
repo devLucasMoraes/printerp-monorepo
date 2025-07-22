@@ -9,7 +9,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  Grid2,
+  Grid,
   InputAdornment,
   MenuItem,
   Switch,
@@ -21,17 +21,13 @@ import { useParams } from 'react-router'
 
 import { CategoriaAutoComplete } from '../../../components/shared/autocompletes/CategoriaAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
-import {
-  CreateInsumoDTO,
-  createInsumoSchema,
-} from '../../../http/insumo/create-insumo'
-import { ListInsumosResponse } from '../../../http/insumo/list-insumos'
-import {
-  UpdateInsumoDTO,
-  updateInsumoSchema,
-} from '../../../http/insumo/update-insumo'
+import type { CreateInsumoDTO } from '../../../http/insumo/create-insumo'
+import { createInsumoSchema } from '../../../http/insumo/create-insumo'
+import type { ListInsumosResponse } from '../../../http/insumo/list-insumos'
+import type { UpdateInsumoDTO } from '../../../http/insumo/update-insumo'
+import { updateInsumoSchema } from '../../../http/insumo/update-insumo'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const InsumoModal = ({
@@ -121,7 +117,7 @@ export const InsumoModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -138,7 +134,7 @@ export const InsumoModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -165,8 +161,8 @@ export const InsumoModal = ({
             ? 'Preencha os campos abaixo para editar o insumo'
             : 'Preencha os campos abaixo para criar um novo insumo'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="descricao"
               control={control}
@@ -180,8 +176,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="valorUntMed"
               control={control}
@@ -208,8 +204,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="valorUntMedAuto"
               control={control}
@@ -218,7 +214,7 @@ export const InsumoModal = ({
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={value || false}
+                        checked={value ?? false}
                         onChange={(e) => onChange(e.target.checked)}
                         {...fieldProps}
                       />
@@ -231,8 +227,8 @@ export const InsumoModal = ({
                 </FormControl>
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="estoqueMinimo"
               control={control}
@@ -252,8 +248,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={6}>
+          </Grid>
+          <Grid size={6}>
             <Controller
               name="undEstoque"
               control={control}
@@ -275,8 +271,8 @@ export const InsumoModal = ({
                 </TextField>
               )}
             />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <Controller
               name="categoriaId"
               control={control}
@@ -287,8 +283,8 @@ export const InsumoModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

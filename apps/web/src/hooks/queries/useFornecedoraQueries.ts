@@ -1,40 +1,25 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createFornecedora,
+import type {
   CreateFornecedoraDTO,
   CreateFornecedoraResponse,
 } from '../../http/fornecedora/create-fornecedora'
+import { createFornecedora } from '../../http/fornecedora/create-fornecedora'
 import { deleteFornecedora } from '../../http/fornecedora/delete-fornecedora'
-import {
-  getAllFornecedoras,
-  GetAllFornecedorasResponse,
-} from '../../http/fornecedora/get-all-fornecedoras'
-import {
-  getFornecedora,
-  GetFornecedoraResponse,
-} from '../../http/fornecedora/get-fornecedora'
-import {
-  getFornecedoraByCnpj,
-  GetFornecedoraByCnpjResponse,
-} from '../../http/fornecedora/get-fornecedora-by-cnpj'
-import {
-  listFornecedoras,
-  ListFornecedorasResponse,
-} from '../../http/fornecedora/list-fornecedoras'
-import {
-  updateFornecedora,
-  UpdateFornecedoraDTO,
-} from '../../http/fornecedora/update-fornecedora'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllFornecedorasResponse } from '../../http/fornecedora/get-all-fornecedoras'
+import { getAllFornecedoras } from '../../http/fornecedora/get-all-fornecedoras'
+import type { GetFornecedoraResponse } from '../../http/fornecedora/get-fornecedora'
+import { getFornecedora } from '../../http/fornecedora/get-fornecedora'
+import type { GetFornecedoraByCnpjResponse } from '../../http/fornecedora/get-fornecedora-by-cnpj'
+import { getFornecedoraByCnpj } from '../../http/fornecedora/get-fornecedora-by-cnpj'
+import type { ListFornecedorasResponse } from '../../http/fornecedora/list-fornecedoras'
+import { listFornecedoras } from '../../http/fornecedora/list-fornecedoras'
+import type { UpdateFornecedoraDTO } from '../../http/fornecedora/update-fornecedora'
+import { updateFornecedora } from '../../http/fornecedora/update-fornecedora'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.FORNECEDORA
 

@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useArmazemQueries } from '../../../hooks/queries/useArmazemQueries'
-import {
-  CreateArmazemDTO,
-  createArmazemSchema,
-} from '../../../http/armazem/create-armazem'
-import { ListArmazensResponse } from '../../../http/armazem/list-armazens'
-import {
-  UpdateArmazemDTO,
-  updateArmazemSchema,
-} from '../../../http/armazem/update-armazem'
+import type { CreateArmazemDTO } from '../../../http/armazem/create-armazem'
+import { createArmazemSchema } from '../../../http/armazem/create-armazem'
+import type { ListArmazensResponse } from '../../../http/armazem/list-armazens'
+import type { UpdateArmazemDTO } from '../../../http/armazem/update-armazem'
+import { updateArmazemSchema } from '../../../http/armazem/update-armazem'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const ArmazemModal = ({
@@ -103,7 +99,7 @@ export const ArmazemModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -122,7 +118,7 @@ export const ArmazemModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -149,8 +145,8 @@ export const ArmazemModal = ({
             ? 'Preencha os campos abaixo para editar o armazém'
             : 'Preencha os campos abaixo para criar um novo armazém'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="nome"
               control={control}
@@ -164,8 +160,8 @@ export const ArmazemModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

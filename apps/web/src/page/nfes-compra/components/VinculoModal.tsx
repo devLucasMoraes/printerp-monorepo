@@ -8,7 +8,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  Grid2,
+  Grid,
   MenuItem,
   Switch,
   TextField,
@@ -20,14 +20,14 @@ import { useParams } from 'react-router'
 import { FornecedoraAutoComplete } from '../../../components/shared/autocompletes/FornecedoraAutoComplete'
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useVinculoQueries } from '../../../hooks/queries/useVinculoQueries'
-import {
+import type {
   CreateOrUpdateVinculoDto,
   CreateOrUpdateVinculoResponse,
-  createOrUpdateVinculoSchema,
 } from '../../../http/vinculo/create-or-update-vinculo'
-import { GetVinculoByCodResponse } from '../../../http/vinculo/get-vinculo-by-cod'
+import { createOrUpdateVinculoSchema } from '../../../http/vinculo/create-or-update-vinculo'
+import type { GetVinculoByCodResponse } from '../../../http/vinculo/get-vinculo-by-cod'
 import { useAlertStore } from '../../../stores/alert-store'
 
 interface VinculoModalProps {
@@ -99,7 +99,7 @@ export const VinculoModal = ({
     })
   }, [isEdit, vinculo, reset, initialData.cod, initialData.fornecedoraId])
 
-  const onSubmit = async (data: CreateOrUpdateVinculoDto) => {
+  const onSubmit = (data: CreateOrUpdateVinculoDto) => {
     if (!orgSlug) {
       enqueueSnackbar('Selecione uma organização', { variant: 'error' })
       return
@@ -114,7 +114,7 @@ export const VinculoModal = ({
         },
         onError: (error) => {
           console.error(error)
-          enqueueSnackbar(error.response?.data.message || error.message, {
+          enqueueSnackbar(error.response?.data.message ?? error.message, {
             variant: 'error',
           })
         },
@@ -140,8 +140,8 @@ export const VinculoModal = ({
         {isEdit ? 'Editar Vínculo' : 'Criar Novo Vínculo'}
       </DialogTitle>
       <DialogContent>
-        <Grid2 container spacing={2} sx={{ mt: 1 }}>
-          <Grid2 size={6}>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid size={6}>
             <Controller
               name="cod"
               control={control}
@@ -156,9 +156,9 @@ export const VinculoModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={6}>
+          <Grid size={6}>
             <Controller
               name="undCompra"
               control={control}
@@ -180,9 +180,9 @@ export const VinculoModal = ({
                 </TextField>
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={12}>
+          <Grid size={12}>
             <Controller
               name="insumoId"
               control={control}
@@ -190,9 +190,9 @@ export const VinculoModal = ({
                 <InsumoAutoComplete field={field} error={errors.insumoId} />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={12}>
+          <Grid size={12}>
             <Controller
               name="fornecedoraId"
               control={control}
@@ -203,9 +203,9 @@ export const VinculoModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={6}>
+          <Grid size={6}>
             <Controller
               name="possuiConversao"
               control={control}
@@ -231,9 +231,9 @@ export const VinculoModal = ({
                 </FormControl>
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={6}>
+          <Grid size={6}>
             <Controller
               name="qtdeEmbalagem"
               control={control}
@@ -254,8 +254,8 @@ export const VinculoModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

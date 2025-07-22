@@ -1,24 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createOrganizationalUser,
+import type {
   CreateOrganizationalUserDTO,
   CreateOrganizationalUserResponse,
 } from '../../http/user/create-organizational-user'
+import { createOrganizationalUser } from '../../http/user/create-organizational-user'
 import { deleteUser } from '../../http/user/delete-user'
-import { getAllUsers, GetAllUsersResponse } from '../../http/user/get-all-users'
-import { getUser, GetUserResponse } from '../../http/user/get-user'
-import { listUsers, ListUsersResponse } from '../../http/user/list-users'
-import { updateUser, UpdateUserDTO } from '../../http/user/update-user'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllUsersResponse } from '../../http/user/get-all-users'
+import { getAllUsers } from '../../http/user/get-all-users'
+import type { GetUserResponse } from '../../http/user/get-user'
+import { getUser } from '../../http/user/get-user'
+import type { ListUsersResponse } from '../../http/user/list-users'
+import { listUsers } from '../../http/user/list-users'
+import type { UpdateUserDTO } from '../../http/user/update-user'
+import { updateUser } from '../../http/user/update-user'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.USER
 

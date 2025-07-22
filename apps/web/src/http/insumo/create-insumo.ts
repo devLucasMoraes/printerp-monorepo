@@ -15,7 +15,7 @@ export const createInsumoSchema = z.object({
 
 export type CreateInsumoDTO = z.infer<typeof createInsumoSchema>
 
-export type CreateInsumoResponse = {
+export interface CreateInsumoResponse {
   insumoId: string
 }
 

@@ -12,10 +12,8 @@ import {
 import { Controller, useForm } from 'react-hook-form'
 
 import { useOrgQueries } from '../../../hooks/queries/useOrgQueries'
-import {
-  CreateOrganizationDto,
-  createOrganizationSchema,
-} from '../../../http/orgs/create-organization'
+import type { CreateOrganizationDto } from '../../../http/orgs/create-organization'
+import { createOrganizationSchema } from '../../../http/orgs/create-organization'
 import { useAlertStore } from '../../../stores/alert-store'
 
 interface Props {

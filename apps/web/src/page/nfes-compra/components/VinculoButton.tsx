@@ -1,9 +1,10 @@
 import { Button, Stack, Typography } from '@mui/material'
-import { Control, useWatch } from 'react-hook-form'
+import type { Control } from 'react-hook-form'
+import { useWatch } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useVinculoQueries } from '../../../hooks/queries/useVinculoQueries'
-import { UpdateNfeCompraDTO } from '../../../http/nfe-compra/update-nfe-compra'
+import type { UpdateNfeCompraDTO } from '../../../http/nfe-compra/update-nfe-compra'
 
 export const VinculoButton = ({
   index,

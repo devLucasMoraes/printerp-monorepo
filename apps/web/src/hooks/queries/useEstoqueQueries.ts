@@ -1,22 +1,13 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  adjustEstoque,
-  AdjustEstoqueDTO,
-} from '../../http/estoque/adjust-estoque'
-import {
-  listEstoques,
-  ListEstoquesResponse,
-} from '../../http/estoque/list-estoques'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { AdjustEstoqueDTO } from '../../http/estoque/adjust-estoque'
+import { adjustEstoque } from '../../http/estoque/adjust-estoque'
+import type { ListEstoquesResponse } from '../../http/estoque/list-estoques'
+import { listEstoques } from '../../http/estoque/list-estoques'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.ESTOQUE
 

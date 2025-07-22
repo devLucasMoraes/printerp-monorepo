@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -14,16 +14,14 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useFornecedoraQueries } from '../../../hooks/queries/useFornecedoraQueries'
-import {
+import type {
   CreateFornecedoraDTO,
   CreateFornecedoraResponse,
-  createFornecedoraSchema,
 } from '../../../http/fornecedora/create-fornecedora'
-import { ListFornecedorasResponse } from '../../../http/fornecedora/list-fornecedoras'
-import {
-  UpdateFornecedoraDTO,
-  updateFornecedoraSchema,
-} from '../../../http/fornecedora/update-fornecedora'
+import { createFornecedoraSchema } from '../../../http/fornecedora/create-fornecedora'
+import type { ListFornecedorasResponse } from '../../../http/fornecedora/list-fornecedoras'
+import type { UpdateFornecedoraDTO } from '../../../http/fornecedora/update-fornecedora'
+import { updateFornecedoraSchema } from '../../../http/fornecedora/update-fornecedora'
 import { useAlertStore } from '../../../stores/alert-store'
 
 interface FornecedoraModalProps {
@@ -109,7 +107,7 @@ export const FornecedoraModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -129,7 +127,7 @@ export const FornecedoraModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -156,8 +154,8 @@ export const FornecedoraModal = ({
             ? 'Preencha os campos abaixo para editar o fornecedora'
             : 'Preencha os campos abaixo para criar um novo fornecedora'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="nomeFantasia"
               control={control}
@@ -171,8 +169,8 @@ export const FornecedoraModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <Controller
               name="razaoSocial"
               control={control}
@@ -186,8 +184,8 @@ export const FornecedoraModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <Controller
               name="cnpj"
               control={control}
@@ -201,8 +199,8 @@ export const FornecedoraModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <Controller
               name="fone"
               control={control}
@@ -216,8 +214,8 @@ export const FornecedoraModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

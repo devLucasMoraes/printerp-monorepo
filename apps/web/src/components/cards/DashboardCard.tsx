@@ -6,14 +6,15 @@ import {
   styled,
   Typography,
 } from '@mui/material'
+import type { JSX } from 'react'
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius * 1.5,
+  borderRadius: Number(theme.shape.borderRadius) * 1.5,
   backgroundColor: theme.palette.background.paper,
   elevation: theme.palette.mode === 'dark' ? 2 : 1,
 }))
 
-type Props = {
+interface Props {
   title?: string
   subtitle?: string
   action?: JSX.Element

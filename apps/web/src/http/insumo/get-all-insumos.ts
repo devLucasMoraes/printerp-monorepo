@@ -1,4 +1,4 @@
-import { Unidade } from '../../constants/Unidade'
+import type { Unidade } from '../../constants/Unidade'
 import { api } from '../api/axios'
 
 export interface GetAllInsumosResponse {

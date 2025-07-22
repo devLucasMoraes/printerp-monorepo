@@ -10,7 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -38,15 +38,13 @@ import { ArmazemAutoComplete } from '../../../components/shared/autocompletes/Ar
 import { InsumoAutoComplete } from '../../../components/shared/autocompletes/InsumoAutoComplete'
 import { ParceiroAutoComplete } from '../../../components/shared/autocompletes/ParceiroAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useEmprestimoQueries } from '../../../hooks/queries/useEmprestimosQueries'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { createEmprestimoSchema } from '../../../http/emprestimo/create-emprestimo'
-import { ListEmprestimosResponse } from '../../../http/emprestimo/list-emprestimos'
-import {
-  UpdateEmprestimoDTO,
-  updateEmprestimoSchema,
-} from '../../../http/emprestimo/update-emprestimo'
+import type { ListEmprestimosResponse } from '../../../http/emprestimo/list-emprestimos'
+import type { UpdateEmprestimoDTO } from '../../../http/emprestimo/update-emprestimo'
+import { updateEmprestimoSchema } from '../../../http/emprestimo/update-emprestimo'
 import { useAlertStore } from '../../../stores/alert-store'
 import { DevolucaoModal } from './DevolucaoModal'
 
@@ -200,7 +198,7 @@ export const EmprestimoModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -221,7 +219,7 @@ export const EmprestimoModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -296,8 +294,8 @@ export const EmprestimoModal = ({
               ? 'Atualize os dados do emprestimo'
               : 'Crie um novo emprestimo'}
           </DialogContentText>
-          <Grid2 container spacing={2} sx={{ mt: 2 }}>
-            <Grid2 size={3}>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid size={3}>
               <Controller
                 name="tipo"
                 control={control}
@@ -315,9 +313,9 @@ export const EmprestimoModal = ({
                   </TextField>
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={3}>
+            <Grid size={3}>
               <Controller
                 name="status"
                 control={control}
@@ -332,9 +330,9 @@ export const EmprestimoModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={3}>
+            <Grid size={3}>
               <Controller
                 name="previsaoDevolucao"
                 control={control}
@@ -351,9 +349,9 @@ export const EmprestimoModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={3}>
+            <Grid size={3}>
               <Controller
                 name="dataEmprestimo"
                 control={control}
@@ -370,9 +368,9 @@ export const EmprestimoModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={4}>
+            <Grid size={4}>
               <Controller
                 name="custoEstimado"
                 control={control}
@@ -399,9 +397,9 @@ export const EmprestimoModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={4}>
+            <Grid size={4}>
               <Controller
                 name="armazemId"
                 control={control}
@@ -409,9 +407,9 @@ export const EmprestimoModal = ({
                   <ArmazemAutoComplete field={field} error={errors.armazemId} />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={4}>
+            <Grid size={4}>
               <Controller
                 name="parceiroId"
                 control={control}
@@ -422,9 +420,9 @@ export const EmprestimoModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 size={12}>
+            <Grid size={12}>
               <Controller
                 name="obs"
                 control={control}
@@ -438,10 +436,10 @@ export const EmprestimoModal = ({
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
             {/* Items Section */}
-            <Grid2 size={12}>
+            <Grid size={12}>
               <Box sx={{ mt: 2 }}>
                 <Stack
                   direction="row"
@@ -506,8 +504,8 @@ export const EmprestimoModal = ({
                             },
                           }}
                         >
-                          <Grid2 container spacing={2}>
-                            <Grid2 size={4}>
+                          <Grid container spacing={2}>
+                            <Grid size={4}>
                               <Controller
                                 name={`itens.${index}.insumoId`}
                                 control={control}
@@ -525,9 +523,9 @@ export const EmprestimoModal = ({
                                   />
                                 )}
                               />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2 size={2}>
+                            <Grid size={2}>
                               <Controller
                                 name={`itens.${index}.quantidade`}
                                 control={control}
@@ -548,9 +546,9 @@ export const EmprestimoModal = ({
                                   />
                                 )}
                               />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2 size={2}>
+                            <Grid size={2}>
                               <Controller
                                 name={`itens.${index}.unidade`}
                                 control={control}
@@ -578,9 +576,9 @@ export const EmprestimoModal = ({
                                   </TextField>
                                 )}
                               />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2 size={2}>
+                            <Grid size={2}>
                               <Controller
                                 name={`itens.${index}.valorUnitario`}
                                 control={control}
@@ -614,9 +612,9 @@ export const EmprestimoModal = ({
                                   />
                                 )}
                               />
-                            </Grid2>
+                            </Grid>
 
-                            <Grid2
+                            <Grid
                               size={2}
                               container
                               direction="row"
@@ -646,16 +644,16 @@ export const EmprestimoModal = ({
                               >
                                 <IconCircleMinus />
                               </IconButton>
-                            </Grid2>
-                          </Grid2>
+                            </Grid>
+                          </Grid>
                         </Box>
                       )
                     })}
                   </Box>
                 )}
               </Box>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancelar</Button>

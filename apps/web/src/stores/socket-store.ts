@@ -1,12 +1,13 @@
 import { env } from '@printerp/env-client'
-import { io, Socket } from 'socket.io-client'
+import type { Socket } from 'socket.io-client'
+import { io } from 'socket.io-client'
 import { create } from 'zustand'
 
 interface SocketState {
   socket: Socket | null
   isConnected: boolean
   lastError: string | null
-  connect: () => Promise<void>
+  connect: () => void
   disconnect: () => void
   emit: (event: string, data: unknown) => void
   subscribe: (event: string, callback: (data: unknown) => void) => () => void
@@ -20,7 +21,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
   isConnected: false,
   lastError: null,
 
-  connect: async () => {
+  connect: () => {
     const { socket } = get()
     if (socket?.connected) return
 

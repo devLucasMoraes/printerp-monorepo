@@ -9,7 +9,7 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -29,15 +29,13 @@ import { InsumoAutoComplete } from '../../../components/shared/autocompletes/Ins
 import { RequisitanteAutoComplete } from '../../../components/shared/autocompletes/RequisitanteAutoComplete'
 import { SetorAutoComplete } from '../../../components/shared/autocompletes/SetorAutoComplete'
 import { unidades } from '../../../constants'
-import { Unidade } from '../../../constants/Unidade'
+import type { Unidade } from '../../../constants/Unidade'
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 import { useRequisicaoEstoqueQueries } from '../../../hooks/queries/useRequisicaoEstoqueQueries'
 import { createRequisicaoEstoqueSchema } from '../../../http/requisicao-estoque/create-requisicao-estoque'
-import { ListRequisicoesEstoqueResponse } from '../../../http/requisicao-estoque/list-requisicoes-estoque'
-import {
-  UpdateRequisicaoEstoqueDTO,
-  updateRequisicaoEstoqueSchema,
-} from '../../../http/requisicao-estoque/update-requisicao-estoque'
+import type { ListRequisicoesEstoqueResponse } from '../../../http/requisicao-estoque/list-requisicoes-estoque'
+import type { UpdateRequisicaoEstoqueDTO } from '../../../http/requisicao-estoque/update-requisicao-estoque'
+import { updateRequisicaoEstoqueSchema } from '../../../http/requisicao-estoque/update-requisicao-estoque'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const RequisicaoEstoqueModal = ({
@@ -154,7 +152,7 @@ export const RequisicaoEstoqueModal = ({
   const handleSuccess = () => {
     onClose()
     reset()
-    queryClient.invalidateQueries({ queryKey: ['estoque'] })
+    void queryClient.invalidateQueries({ queryKey: ['estoque'] })
     enqueueSnackbar(
       `Requisição ${isUpdate ? 'atualizada' : 'criada'} com sucesso`,
       { variant: 'success' },
@@ -173,7 +171,7 @@ export const RequisicaoEstoqueModal = ({
           onSuccess: handleSuccess,
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -186,7 +184,7 @@ export const RequisicaoEstoqueModal = ({
           onSuccess: handleSuccess,
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -269,8 +267,8 @@ export const RequisicaoEstoqueModal = ({
               },
             }}
           >
-            <Grid2 container spacing={2}>
-              <Grid2 size={4}>
+            <Grid container spacing={2}>
+              <Grid size={4}>
                 <Controller
                   name={`itens.${index}.insumoId`}
                   control={control}
@@ -288,9 +286,9 @@ export const RequisicaoEstoqueModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={2}>
+              <Grid size={2}>
                 <Controller
                   name={`itens.${index}.quantidade`}
                   control={control}
@@ -307,9 +305,9 @@ export const RequisicaoEstoqueModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={3}>
+              <Grid size={3}>
                 <Controller
                   name={`itens.${index}.unidade`}
                   control={control}
@@ -332,9 +330,9 @@ export const RequisicaoEstoqueModal = ({
                     </TextField>
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2 size={2}>
+              <Grid size={2}>
                 <Controller
                   name={`itens.${index}.valorUnitario`}
                   control={control}
@@ -359,9 +357,9 @@ export const RequisicaoEstoqueModal = ({
                     />
                   )}
                 />
-              </Grid2>
+              </Grid>
 
-              <Grid2
+              <Grid
                 size={1}
                 container
                 direction="row"
@@ -375,8 +373,8 @@ export const RequisicaoEstoqueModal = ({
                 >
                   <IconCircleMinus />
                 </IconButton>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </Box>
         ))}
       </Box>
@@ -400,8 +398,8 @@ export const RequisicaoEstoqueModal = ({
             ? 'Preencha os campos abaixo para editar a requisição de estoque'
             : 'Preencha os campos abaixo para criar uma nova requisição de estoque'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size="grow">
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size="grow">
             <Controller
               name="valorTotal"
               control={control}
@@ -428,9 +426,9 @@ export const RequisicaoEstoqueModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={4}>
+          <Grid size={4}>
             <Controller
               name="armazemId"
               control={control}
@@ -438,9 +436,9 @@ export const RequisicaoEstoqueModal = ({
                 <ArmazemAutoComplete field={field} error={errors.armazemId} />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size="auto">
+          <Grid size="auto">
             <Controller
               name="dataRequisicao"
               control={control}
@@ -457,9 +455,9 @@ export const RequisicaoEstoqueModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={12}>
+          <Grid size={12}>
             <Controller
               name="obs"
               control={control}
@@ -473,9 +471,9 @@ export const RequisicaoEstoqueModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={4}>
+          <Grid size={4}>
             <Controller
               name="ordemProducao"
               control={control}
@@ -489,9 +487,9 @@ export const RequisicaoEstoqueModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={4}>
+          <Grid size={4}>
             <Controller
               name="setorId"
               control={control}
@@ -499,9 +497,9 @@ export const RequisicaoEstoqueModal = ({
                 <SetorAutoComplete field={field} error={errors.setorId} />
               )}
             />
-          </Grid2>
+          </Grid>
 
-          <Grid2 size={4}>
+          <Grid size={4}>
             <Controller
               name="requisitanteId"
               control={control}
@@ -512,10 +510,10 @@ export const RequisicaoEstoqueModal = ({
                 />
               )}
             />
-          </Grid2>
+          </Grid>
 
           {/* Items Section */}
-          <Grid2 size={12}>
+          <Grid size={12}>
             <Box sx={{ mt: 2 }}>
               <Stack
                 direction="row"
@@ -539,8 +537,8 @@ export const RequisicaoEstoqueModal = ({
 
               {renderItems()}
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

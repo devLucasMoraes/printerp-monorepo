@@ -9,7 +9,9 @@
     "env:load": "dotenv -e ../../.env --",
     "typeorm": "tsx ./node_modules/typeorm/cli.js -d src/database/data-source.ts",
     "build": "tsup",
-    "start": "node dist/http/server.js"
+    "start": "node dist/http/server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -29,7 +31,7 @@
     "socket.io": "^4.8.1",
     "typeorm": "^0.3.23",
     "uuid": "^11.0.5",
-    "zod": "^3.24.3"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.7.0",
@@ -38,15 +40,10 @@
     "@printerp/tsconfig": "workspace:*",
     "@swc/core": "^1.12.1",
     "@types/bcryptjs": "^3.0.0",
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.1.0",
     "dotenv-cli": "^8.0.0",
     "tsup": "^8.5.0",
     "tsx": "^4.19.3"
   },
-  "prettier": "@printerp/prettier",
-  "eslintConfig": {
-    "extends": [
-      "@printerp/eslint-config/node"
-    ]
-  }
+  "prettier": "@printerp/prettier"
 }

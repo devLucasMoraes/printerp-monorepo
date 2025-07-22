@@ -172,4 +172,4 @@ const pageLinks = [
   },
 ]
 
-export { notifications, profile, pageLinks, appsLink }
+export { appsLink, notifications, pageLinks, profile }

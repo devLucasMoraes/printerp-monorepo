@@ -1,23 +1,16 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createOrUpdateVinculo,
+import type {
   CreateOrUpdateVinculoDto,
   CreateOrUpdateVinculoResponse,
 } from '../../http/vinculo/create-or-update-vinculo'
-import {
-  getVinculoByCod,
-  GetVinculoByCodResponse,
-} from '../../http/vinculo/get-vinculo-by-cod'
-import { ErrorResponse } from '../../types'
+import { createOrUpdateVinculo } from '../../http/vinculo/create-or-update-vinculo'
+import type { GetVinculoByCodResponse } from '../../http/vinculo/get-vinculo-by-cod'
+import { getVinculoByCod } from '../../http/vinculo/get-vinculo-by-cod'
+import type { ErrorResponse } from '../../types'
 
 const resourceKey = ResourceKeys.VINCULO
 

@@ -2,8 +2,9 @@ import { XMLParser, XMLValidator } from 'fast-xml-parser'
 import { useCallback } from 'react'
 import { ZodError } from 'zod'
 
-import { InfNFe, XmlNFeSchema } from '../schemas/nfe'
-import { NfeData } from '../types'
+import type { InfNFe } from '../schemas/nfe'
+import { XmlNFeSchema } from '../schemas/nfe'
+import type { NfeData } from '../types'
 
 export interface UseXmlImportOptions {
   onSuccess?: (data: NfeData) => void

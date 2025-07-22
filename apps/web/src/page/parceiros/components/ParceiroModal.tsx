@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid2,
+  Grid,
   TextField,
 } from '@mui/material'
 import { useEffect } from 'react'
@@ -14,15 +14,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router'
 
 import { useParceiroQueries } from '../../../hooks/queries/useParceiroQueries'
-import {
-  CreateParceiroDTO,
-  createParceiroSchema,
-} from '../../../http/parceiro/create-parceiro'
-import { ListParceirosResponse } from '../../../http/parceiro/list-parceiros'
-import {
-  UpdateParceiroDTO,
-  updateParceiroSchema,
-} from '../../../http/parceiro/update-parceiro'
+import type { CreateParceiroDTO } from '../../../http/parceiro/create-parceiro'
+import { createParceiroSchema } from '../../../http/parceiro/create-parceiro'
+import type { ListParceirosResponse } from '../../../http/parceiro/list-parceiros'
+import type { UpdateParceiroDTO } from '../../../http/parceiro/update-parceiro'
+import { updateParceiroSchema } from '../../../http/parceiro/update-parceiro'
 import { useAlertStore } from '../../../stores/alert-store'
 
 export const ParceiroModal = ({
@@ -104,7 +100,7 @@ export const ParceiroModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -123,7 +119,7 @@ export const ParceiroModal = ({
           },
           onError: (error) => {
             console.error(error)
-            enqueueSnackbar(error.response?.data.message || error.message, {
+            enqueueSnackbar(error.response?.data.message ?? error.message, {
               variant: 'error',
             })
           },
@@ -150,8 +146,8 @@ export const ParceiroModal = ({
             ? 'Preencha os campos abaixo para editar o parceiro'
             : 'Preencha os campos abaixo para criar um novo parceiro'}
         </DialogContentText>
-        <Grid2 container spacing={2} sx={{ mt: 2 }}>
-          <Grid2 size={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={12}>
             <Controller
               name="nome"
               control={control}
@@ -165,8 +161,8 @@ export const ParceiroModal = ({
                 />
               )}
             />
-          </Grid2>
-          <Grid2 size={12}>
+          </Grid>
+          <Grid size={12}>
             <Controller
               name="fone"
               control={control}
@@ -180,8 +176,8 @@ export const ParceiroModal = ({
                 />
               )}
             />
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

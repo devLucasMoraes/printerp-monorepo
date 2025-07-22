@@ -1,5 +1,5 @@
 import { IconButton } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
+import type { GridColDef } from '@mui/x-data-grid'
 import { IconTool } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useParams } from 'react-router'
@@ -10,7 +10,7 @@ import PageContainer from '../../components/container/PageContainer'
 import { ServerDataTable } from '../../components/shared/ServerDataTable'
 import { useEstoqueQueries } from '../../hooks/queries/useEstoqueQueries'
 import { useCacheInvalidation } from '../../hooks/useCacheInvalidation'
-import { ListEstoquesResponse } from '../../http/estoque/list-estoques'
+import type { ListEstoquesResponse } from '../../http/estoque/list-estoques'
 import { EstoqueModal } from './components/EstoqueModal'
 
 const Estoques = () => {

@@ -9,7 +9,7 @@ export const createRequisitanteSchema = z.object({
 
 export type CreateRequisitanteDTO = z.infer<typeof createRequisitanteSchema>
 
-export type CreateRequisitanteResponse = {
+export interface CreateRequisitanteResponse {
   requisitanteId: string
 }
 

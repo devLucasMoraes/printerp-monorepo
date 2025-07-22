@@ -1,6 +1,8 @@
 import { alpha, Box, Card, styled } from '@mui/material'
-import { DataGrid, GridColDef, GridValidRowModel } from '@mui/x-data-grid'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import type { GridColDef, GridValidRowModel } from '@mui/x-data-grid'
+import { DataGrid } from '@mui/x-data-grid'
+import type { Dispatch, SetStateAction } from 'react'
+import { useEffect, useState } from 'react'
 
 const PAGE_SIZE_KEY = 'dataTablePageSize'
 const DEFAULT_PAGE_SIZE = 10

@@ -1,12 +1,11 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseQueryOptions } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  listMovimentacoesEstoque,
-  ListMovimentacoesEstoqueResponse,
-} from '../../http/movimentacao-estoque/list-movimentacoes-estoque'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { ListMovimentacoesEstoqueResponse } from '../../http/movimentacao-estoque/list-movimentacoes-estoque'
+import { listMovimentacoesEstoque } from '../../http/movimentacao-estoque/list-movimentacoes-estoque'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.MOVIMENTO_ESTOQUE
 export function useMovimentoEstoqueQueries() {

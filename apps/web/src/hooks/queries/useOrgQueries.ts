@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createOrganization,
+import type {
   CreateOrganizationDto,
   CreateOrganizationResponse,
 } from '../../http/orgs/create-organization'
-import {
-  getOrganization,
-  GetOrganizationResponse,
-} from '../../http/orgs/get-organization'
-import {
-  getOrganizations,
-  GetOrganizationsResponse,
-} from '../../http/orgs/get-organizations'
-import {
-  listOrganizations,
-  ListOrganizationsResponse,
-} from '../../http/orgs/list-organizations'
+import { createOrganization } from '../../http/orgs/create-organization'
+import type { GetOrganizationResponse } from '../../http/orgs/get-organization'
+import { getOrganization } from '../../http/orgs/get-organization'
+import type { GetOrganizationsResponse } from '../../http/orgs/get-organizations'
+import { getOrganizations } from '../../http/orgs/get-organizations'
+import type { ListOrganizationsResponse } from '../../http/orgs/list-organizations'
+import { listOrganizations } from '../../http/orgs/list-organizations'
 import { shtutdownOrganization } from '../../http/orgs/shutdown-organization'
-import {
-  updateOrganization,
-  UpdateOrganizationDto,
-} from '../../http/orgs/update-organization'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { UpdateOrganizationDto } from '../../http/orgs/update-organization'
+import { updateOrganization } from '../../http/orgs/update-organization'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.ORGANIZATION
 

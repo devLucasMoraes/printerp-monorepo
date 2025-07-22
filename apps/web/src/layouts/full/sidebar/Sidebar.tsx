@@ -31,7 +31,7 @@ const ScrollableBox = styled(Box)(({ theme }) => ({
   },
   '&::-webkit-scrollbar-thumb': {
     backgroundColor: alpha(theme.palette.grey[500], 0.2),
-    borderRadius: theme.shape.borderRadius / 2,
+    borderRadius: Number(theme.shape.borderRadius) / 2,
   },
 }))
 

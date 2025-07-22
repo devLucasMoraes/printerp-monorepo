@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 
 import { useInsumoQueries } from '../../../hooks/queries/useInsumoQueries'
 
-type FieldProps = {
+interface FieldProps {
   size?: 'small' | 'medium'
   field: {
     value: string | null

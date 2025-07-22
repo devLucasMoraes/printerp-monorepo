@@ -1,6 +1,7 @@
-import { Helmet } from 'react-helmet-async'
+import { Helmet } from '@dr.pogodin/react-helmet'
+import type { JSX } from 'react'
 
-type Props = {
+interface Props {
   description?: string
   children: JSX.Element | JSX.Element[]
   title?: string

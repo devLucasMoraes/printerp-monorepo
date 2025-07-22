@@ -1,36 +1,23 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from '@tanstack/react-query'
-import { AxiosError } from 'axios'
+import type { UseMutationOptions, UseQueryOptions } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 
 import { ResourceKeys } from '../../constants/ResourceKeys'
-import {
-  createRequisitante,
+import type {
   CreateRequisitanteDTO,
   CreateRequisitanteResponse,
 } from '../../http/requisitante/create-requisitante'
+import { createRequisitante } from '../../http/requisitante/create-requisitante'
 import { deleteRequisitante } from '../../http/requisitante/delete-requisitante'
-import {
-  getAllRequisitantes,
-  GetAllRequisitantesResponse,
-} from '../../http/requisitante/get-all-requisitantes'
-import {
-  getRequisitante,
-  GetRequisitanteResponse,
-} from '../../http/requisitante/get-requisitante'
-import {
-  listRequisitantes,
-  ListRequisitantesResponse,
-} from '../../http/requisitante/list-requisitantes'
-import {
-  updateRequisitante,
-  UpdateRequisitanteDTO,
-} from '../../http/requisitante/update-requisitante'
-import { ErrorResponse, Page, PageParams } from '../../types'
+import type { GetAllRequisitantesResponse } from '../../http/requisitante/get-all-requisitantes'
+import { getAllRequisitantes } from '../../http/requisitante/get-all-requisitantes'
+import type { GetRequisitanteResponse } from '../../http/requisitante/get-requisitante'
+import { getRequisitante } from '../../http/requisitante/get-requisitante'
+import type { ListRequisitantesResponse } from '../../http/requisitante/list-requisitantes'
+import { listRequisitantes } from '../../http/requisitante/list-requisitantes'
+import type { UpdateRequisitanteDTO } from '../../http/requisitante/update-requisitante'
+import { updateRequisitante } from '../../http/requisitante/update-requisitante'
+import type { ErrorResponse, Page, PageParams } from '../../types'
 
 const resourceKey = ResourceKeys.REQUISITANTE
 
